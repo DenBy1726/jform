@@ -1,0 +1,25 @@
+{
+  "name": "jform",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "postinstall": "lerna bootstrap",
+    "publish": "lerna publish",
+    "changed": "lerna changed",
+    "test": "lerna run --stream test",
+    "test:update": "lerna run --stream test:update",
+    "build": "lerna run --stream build",
+    "start": "lerna run start --stream --parallel"
+  },
+  "dependencies": {
+    "lerna": "^4.0.0"
+  },
+  "devDependencies": {
+    "source-map-loader": "^1.1.2",
+    "ts-loader": "^8.4.0",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4",
+    "webpack": "^4.46.0"
+  }
+}
