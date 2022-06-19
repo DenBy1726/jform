@@ -1,5 +1,5 @@
 import React from "react";
 import {render} from "react-dom";
-import Demo from "@jform/core"
+import Form from "@jform/core"
 
-render(<Demo/>, document.getElementById("app"));
+render(<Form  data="hello world 22"/>, document.getElementById("app"));

@@ -20,9 +20,21 @@ module.exports = merge(common, {
     },
     resolve: {
         alias: {
-            '@jform/core': path.resolve(__dirname, '../core/src'),
+            "react": path.resolve('./node_modules/react'),
+            'react-dom': path.resolve('./node_modules/react-dom'),
         }
-    }
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                loader: "babel-loader",
+                options: { babelrcRoots: [".", "../core/src"] }
+            }
+        ]
+    },
 
 
 });

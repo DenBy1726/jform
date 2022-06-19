@@ -1,4 +1,3 @@
-import React from "react"
+import Form from "./form";
 
-const Demo = () => "hello world";
-export default Demo;
+export default Form;
