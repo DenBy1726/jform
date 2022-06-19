@@ -19,7 +19,11 @@ module.exports = merge(common, {
         port: 3000
     },
     resolve: {
+        modules: [path.resolve('./src'), path.resolve('../core/src'),  path.resolve('../utils/src')],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
         alias: {
+            "@jform/core":  path.resolve('../core/src'),
+            "@jform/utils":  path.resolve('../utils/src'),
             "react": path.resolve('./node_modules/react'),
             'react-dom': path.resolve('./node_modules/react-dom'),
         }
@@ -28,11 +32,20 @@ module.exports = merge(common, {
     module: {
         rules: [
             {
-                test: /\.jsx?$/,
+                test: /\.[jt]sx?$/,
                 exclude: /node_modules/,
                 loader: "babel-loader",
                 options: { babelrcRoots: [".", "../core/src"] }
-            }
+            },
+            {
+                test: /\.tsx?$/,
+                use: [{
+                    loader: 'ts-loader',
+                    options: {
+                        transpileOnly: true
+                    }
+                }]
+            },
         ]
     },
 
