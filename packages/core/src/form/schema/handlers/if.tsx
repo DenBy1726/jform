@@ -1,8 +1,9 @@
 //@ts-nocheck
 import {JSONSchema7} from "json-schema";
 import Ajv from "ajv";
-import {retrieveSchema} from "form/schema/reference";
-import {ID_PREFIX} from "form/schema/constant";
+import {retrieveSchema} from "../reference";
+import {ID_PREFIX} from "../constant";
+import {mergeSchemas} from "@jform/utils/mergeSchemas";
 
 export const createAjvInstance = (): Ajv => {
     return new Ajv({
@@ -19,11 +20,7 @@ export const withIdRefPrefix = (schemaNode: JSONSchema7) => {
         obj = {...schemaNode};
         for (const key in obj) {
             const value: any = obj[key];
-            if (
-                key === "$ref" &&
-                typeof value === "string" &&
-                value.startsWith("#")
-            ) {
+            if (key === "$ref" && typeof value === "string" && value.startsWith("#")) {
                 obj[key] = ID_PREFIX + value;
             } else {
                 obj[key] = withIdRefPrefix(value);

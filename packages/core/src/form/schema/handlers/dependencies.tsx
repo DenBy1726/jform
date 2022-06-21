@@ -1,33 +1,31 @@
 import {JSONSchema7} from "json-schema";
-import {retrieveSchema} from "form/schema/reference";
-import {resolveReference} from "form/schema/handlers/$ref";
+import {retrieveSchema} from "../reference";
+import {resolveReference} from "./$ref";
 import {mergeSchemas, isObject} from "@jform/utils/index";
-import {isValid} from "form/schema/handlers/if";
+import {isValid} from "./if";
 
 const withExactlyOneSubschema = (schema: JSONSchema7, rootSchema: JSONSchema7, data: any, dependencyKey: string, oneOf: JSONSchema7[]) => {
-    //TODO:
-    // const validSubschemas = oneOf.filter(subschema => {
-    //     if (!subschema.properties) {
-    //         return false;
-    //     }
-    //     const { [dependencyKey]: conditionPropertySchema } = subschema.properties;
-    //     if (conditionPropertySchema) {
-    //         const conditionSchema = {
-    //             type: "object",
-    //             properties: {
-    //                 [dependencyKey]: conditionPropertySchema,
-    //             },
-    //         };
-    //         const { errors } = validateFormData(formData, conditionSchema);
-    //         return errors.length === 0;
-    //     }
-    //     return false;
-    // });
-    if (oneOf.length !== 1) {
+    const validSubschemas = oneOf.filter(subschema => {
+        if (!subschema.properties) {
+            return false;
+        }
+        const {[dependencyKey]: conditionPropertySchema} = subschema.properties;
+        if (conditionPropertySchema) {
+            const conditionSchema: JSONSchema7 = {
+                type: "object",
+                properties: {
+                    [dependencyKey]: conditionPropertySchema,
+                },
+            };
+            return isValid(conditionSchema, data, rootSchema);
+        }
+        return false;
+    });
+    if (validSubschemas.length !== 1) {
+        console.warn("ignoring oneOf in dependencies because there isn't exactly one subschema that is valid");
         return schema;
     }
-    const subschema = oneOf[0];
-
+    const subschema = validSubschemas[0];
     const {
         // @ts-ignore
         [dependencyKey]: conditionPropertySchema,

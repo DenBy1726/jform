@@ -1,9 +1,8 @@
 import mergeAllOf from "json-schema-merge-allof";
 import {JSONSchema7} from "json-schema";
-import {retrieveSchema} from "form/schema/reference";
+import {retrieveSchema} from "../reference";
 
-// @ts-ignore
-export const resolveAllOfMerge = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
+export const resolveAllOfMerge = <T extends any>(schema: JSONSchema7, _rootSchema: JSONSchema7, _data: T): JSONSchema7 => {
     try {
         return mergeAllOf({
             ...schema,
@@ -18,8 +17,7 @@ export const resolveAllOfMerge = <T extends any>(schema: JSONSchema7, rootSchema
 export const resolveAllOf = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 =>  {
     return {
         ...schema,
-        //@ts-ignore
-        allOf: schema.allOf.map(allOfSubschema => retrieveSchema(allOfSubschema, rootSchema, data)),
+        allOf: schema.allOf!.map(allOfSubschema => retrieveSchema(allOfSubschema, rootSchema, data)),
     };
 }
 

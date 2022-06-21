@@ -7,6 +7,6 @@
       "*": ["src/*", "node_modules/*", ".."],
       "@jform/utils/*": ["../utils/src/*"]
     },
-    "jsx": "react",
+    "jsx": "react"
   }
 }

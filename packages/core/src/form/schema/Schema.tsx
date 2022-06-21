@@ -10,6 +10,7 @@ export default function Schema(props: PropsWithChildren<SchemaProps>) {
 
     const computedSchema = useMemo(() => retrieveSchema(schema, schema, data), [schema, data]);
 
+    console.log(JSON.stringify(computedSchema))
     return <FieldTemplate>
         {JSON.stringify(computedSchema)} - {data}
     </FieldTemplate>;
