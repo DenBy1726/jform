@@ -12,7 +12,6 @@ const handlers = {
     dependencies: resolveDependenciesRecursive,
     allOf_before: resolveAllOf,
     if: resolveCondition,
-    items: (schema: JSONSchema7,resolver: JSONSchema7, data: any) => retrieveSchema(schema.items as JSONSchema7, resolver, data),
     properties: resolveProperties,
     allOf_after: resolveAllOfMerge,
     additionalProperties: stubExistingAdditionalProperties

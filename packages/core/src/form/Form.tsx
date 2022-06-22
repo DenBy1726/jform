@@ -1,19 +1,14 @@
-import React, {Component} from "react";
+import React, {PropsWithChildren, useMemo} from "react";
 import Schema from "./schema";
 import {FormProps} from "@jform/core";
 import {merge} from "lodash"
-import defaultTemplate from "./defaultTemplate";
+import getDefaultTemplate from "./schema/defaultTemplate";
 
-export default class Form extends Component<FormProps> {
+export default function Form(props: PropsWithChildren<FormProps>) {
+    let {data, schema, template, ...other} = props;
 
-    render() {
-        let {data, schema, template} = this.props;
+    const computedTemplate = useMemo(() => merge(getDefaultTemplate(), template), [template]);
+    const computedSchema = useMemo(() => merge({}, schema), [schema]);
 
-        template = merge(template, defaultTemplate);
-
-
-        return <Schema data={data} schema={schema} template={template}>
-            {data}
-        </Schema>
-    }
+    return <Schema data={data} schema={computedSchema} template={computedTemplate} {...other}/>
 }

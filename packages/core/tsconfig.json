@@ -3,6 +3,7 @@
   "include": ["src", "types", "index.d.ts"],
   "compilerOptions": {
     "baseUrl": "./",
+    "moduleResolution": "node",
     "paths": {
       "*": ["src/*", "node_modules/*", ".."],
       "@jform/utils/*": ["../utils/src/*"]

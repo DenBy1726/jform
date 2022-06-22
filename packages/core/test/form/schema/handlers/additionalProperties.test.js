@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {retrieveSchema} from "../src/form/schema/reference"
+import {retrieveSchema} from "../../../../src/form/schema/reference"
 
 describe("additional properties", () => {
 

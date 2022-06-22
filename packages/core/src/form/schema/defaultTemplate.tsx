@@ -1,14 +1,20 @@
 import React from "react"
 import {FormTemplate} from "@jform/core";
+import layout from "./templates/layout";
+import title from "./templates/title";
+import {cloneDeep} from "lodash";
+import help from "./templates/help";
+import description from "./templates/description";
+import error from "./templates/error";
 
 const defaultTemplate: FormTemplate = {
     common: {
         field: {
-            layout: ({children}) => <>{children}</>,
-            title: ({children}) => <>{children}</>,
-            description: ({children}) => <>{children}</>,
-            help: ({children}) => <>{children}</>,
-            error: ({children}) => <>{children}</>,
+            layout: layout,
+            title: title,
+            description: description,
+            help: help,
+            error: error,
             state: {
                 view: ({children}) => <>{children}</>,
                 loading: ({children}) => <>{children}</>,
@@ -21,4 +27,4 @@ const defaultTemplate: FormTemplate = {
     }
 }
 
-export default defaultTemplate;
+export default (): FormTemplate => cloneDeep(defaultTemplate);

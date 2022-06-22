@@ -10,21 +10,23 @@ export function createComponent(Component, props) {
     // const onError = sinon.spy();
     // const onSubmit = sinon.spy();
     const comp = renderIntoDocument(
-        <Component
-    //         onSubmit={onSubmit}
-    // onError={onError}
-    // onChange={onChange}
-    {...props}
-    />
-);
+        <div>
+            <Component
+                //         onSubmit={onSubmit}
+                // onError={onError}
+                // onChange={onChange}
+                {...props}
+            />
+        </div>
+    );
     const node = findDOMNode(comp);
     // return { comp, node, onChange, onError, onSubmit };
-    return { comp, node};
+    return {comp, node};
 
 }
 
 export function createFormComponent(props) {
-    return createComponent(Form, { ...props });
+    return createComponent(Form, {...props});
 }
 
 export function createSandbox() {
@@ -32,24 +34,24 @@ export function createSandbox() {
     return sandbox;
 }
 
-export function setProps(comp, newProps) {
-    const node = findDOMNode(comp);
-    render(React.createElement(comp.constructor, newProps), node.parentNode);
-}
-
-/* Run a group of tests with different combinations of omitExtraData and liveOmit as form props.
- */
-export function describeRepeated(title, fn) {
-    const formExtraPropsList = [
-        { omitExtraData: false },
-        { omitExtraData: true },
-        { omitExtraData: true, liveOmit: true },
-    ];
-    for (let formExtraProps of formExtraPropsList) {
-        const createFormComponentFn = props =>
-            createFormComponent({ ...props, ...formExtraProps });
-        describe(title + " " + JSON.stringify(formExtraProps), () =>
-            fn(createFormComponentFn)
-        );
-    }
-}
+// export function setProps(comp, newProps) {
+//     const node = findDOMNode(comp);
+//     render(React.createElement(comp.constructor, newProps), node.parentNode);
+// }
+//
+// /* Run a group of tests with different combinations of omitExtraData and liveOmit as form props.
+//  */
+// export function describeRepeated(title, fn) {
+//     const formExtraPropsList = [
+//         {omitExtraData: false},
+//         {omitExtraData: true},
+//         {omitExtraData: true, liveOmit: true},
+//     ];
+//     for (let formExtraProps of formExtraPropsList) {
+//         const createFormComponentFn = props =>
+//             createFormComponent({...props, ...formExtraProps});
+//         describe(title + " " + JSON.stringify(formExtraProps), () =>
+//             fn(createFormComponentFn)
+//         );
+//     }
+// }
