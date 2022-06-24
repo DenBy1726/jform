@@ -23,6 +23,8 @@
     "react": ">=16 || >=17"
   },
   "dependencies": {
+    "@json-schema-tools/traverse": "^1.8.1",
+    "@json-schema-tools/dereferencer": "^1.5.4",
     "ajv": "^8.11.0",
     "jsonpointer": "^5.0.0",
     "json-schema-merge-allof": "^0.8.1",

@@ -1,6 +1,18 @@
-import React, {FunctionComponent, PropsWithChildren, useMemo} from "react"
-import {FieldLabelProps, FieldLayoutProps, SchemaErrorItem, SchemaItem, SchemaProps} from "@jform/core";
+import React, {FunctionComponent, PropsWithChildren, useContext, useMemo} from "react"
+import {
+    ConfigSchema, FieldHiddenProps,
+    FieldLabelProps,
+    FieldLayoutProps, FormTemplate,
+    SchemaErrorItem,
+    SchemaItem,
+    SchemaProps,
+    TypeProps
+} from "@jform/core";
 import {retrieveSchema} from "./reference";
+import {JSONSchema7} from "json-schema";
+import {getSchemaType} from "@jform/utils/getSchemaType";
+import types from "./types";
+import {JFormContext} from "../Form";
 
 const getFieldItemHandler = (item: SchemaItem<any, any>, def: FunctionComponent): FunctionComponent<any> => {
     const {text, template, ...otherProps} = item;
@@ -12,27 +24,22 @@ const getFieldItemHandler = (item: SchemaItem<any, any>, def: FunctionComponent)
     }
 }
 
-const canonizeFieldItemProps = (item?: SchemaItem<any, any> | string | ((arg: any) => string), standard?: string): SchemaItem<any, any> => {
+const canonizeFieldItemProps = (item?: SchemaItem<any, any>, standard?: string): SchemaItem<any, any> => {
     if (item === undefined) {
         return {text: standard};
-    } else if (typeof item === 'string' || typeof item === 'function') {
-        return {text: item};
-    } else {
-        return {...item, text: item.text || standard};
     }
+    return {...item, text: item.text || standard};
 }
 
-const canonizeErrorFieldProps = (item?: SchemaErrorItem<any> | string [], standard?: string[]): SchemaErrorItem<any> => {
+const canonizeErrorFieldProps = (item?: SchemaErrorItem<any>, standard?: string[]): SchemaErrorItem<any> => {
     let errors: string[] = [];
     if (standard !== undefined) {
         errors.push(...standard);
     }
     if (item === undefined) {
         return {text: errors}
-    } else if (Array.isArray(item)) {
-        return {text: [...errors, ...item]}
     } else {
-        if(item.text === undefined) {
+        if (item.text === undefined) {
             return {...item, text: [...errors]}
         } else if (Array.isArray(item.text)) {
             return {...item, text: [...errors, ...item.text]}
@@ -43,9 +50,42 @@ const canonizeErrorFieldProps = (item?: SchemaErrorItem<any> | string [], standa
     }
 }
 
+function getTypeTemplate(schema: JSONSchema7, configSchema?: ConfigSchema): FunctionComponent<TypeProps> {
+    if (configSchema?.field !== undefined) {
+        return configSchema.field;
+    }
+    const type = getSchemaType(schema);
+    let typeTemplate;
+
+    if (typeof type === "string") {
+        typeTemplate = types[type];
+    } else {
+        typeTemplate = types[0];
+    }
+
+    // // If the type is not defined and the schema uses 'anyOf' or 'oneOf', don't
+    // // render a field and let the MultiSchemaField component handle the form display
+    // if (!componentName && (schema.anyOf || schema.oneOf)) {
+    //     return () => null;
+    // }
+
+    return typeTemplate;
+
+}
+
+function getFieldTemplate(configSchema: ConfigSchema | undefined, template: FormTemplate): FunctionComponent<FieldLayoutProps> {
+    if (configSchema?.layout) {
+        if (typeof configSchema.layout === 'function') {
+            return configSchema.layout;
+        } else {
+            return (props) => template!.common!.field!.layout({...props, ...configSchema?.layout});
+        }
+    }
+    return template!.common!.field!.layout;
+}
+
 export default (props: PropsWithChildren<SchemaProps>) => {
     const {
-        template,
         schema,
         data,
         configSchema,
@@ -54,32 +94,30 @@ export default (props: PropsWithChildren<SchemaProps>) => {
         required,
         propertyKeyModified = false,
         modifiedName,
+        className,
         ...other
     } = props;
 
-    const FieldTemplate: FunctionComponent<FieldLayoutProps> = configSchema?.template || template!.common!.field!.layout;
+    const {template} = useContext(JFormContext);
 
-    const titleProps: FieldLabelProps<any> = canonizeFieldItemProps(configSchema?.title, schema.title);
-    const descProps: SchemaItem<string,any> = canonizeFieldItemProps(configSchema?.description, schema.description);
-    const helpProps: SchemaItem<string,any> = canonizeFieldItemProps(configSchema?.help);
-    const errorProps: SchemaErrorItem<any> = canonizeErrorFieldProps(configSchema?.error, errors);
+    const FieldTemplate: FunctionComponent<FieldLayoutProps> = getFieldTemplate(configSchema, template);
+
+    const titleProps: FieldLabelProps = canonizeFieldItemProps(configSchema?.title as SchemaItem<any, any>, schema.title) as FieldLabelProps;
+    //@ts-ignore
+    titleProps?.required?.display = required || titleProps?.required?.display || false;
+
+    const descProps: SchemaItem<string, any> = canonizeFieldItemProps(configSchema?.description as SchemaItem<any, any>, schema.description);
+    const helpProps: SchemaItem<string, any> = canonizeFieldItemProps(configSchema?.help as SchemaItem<any, any>);
+    const errorProps: SchemaErrorItem<any> = canonizeErrorFieldProps(configSchema?.error as SchemaErrorItem<any>, errors);
 
     const TitleField: FunctionComponent = useMemo(() => getFieldItemHandler(titleProps, template!.common!.field!.title as FunctionComponent), [titleProps]);
     const DescriptionField: FunctionComponent = useMemo(() => getFieldItemHandler(descProps, template!.common!.field!.description), [descProps]);
     const HelpField: FunctionComponent = useMemo(() => getFieldItemHandler(helpProps, template!.common!.field!.help), [helpProps]);
     const ErrorsField: FunctionComponent = useMemo(() => getFieldItemHandler(errorProps, template!.common!.field!.error), [errorProps]);
 
-    //const disabled = configSchema?.disabled || schema.readOnly;
-    //const autofocus = configSchema?.autofocus;
-    // let classNames: string | string[] = [`jform-field`, `jform-field-${schema.type}`]
-    // // @ts-ignore
-    // if (errorProps.display !== false && errorProps.list?.length > 0) {
-    //     classNames.push("field-error has-error has-danger")
-    // }
-    // if (configSchema?.className) {
-    //     classNames.push(configSchema.className);
-    // }
-    // classNames = classNames.join(" ").trim();
+    const disabled = configSchema?.disabled || schema.readOnly;
+    const autofocus = configSchema?.autofocus;
+
 
     // if(propertyKeyModified) {
     //     titleProps.text = modifiedName;
@@ -90,16 +128,34 @@ export default (props: PropsWithChildren<SchemaProps>) => {
 
     const computedSchema = useMemo(() => retrieveSchema(schema, schema, data), [schema, data]);
     console.log(computedSchema);
+
+    const TypeTemplate = getTypeTemplate(schema, configSchema);
+
     return <FieldTemplate title={TitleField}
                           description={DescriptionField}
                           help={HelpField}
                           titleProps={titleProps}
                           descriptionProps={descProps}
                           helpProps={helpProps}
-                          hidden={configSchema?.hidden}
+                          hidden={configSchema?.hidden as FieldHiddenProps}
                           errors={ErrorsField}
                           errorsProps={errorProps}
                           {...other}>
-        {props.children}
+        <TypeTemplate
+            schema={schema}
+            configSchema={configSchema}
+            autofocus={!!autofocus}
+            disabled={!!disabled}
+            className={className}
+            data={data}
+            required={false}
+            onChange={() => {
+            }}
+            onBlur={() => {
+            }}
+            onFocus={() => {
+            }}
+            errors={errorProps}
+        />
     </FieldTemplate>;
 }

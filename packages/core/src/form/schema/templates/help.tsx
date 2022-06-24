@@ -9,7 +9,7 @@ export default (props: PropsWithChildren<SchemaItem<string, any>>) => {
     }
     let computedText = typeof text === "function" ? text(props) : text;
     return (
-        <div style={style} className={`jform-help ${className}`} id={id}>
+        <div style={style} className={className} id={id}>
             {computedText}
         </div>
     );

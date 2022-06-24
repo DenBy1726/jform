@@ -1,4 +1,6 @@
-export const guessType = (value: any): string => {
+import {JSONSchema7TypeName} from "json-schema";
+
+export const guessType = (value: any): JSONSchema7TypeName => {
     if (Array.isArray(value)) {
         return 'array';
     }

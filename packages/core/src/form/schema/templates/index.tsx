@@ -1,11 +1,11 @@
 import React from "react"
 import {FormTemplate} from "@jform/core";
-import layout from "./templates/layout";
-import title from "./templates/title";
+import layout from "./layout";
+import title from "./title";
 import {cloneDeep} from "lodash";
-import help from "./templates/help";
-import description from "./templates/description";
-import error from "./templates/error";
+import help from "./help";
+import description from "./description";
+import error from "./error";
 
 const defaultTemplate: FormTemplate = {
     common: {

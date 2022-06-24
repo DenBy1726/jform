@@ -1,18 +1,19 @@
 import React, {PropsWithChildren} from "react"
 import {FieldLabelProps} from "@jform/core";
-import {REQUIRED_FIELD_SYMBOL} from "./constant";
 
 
-export default (props: PropsWithChildren<FieldLabelProps<any>>) => {
-    const {text, required, id, className, style} = props;
+export default (props: PropsWithChildren<FieldLabelProps>) => {
+    const {text, required = {}, id, className = "", style} = props;
     if (!text) {
         return null;
     }
     let computedText = typeof text === "function" ? text(props) : text;
+    let computedRequired = typeof required.text === "function" ? required.text(props) : required.text;
     return (
-        <label style={style} className={`jform-label ${className}`} id={id}>
+        <label style={style} className={className} id={id}>
             {computedText}
-            {required && <span className="jform-label-required">{REQUIRED_FIELD_SYMBOL}</span>}
+            {required.display !== false && computedRequired &&
+                <span className={required.className} style={required.style} id={required.id}>{computedRequired}</span>}
         </label>
     );
 }

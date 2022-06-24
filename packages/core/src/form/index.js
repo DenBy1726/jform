@@ -1,8 +1,9 @@
 import Form from "./Form";
-import getDefaultTemplate from "./schema/defaultTemplate"
+import getDefaultTemplate from "./schema/templates"
+import getDefaultWidgets from "./schema/widgets"
 
 export default Form;
 
 export {
-    getDefaultTemplate
+    getDefaultTemplate, getDefaultWidgets
 }

@@ -1,7 +1,7 @@
 import {guessType} from "./guessType";
-import {JSONSchema7} from "json-schema";
+import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 
-export const getSchemaType = (schema: JSONSchema7): string | string[] => {
+export const getSchemaType = (schema: JSONSchema7): JSONSchema7TypeName | JSONSchema7TypeName[] => {
     let {type} = schema;
 
     if (!type) {

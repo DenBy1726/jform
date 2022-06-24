@@ -13,6 +13,10 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
         errorsProps,
         hidden,
         children,
+        className = "",
+        errorClassName = "",
+        style,
+        id
     } = props;
 
     const Title = title;
@@ -20,12 +24,19 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
     const Help = help;
     const Errors = errors;
 
-    if (hidden) {
-        return <div className="jform-hidden">{children}</div>;
+    if (hidden?.enable === true) {
+        const {className = "", id, style} = hidden;
+        return <div className={className} id={id} style={style}>{children}</div>;
+    }
+
+    let errorClass = "";
+    //@ts-ignore
+    if (errorsProps?.display !== false && errorsProps?.text?.length > 0) {
+        errorClass = errorClassName;
     }
 
     return (
-        <div className="jform-field-layout-root">
+        <div className={`${className} ${errorClass}`} style={style} id={id}>
             {titleProps.display !== false && <Title {...titleProps} />}
             {descriptionProps.display !== false && <Description {...descriptionProps}/>}
             {children}

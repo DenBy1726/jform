@@ -1,6 +1,6 @@
 import React from "react";
 import sinon from "sinon";
-import {renderIntoDocument} from "react-dom/test-utils";
+import {renderIntoDocument, act, Simulate} from "react-dom/test-utils";
 import {findDOMNode, render} from "react-dom";
 
 import Form from "../src";
@@ -55,3 +55,9 @@ export function createSandbox() {
 //         );
 //     }
 // }
+
+export function submitForm(node) {
+    act(() => {
+        Simulate.submit(node);
+    });
+}

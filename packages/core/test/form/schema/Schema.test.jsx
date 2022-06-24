@@ -32,7 +32,7 @@ describe("Schema", () => {
                 template.common.field.layout = () => "Bar";
 
                 const {node} = createFormComponent({
-                    schema: {}, template, configSchema: {template: () => "Baz"}
+                    schema: {}, template, configSchema: {layout: () => "Baz"}
                 });
                 expect(node.textContent).to.equal("Baz")
             })
@@ -42,6 +42,33 @@ describe("Schema", () => {
                 expect(node.getElementsByClassName("jform-hidden").length).to.equal(1)
             })
 
+            it("should support className", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        layout: {
+                            className: "Bar",
+                            id: "match"
+                        }
+                    }
+                });
+                expect(node.querySelectorAll("#match.Bar").length).to.equal(1)
+                expect(node.querySelectorAll("#match.jform-field-layout-root.Bar").length).to.equal(1)
+            })
+
+            it("should support style", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        layout: {
+                            style: {
+                                width: '10px', margin: '1em'
+                            }, id: "match"
+                        }
+                    }
+                });
+
+                expect(node.querySelector("#match").style[0]).to.equal("width")
+                expect(node.querySelector("#match").style[1]).to.equal("margin")
+            })
         });
 
         describe("title", () => {
@@ -58,14 +85,14 @@ describe("Schema", () => {
                 const {node} = createFormComponent({
                     schema: {title: "Foo"}
                 });
-                expect(node.textContent).to.equal("Foo")
+                expect(node.getElementsByClassName("jform-title")[0].textContent).to.equal("Foo")
             })
 
-            it("should overlap from config schema", () => {
+            it("should override from config schema", () => {
                 const {node} = createFormComponent({
                     schema: {title: "Foo"}, configSchema: {title: "Bar"}
                 });
-                expect(node.textContent).to.equal("Bar")
+                expect(node.getElementsByClassName("jform-title")[0].textContent).to.equal("Bar")
             })
 
             it("should support function initialization", () => {
@@ -74,7 +101,7 @@ describe("Schema", () => {
                         title: (props) => "Bar"
                     }
                 });
-                expect(node.textContent).to.equal("Bar")
+                expect(node.getElementsByClassName("jform-title")[0].textContent).to.equal("Bar")
             })
 
             it("should support object initialization", () => {
@@ -110,18 +137,6 @@ describe("Schema", () => {
                 expect(node.querySelector("#match").textContent).to.equal("Bar")
             })
 
-            //in this level of testing we cannot use required from schema, because from schema it object level property
-            it("should support required", () => {
-                const {node} = createFormComponent({
-                    schema: {title: "Foo"}, configSchema: {
-                        title: {
-                            required: true, id: "match"
-                        }
-                    }
-                });
-                expect(node.querySelector("#match .jform-label-required").textContent).to.have.lengthOf.greaterThan(0)
-            })
-
             it("should support additional class", () => {
                 const {node} = createFormComponent({
                     schema: {title: "Foo"}, configSchema: {
@@ -131,7 +146,7 @@ describe("Schema", () => {
                     }
                 });
                 expect(node.querySelector("#match.Bar").textContent).to.equal("Foo")
-                expect(node.querySelector("#match.jform-label.Bar").textContent).to.equal("Foo")
+                expect(node.querySelector("#match.jform-title.Bar").textContent).to.equal("Foo")
             })
 
             it("should support styles", () => {
@@ -150,6 +165,111 @@ describe("Schema", () => {
 
         });
 
+        //in this level of testing we cannot use required from schema, because from schema it object level property
+        describe("required", () => {
+            it("should display required mark", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        title: {
+                            text: "Foo",
+                            required: {
+                                text: "!",
+                                display: true
+                            }
+                        }
+                    }
+                });
+                expect(node.getElementsByClassName("jform-label-required")[0].textContent).to.equal("!")
+            })
+
+            it("should support function initialization", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        title: {
+                            text: "Foo",
+                            required: {
+                                text: () => "!",
+                                display: true
+                            }
+                        }
+                    }
+                });
+                expect(node.getElementsByClassName("jform-label-required")[0].textContent).to.equal("!")
+            })
+
+            it("should support additional class", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        title: {
+                            text: "Foo",
+                            required: {
+                                display: true,
+                                className: "Bar",
+                                id: "match"
+                            }
+                        }
+                    }
+                });
+                expect(node.querySelector("#match.Bar").textContent).to.equal("*")
+                expect(node.querySelector("#match.jform-label-required.Bar").textContent).to.equal("*")
+            })
+
+            it("should support styles", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        title: {
+                            text: "Foo",
+                            required: {
+                                display: true,
+                                style: {
+                                    width: "1em",
+                                    margin: "10px"
+                                },
+                                id: "match"
+                            }
+                        }
+                    }
+                });
+                expect(node.querySelector("#match").style[0]).to.equal("width")
+                expect(node.querySelector("#match").style[1]).to.equal("margin")
+            })
+
+        });
+
+        describe("hidden", () => {
+            it("should support additional class", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        hidden: {
+                            enable: true,
+                            className: "Bar",
+                            id: "match"
+                        }
+                    }
+                });
+                expect(node.querySelectorAll("#match.Bar").length).to.equal(1)
+            })
+
+            it("should support styles", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        hidden: {
+                            enable: true,
+                            style: {
+                                width: "1em",
+                                margin: "10px"
+                            },
+                            id: "match"
+                        }
+                    }
+                });
+                expect(node.querySelector("#match").style[0]).to.equal("width")
+                expect(node.querySelector("#match").style[1]).to.equal("margin")
+            })
+
+        });
+
+
         describe("help", () => {
             it("should use passed help template", () => {
                 const template = getDefaultTemplate();
@@ -162,12 +282,12 @@ describe("Schema", () => {
 
             it("should use text from config schema", () => {
                 const {node} = createFormComponent({configSchema: {help: "Bar"}});
-                expect(node.textContent).to.equal("Bar")
+                expect(node.getElementsByClassName("jform-help")[0].textContent).to.equal("Bar")
             })
 
             it("should support function initialization", () => {
                 const {node} = createFormComponent({configSchema: {help: (props) => "Bar"}});
-                expect(node.textContent).to.equal("Bar")
+                expect(node.getElementsByClassName("jform-help")[0].textContent).to.equal("Bar")
             })
 
             it("should support object initialization", () => {
@@ -242,19 +362,19 @@ describe("Schema", () => {
 
             it("should use text from config schema", () => {
                 const {node} = createFormComponent({schema: {description: "Bar"}});
-                expect(node.textContent).to.equal("Bar")
+                expect(node.getElementsByClassName("jform-description")[0].textContent).to.equal("Bar")
             })
 
             it("should overlap from config schema", () => {
                 const {node} = createFormComponent({
                     schema: {description: "Foo"}, configSchema: {description: "Bar"}
                 });
-                expect(node.textContent).to.equal("Bar")
+                expect(node.getElementsByClassName("jform-description")[0].textContent).to.equal("Bar")
             })
 
             it("should support function initialization", () => {
                 const {node} = createFormComponent({configSchema: {description: (props) => "Bar"}});
-                expect(node.textContent).to.equal("Bar")
+                expect(node.getElementsByClassName("jform-description")[0].textContent).to.equal("Bar")
             })
 
             it("should support object initialization", () => {
@@ -317,97 +437,96 @@ describe("Schema", () => {
             })
         });
 
+        describe("error", () => {
+            it("should use passed error template", () => {
+                const template = getDefaultTemplate();
+                template.common.field.error = () => "Bar";
+                template.common.field.layout = ({errors}) => errors()
+
+                const {node} = createFormComponent({schema: {description: "Foo"}, template});
+                expect(node.textContent).to.equal("Bar")
+            })
+
+            it("should overlap from config schema", () => {
+                const {node} = createFormComponent({
+                    configSchema: {error: ["1", "2"]}
+                });
+                expect(node.getElementsByClassName("jform-error").length).to.equal(2)
+            })
+
+            it("should support object initialization", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        error: {
+                            text: ["1", "2"], id: "match"
+                        }
+                    }
+                });
+                expect(node.getElementsByClassName("jform-error").length).to.equal(2)
+            })
+
+            it("should support custom template from props", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        error: {
+                            text: ["1", "2"], template: ({text}) => <label id="match">{text}</label>
+                        }
+                    }
+                });
+                expect(node.querySelector("#match").textContent).to.equal("12")
+            })
+
+            it("should support additional class", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        error: {
+                            text: ["Foo"], className: "Bar", id: "match"
+                        }
+                    }
+                });
+                expect(node.querySelector("#match.Bar").textContent).to.equal("Foo")
+                expect(node.querySelector("#match.jform-errors.Bar").textContent).to.equal("Foo")
+            })
+
+            it("should support additional class for error", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        error: {
+                            text: ["Foo"], errorClassName: "Bar", id: "match"
+                        }
+                    }
+                });
+                expect(node.querySelector("#match .jform-error.Bar").textContent).to.equal("Foo")
+            })
+
+            it("should support styles", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        error: {
+                            text: ["Bar"], style: {
+                                width: '10px', margin: '1em'
+                            }, id: "match"
+                        }
+                    }
+                });
+                expect(node.querySelector("#match").style[0]).to.equal("width")
+                expect(node.querySelector("#match").style[1]).to.equal("margin")
+            })
+
+            it("should support user defined errors", () => {
+                const {node} = createFormComponent({
+                    errors: ["Foo"],
+                    configSchema: {
+                        error: {
+                            text: ["Bar"], style: {
+                                width: '10px', margin: '1em'
+                            }, id: "match"
+                        }
+                    }
+                });
+                expect(node.getElementsByClassName("jform-error").length).to.equal(2)
+            })
+        });
+
     })
-
-    describe("error", () => {
-        it("should use passed error template", () => {
-            const template = getDefaultTemplate();
-            template.common.field.error = () => "Bar";
-            template.common.field.layout = ({errors}) => errors()
-
-            const {node} = createFormComponent({schema: {description: "Foo"}, template});
-            expect(node.textContent).to.equal("Bar")
-        })
-
-        it("should overlap from config schema", () => {
-            const {node} = createFormComponent({
-                configSchema: {error: ["1", "2"]}
-            });
-            expect(node.getElementsByClassName("jform-error").length).to.equal(2)
-        })
-
-        it("should support object initialization", () => {
-            const {node} = createFormComponent({
-                configSchema: {
-                    error: {
-                        text: ["1", "2"], id: "match"
-                    }
-                }
-            });
-            expect(node.getElementsByClassName("jform-error").length).to.equal(2)
-        })
-
-        it("should support custom template from props", () => {
-            const {node} = createFormComponent({
-                configSchema: {
-                    error: {
-                        text: ["1", "2"], template: ({text}) => <label id="match">{text}</label>
-                    }
-                }
-            });
-            expect(node.querySelector("#match").textContent).to.equal("12")
-        })
-
-        it("should support additional class", () => {
-            const {node} = createFormComponent({
-                configSchema: {
-                    error: {
-                        text: ["Foo"], className: "Bar", id: "match"
-                    }
-                }
-            });
-            expect(node.querySelector("#match.Bar").textContent).to.equal("Foo")
-            expect(node.querySelector("#match.jform-errors.Bar").textContent).to.equal("Foo")
-        })
-
-        it("should support additional class for error", () => {
-            const {node} = createFormComponent({
-                configSchema: {
-                    error: {
-                        text: ["Foo"], errorClass: "Bar", id: "match"
-                    }
-                }
-            });
-            expect(node.querySelector("#match .jform-error.Bar").textContent).to.equal("Foo")
-        })
-
-        it("should support styles", () => {
-            const {node} = createFormComponent({
-                configSchema: {
-                    error: {
-                        text: ["Bar"], style: {
-                            width: '10px', margin: '1em'
-                        }, id: "match"
-                    }
-                }
-            });
-            expect(node.querySelector("#match").style[0]).to.equal("width")
-            expect(node.querySelector("#match").style[1]).to.equal("margin")
-        })
-
-        it("should support user defined errors", () => {
-            const {node} = createFormComponent({
-                errors: ["Foo"],
-                configSchema: {
-                    error: {
-                        text: ["Bar"], style: {
-                            width: '10px', margin: '1em'
-                        }, id: "match"
-                    }
-                }
-            });
-            expect(node.getElementsByClassName("jform-error").length).to.equal(2)
-        })
-
-    });
 })

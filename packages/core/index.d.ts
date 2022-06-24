@@ -2,6 +2,7 @@ declare module '@jform/core' {
     import * as React from 'react';
     import type * as CSS from 'csstype';
     import {JSONSchema7, JSONSchema7Definition, JSONSchema7Type, JSONSchema7TypeName} from 'json-schema';
+    import {FunctionComponent} from "react";
 
 
     export interface FieldStateCommonFormTemplate {
@@ -19,33 +20,93 @@ declare module '@jform/core' {
         id?: string,
     }
 
-    export interface SchemaItem<Text, T> extends HtmlConfigurable, KeysSchema {
+    export interface SchemaItem<Text, T> extends HtmlConfigurable {
         text?: Text | ((arg: T) => Text),
         display?: boolean
         template?: string | ((arg: T) => React.FunctionComponent<T>),
     }
 
     export interface SchemaErrorItem<T> extends SchemaItem<string[], T> {
-        errorClass?: string
+        errorClassName?: string
     }
 
-    export interface FieldLabelProps<T> extends SchemaItem<string, T> {
-        required?: boolean
+    export interface FieldLabelProps extends HtmlConfigurable {
+        required?: SchemaItem<string, FieldLabelProps>,
+        text?: string | ((arg: FieldLabelProps) => string),
+        display?: boolean
+    }
+
+    export interface LayoutProps extends HtmlConfigurable {
+        errorClassName?: string
+    }
+
+    export interface TypeProps extends HtmlConfigurable {
+        schema: JSONSchema7,
+        configSchema?: ConfigSchema,
+        disabled: boolean,
+        autofocus: boolean,
+        data: any,
+        required: boolean,
+        onChange: Function,
+        onBlur: Function,
+        onFocus: Function,
+        errors: SchemaErrorItem<any>,
+        placeholder?: string
+    }
+
+    export interface StringTypeProps extends TypeProps {
+        options?: any[]
+    }
+
+    export interface WidgetProps<T> extends HtmlConfigurable {
+        autofocus?: boolean,
+        schema: JSONSchema7,
+        configSchema?: ConfigSchema,
+        disabled: boolean,
+        required: boolean,
+        onChange: Function,
+        onBlur: Function,
+        onFocus: Function,
+        errors: SchemaErrorItem<any>,
+        value: T,
+        emptyValue?: T,
+        placeholder?: string,
+        defaultValue?: string
+    }
+
+    export interface SelectOption<T> {
+        schema?: JSONSchema7,
+        label: string,
+        value: T,
+    }
+
+    export interface StringWidgetProps extends WidgetProps<string> {
+        options?: SelectOption<string>[],
+        disabledOptions?: string[]
     }
 
 
     export interface ConfigSchema extends KeysSchema, HtmlConfigurable {
-        template?: React.FunctionComponent,
-        title?: FieldLabelProps<any> | string,
-        description?: SchemaItem<string, any> | string,
-        help?: SchemaItem<string, any> | string,
-        error?: SchemaErrorItem<any> | string[],
-        hidden?: boolean,
-        disabled?: boolean
+        layout?: LayoutProps,
+        field?: React.FunctionComponent,
+        title?: FieldLabelProps | string | ((arg: any) => string),
+        description?: SchemaItem<string, any> | string | ((arg: any) => string),
+        help?: SchemaItem<string, any> | string | ((arg: any) => string),
+        error?: SchemaErrorItem<any> | string[] | ((arg: any) => string[]),
+        hidden?: boolean | (HtmlConfigurable & { enable?: boolean }),
+        disabled?: boolean,
+        autofocus?: boolean,
+        enumNames?: string,
+        placeholder?: string,
+        type?: string,
+        widget?: HtmlConfigurable | Function,
+        disabledOptions?: any[]
     }
 
     export interface ReadSchema extends KeysSchema {
-        always: boolean
+        always?: boolean
+        href?: string,
+        widget?: string
     }
 
     export interface ValidationSchema extends KeysSchema {
@@ -54,34 +115,37 @@ declare module '@jform/core' {
     export interface EventSchema extends KeysSchema {
     }
 
-    export interface RulesSchema extends KeysSchema {
+    export interface RulesSchema {
     }
 
     export interface JSchema {
-        schema: JSONSchema7,
-        configSchema: ConfigSchema,
-        readSchema: ReadSchema,
-        validationSchema: ValidationSchema,
-        eventSchema: EventSchema,
+        schema?: JSONSchema7,
+        configSchema?: ConfigSchema,
+        readSchema?: ReadSchema,
+        validationSchema?: ValidationSchema,
+        eventSchema?: EventSchema,
         rulesSchema?: RulesSchema
     }
 
-    export interface FieldLayoutProps {
-        title: React.FunctionComponent<FieldLabelProps<any>>,
+    export interface FieldHiddenProps extends HtmlConfigurable {
+        enable?: boolean
+    }
+
+    export interface FieldLayoutProps extends LayoutProps {
+        title: React.FunctionComponent<FieldLabelProps>,
         description: React.FunctionComponent<SchemaItem<string, any>>,
         help: React.FunctionComponent<SchemaItem<string, any>>,
-        titleProps: FieldLabelProps<any>,
+        titleProps: FieldLabelProps,
         descriptionProps: SchemaItem<string, any>,
         helpProps: SchemaItem<string, any>,
         errors: React.FunctionComponent<SchemaErrorItem<any>>,
         errorsProps: SchemaErrorItem<any>,
-        hidden?: boolean,
-        id?: string
+        hidden?: FieldHiddenProps
     }
 
     export interface FieldCommonFormTemplate {
         layout: React.FunctionComponent<FieldLayoutProps>,
-        title: React.FunctionComponent<FieldLabelProps<any>>,
+        title: React.FunctionComponent<FieldLabelProps>,
         description: React.FunctionComponent<SchemaItem<string, any>>,
         help: React.FunctionComponent<SchemaItem<string, any>>,
         error: React.FunctionComponent<SchemaErrorItem<any>>,
@@ -100,6 +164,18 @@ declare module '@jform/core' {
         format: { [k: string]: string | object }
     }
 
+    export interface Defaults {
+        common?: JSchema,
+        type?: { [k in JSONSchema7TypeName]?: JSchema },
+        widget?: { [k in JSONSchema7TypeName]?: { [v: string]: JSchema } },
+        rules?: ((arg: JSchema) => JSchema | undefined)[]
+    }
+
+    export interface Widgets {
+        // @ts-ignore
+        [k in JSONSchema7TypeName]: { [v: string]: FunctionComponent<WidgetProps> }
+    }
+
     export interface FormTemplate {
         common: CommonFormTemplate,
         type?: { [k in JSONSchema7TypeName]: JsonTypeFormTemplate },
@@ -111,13 +187,12 @@ declare module '@jform/core' {
         schema: JSONSchema7,
         configSchema?: ConfigSchema,
         readSchema?: ReadSchema,
-        validationSchema?: ValidationSchema,
         eventSchema?: EventSchema,
-        template?: FormTemplate,
         errors?: string[],
         propertyKeyModified?: boolean,
         modifiedName?: string,
-        required?: boolean
+        required?: boolean,
+        className?: string
     }
 
     export interface FormProps {
@@ -128,8 +203,11 @@ declare module '@jform/core' {
         validationSchema?: ValidationSchema,
         eventSchema?: EventSchema,
         template?: FormTemplate,
+        widgets?: Widgets,
         errors?: string[],
-        rulesSchema?: RulesSchema
+        rulesSchema?: RulesSchema,
+        defaults?: Defaults,
+        schemaInitialized?: (arg: JSchema) => void
     }
 
 
@@ -138,5 +216,7 @@ declare module '@jform/core' {
     export default function Form(props: React.PropsWithChildren<FormProps>): React.FunctionComponent;
 
     export function getDefaultTemplate(): FormTemplate;
+
+    export function getDefaultWidgets(): Widgets;
 
 }

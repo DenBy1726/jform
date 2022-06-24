@@ -3,9 +3,9 @@ import {isObject} from "lodash";
 import {resolveCondition} from "./handlers/if";
 import {stubExistingAdditionalProperties} from "./handlers/additionalProperties";
 import {resolveProperties} from "./handlers/properties";
-import {resolveAllOfMerge, resolveAllOf} from "./handlers/allOf";
-import {resolveReference} from "./handlers/$ref";
+import {resolveAllOf, resolveAllOfMerge} from "./handlers/allOf";
 import {resolveDependenciesRecursive} from "./handlers/dependencies";
+import {resolveReference} from "@jform/utils/index";
 
 const handlers = {
     $ref: resolveReference,
