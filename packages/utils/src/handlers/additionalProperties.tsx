@@ -1,11 +1,11 @@
 //@ts-nocheck
 import {JSONSchema7} from "json-schema";
-import {retrieveSchema} from "../reference";
-import {ADDITIONAL_PROPERTY_FLAG} from "../constant";
-import {guessType, isObject} from "@jform/utils/index";
+import {guessType, isObject, retrieveSchema} from "../index";
+
+const ADDITIONAL_PROPERTY_FLAG = "__additional_property";
 
 //add additional data definitions to schema
-export const stubExistingAdditionalProperties = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
+export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
     // Clone the schema so we don't ruin the consumer's original
     schema = {...schema};
     if (schema.properties) {

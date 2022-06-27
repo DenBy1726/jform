@@ -1,5 +1,5 @@
-import {expect} from "chai";
-import {retrieveSchema} from "../../../../src/form/schema/reference"
+//@ts-nocheck
+import {retrieveSchema} from "../../src"
 
 describe("allOf", () => {
 
@@ -14,7 +14,7 @@ describe("allOf", () => {
         };
 
         const resultSchema = retrieveSchema(schema, schema);
-        expect(resultSchema.properties.foo.type).to.equals("string");
+        expect(resultSchema.properties.foo.type).toEqual("string");
     });
 
     it("should be able to handle incompatible types and not crash", () => {
@@ -28,6 +28,6 @@ describe("allOf", () => {
         };
 
         const resultSchema = retrieveSchema(schema, schema);
-        expect(resultSchema.properties.foo.type).be.undefined;
+        expect(resultSchema.properties.foo.type).toBeUndefined();
     });
 });

@@ -1,6 +1,6 @@
 import mergeAllOf from "json-schema-merge-allof";
 import {JSONSchema7} from "json-schema";
-import {retrieveSchema} from "../reference";
+import {retrieveSchema} from "./";
 
 export const resolveAllOfMerge = <T extends any>(schema: JSONSchema7, _rootSchema: JSONSchema7, _data: T): JSONSchema7 => {
     try {

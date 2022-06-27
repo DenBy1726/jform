@@ -1,15 +1,31 @@
 import React, {FunctionComponent, PropsWithChildren} from "react"
-import {JSONSchema7TypeName} from "json-schema";
+import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 import string from "./string";
+import {ConfigSchema, EventSchema, FieldError, HtmlConfigurable} from "@jform/core";
 
-const types : { [k in JSONSchema7TypeName as string]: FunctionComponent<PropsWithChildren<any>>} = {
+export interface Types extends Record<JSONSchema7TypeName, FunctionComponent<PropsWithChildren<TypeProps>>> {
+}
+
+export interface TypeProps extends HtmlConfigurable {
+    schema: JSONSchema7,
+    configSchema?: ConfigSchema,
+    disabled: boolean,
+    autofocus: boolean,
+    data: any,
+    required: boolean,
+    eventSchema?: EventSchema,
+    errors: FieldError,
+    type: string
+}
+
+const types: Types = {
     string: string,
-    number: ({children}) => <>{children}</>,
-    integer: ({children}) => <>{children}</>,
-    boolean: ({children}) => <>{children}</>,
-    object: ({children}) => <>{children}</>,
-    array: ({children}) => <>{children}</>,
-    null: ({children}) => <>{children}</>
+    number: () => <></>,
+    integer: () => <></>,
+    boolean: () => <></>,
+    object: () => <></>,
+    array: () => <></>,
+    null: () => <></>
 };
 
 export default types;

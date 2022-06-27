@@ -1,12 +1,12 @@
-import {isObject} from "@jform/utils/index";
+import {isObject} from "../index";
 import {JSONSchema7} from "json-schema";
-import {retrieveSchema} from "../reference";
+import {retrieveSchema} from "./index"
 
-export const resolveProperties = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
+export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
     const properties = {};
 
     //@ts-ignore
-    Object.entries(schema.properties).forEach(([propName,propSchema]) => {
+    Object.entries(schema.properties).forEach(([propName, propSchema]) => {
         //@ts-ignore
         const rawPropData = data && data[propName];
         const propData = isObject(rawPropData) ? rawPropData : {};

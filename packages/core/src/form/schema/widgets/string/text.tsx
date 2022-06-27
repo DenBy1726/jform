@@ -1,33 +1,27 @@
 import React from "react";
-import {StringWidgetProps} from "@jform/core";
+import {StringWidgetProps} from "./index";
+
+const processValue = (value: string, empty?: string): string | undefined => {
+    return value === "" ? empty : value
+}
 
 function TextWidget(props: StringWidgetProps) {
     const {
         autofocus,
-        schema,
-        configSchema,
         disabled,
-        required,
         onChange,
         onFocus,
         onBlur,
-        errors,
         value,
-        emptyValue,
+        empty,
         defaultValue,
         id,
         style,
         className,
-        options,
-        disabledOptions,
         placeholder,
-        ...inputProps
+        examples
     } = props;
 
-    //@ts-ignore
-    const _onChange = ({target: {value}}) => {
-        return props.onChange(value === "" ? emptyValue : value);
-    };
 
     return <>
         <input
@@ -38,19 +32,16 @@ function TextWidget(props: StringWidgetProps) {
             autoFocus={autofocus}
             value={value == null ? defaultValue : value}
             placeholder={placeholder}
-            {...inputProps}
-            onChange={_onChange}
-            onBlur={onBlur && (event => onBlur(event.target.value))}
-            onFocus={onFocus && (event => onFocus(event.target.value))}
+            onChange={onChange && (e => onChange(processValue(e.target.value, empty)))}
+            onBlur={onBlur && (e => onBlur(processValue(e.target.value, empty)))}
+            onFocus={onFocus && (e => onFocus(processValue(e.target.value, empty)))}
         />
-        {schema.examples ? (
+        {examples ? (
             <datalist>
-                {[
-                    ...new Set((schema.examples as any[]).concat(schema.default ? [schema.default] : [])
-                    ),
-                ].map(example => (
-                    <option key={example} value={example}/>
-                ))}
+                {[...new Set((examples).concat(defaultValue ? [defaultValue] : [])),]
+                    .map(example => (
+                        <option key={example} value={example}/>
+                    ))}
             </datalist>
         ) : null}
     </>

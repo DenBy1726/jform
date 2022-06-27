@@ -1,11 +1,12 @@
 //@ts-nocheck
 import {JSONSchema7} from "json-schema";
 import Ajv from "ajv";
-import {retrieveSchema} from "../reference";
-import {ID_PREFIX} from "../constant";
-import {mergeSchemas} from "@jform/utils/mergeSchemas";
+import {retrieveSchema} from "./";
+import {mergeSchemas} from "../index";
 
-export const createAjvInstance = (): Ajv => {
+const ID_PREFIX = "__jform_rootSchema";
+
+const createAjvInstance = (): Ajv => {
     return new Ajv({
         allErrors: true,
         multipleOfPrecision: 8
@@ -14,7 +15,7 @@ export const createAjvInstance = (): Ajv => {
 
 let ajv = createAjvInstance()
 
-export const withIdRefPrefix = (schemaNode: JSONSchema7) => {
+const withIdRefPrefix = (schemaNode: JSONSchema7) => {
     let obj: JSONSchema7 = schemaNode;
     if (schemaNode.constructor === Object) {
         obj = {...schemaNode};
@@ -52,7 +53,7 @@ export const isValid = (schema: JSONSchema7, data: any, rootSchema: JSONSchema7)
     }
 }
 
-export const resolveCondition = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
+export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
     let {if: expression, then, else: otherwise, ...resolvedSchemaLessConditional} = schema;
 
     const conditionalSchema = isValid(expression as JSONSchema7, data, rootSchema) ? then : otherwise;

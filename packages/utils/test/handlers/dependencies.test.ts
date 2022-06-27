@@ -1,5 +1,5 @@
-import {expect} from "chai";
-import {retrieveSchema} from "../../../../src/form/schema/reference"
+//@ts-nocheck
+import {retrieveSchema} from "../../src"
 import {cloneDeep} from "lodash";
 
 describe("dependencies", () => {
@@ -29,12 +29,12 @@ describe("dependencies", () => {
                 const resultSchema = retrieveSchema(schema, schema, {});
                 const _schema = cloneDeep(schema);
                 delete _schema.dependencies;
-                expect(_schema).to.deep.equal(resultSchema);
+                expect(_schema).toEqual(resultSchema);
             });
 
             it("should add dependent required, when dependency is present", () => {
                 const resultSchema = retrieveSchema(schema, schema, {credit_card: 1});
-                expect(resultSchema.required).to.have.lengthOf(2);
+                expect(resultSchema.required).toHaveLength(2);
             });
 
         })
@@ -60,25 +60,25 @@ describe("dependencies", () => {
                 const resultSchema = retrieveSchema(schema, schema, {});
                 const _schema = cloneDeep(schema);
                 delete _schema.dependencies;
-                expect(_schema).to.deep.equal(resultSchema);
+                expect(_schema).toEqual(resultSchema);
             });
 
             it("should add dependent required, when dependency is present (1)", () => {
                 const resultSchema = retrieveSchema(schema, schema, {credit_card: 1});
-                expect(resultSchema.required).to.be.lengthOf(1);
-                expect(resultSchema.required).to.include.members(["billing_address"]);
+                expect(resultSchema.required).toHaveLength(1);
+                expect(resultSchema.required).toContainEqual("billing_address");
             });
 
             it("should add dependent required, when dependency is present (2)", () => {
                 const resultSchema = retrieveSchema(schema, schema, {billing_address: 1});
-                expect(resultSchema.required).to.have.lengthOf(1);
-                expect(resultSchema.required).to.include.members(["credit_card"]);
+                expect(resultSchema.required).toHaveLength(1);
+                expect(resultSchema.required).toContainEqual("credit_card");
             });
 
             it("should add dependent required, when dependency is present (3)", () => {
                 const resultSchema = retrieveSchema(schema, schema, {credit_card: 1, billing_address: 1});
-                expect(resultSchema.required).to.have.lengthOf(2);
-                expect(resultSchema.required).to.include.members(["credit_card", "billing_address"]);
+                expect(resultSchema.required).toHaveLength(2);
+                expect(resultSchema.required).toEqual(["billing_address", "credit_card"]);
             });
 
         })
@@ -113,13 +113,13 @@ describe("dependencies", () => {
                 const resultSchema = retrieveSchema(schema, schema, {});
                 const _schema = cloneDeep(schema);
                 delete _schema.dependencies;
-                expect(_schema).to.deep.equal(resultSchema);
+                expect(_schema).toEqual(resultSchema);
             });
 
             it("should add dependent subschema, when dependency is present", () => {
                 const resultSchema = retrieveSchema(schema, schema, {credit_card: 1});
-                expect(resultSchema.properties.billing_address.type).to.equals("string");
-                expect(resultSchema.required).to.have.lengthOf(2);
+                expect(resultSchema.properties.billing_address.type).toEqual("string");
+                expect(resultSchema.required).toHaveLength(2);
             });
         });
 
@@ -197,29 +197,29 @@ describe("dependencies", () => {
 
             it("should drop dependency keyword", () => {
                 const resultSchema = retrieveSchema(conditional, conditional, {});
-                expect(resultSchema.dependencies).to.be.undefined;
+                expect(resultSchema.dependencies).toBeUndefined();
             });
 
             it("should not add if data not match", () => {
                 const resultSchema = retrieveSchema(conditional, conditional, {});
-                expect(Object.keys(resultSchema.properties)).to.have.lengthOf(1)
+                expect(Object.keys(resultSchema.properties)).toHaveLength(1)
             });
 
             it("should add if data match (1)", () => {
                 const resultSchema = retrieveSchema(conditional, conditional, {"Do you have any pets?": "No"});
-                expect(Object.keys(resultSchema.properties)).to.have.lengthOf(1)
+                expect(Object.keys(resultSchema.properties)).toHaveLength(1)
             });
 
             it("should add if data match (2)", () => {
                 const resultSchema = retrieveSchema(conditional, conditional, {"Do you have any pets?": "Yes: One"});
-                expect(Object.keys(resultSchema.properties)).to.have.lengthOf(2)
-                expect(resultSchema.properties["How old is your pet?"]).not.to.be.undefined
+                expect(Object.keys(resultSchema.properties)).toHaveLength(2)
+                expect(resultSchema.properties["How old is your pet?"]).toBeDefined()
             });
 
             it("should add if data match (3)", () => {
                 const resultSchema = retrieveSchema(conditional, conditional, {"Do you have any pets?": "Yes: More than one"});
-                expect(Object.keys(resultSchema.properties)).to.have.lengthOf(2)
-                expect(resultSchema.properties["Do you want to get rid of any?"]).not.to.be.undefined
+                expect(Object.keys(resultSchema.properties)).toHaveLength(2)
+                expect(resultSchema.properties["Do you want to get rid of any?"]).toBeDefined()
             });
         });
     });

@@ -1,14 +1,19 @@
 declare module '@jform/core' {
     import * as React from 'react';
     import type * as CSS from 'csstype';
-    import {JSONSchema7, JSONSchema7Definition, JSONSchema7Type, JSONSchema7TypeName} from 'json-schema';
-    import {FunctionComponent} from "react";
+    import {JSONSchema7} from 'json-schema';
+    import {
+        FieldStaticInfoProps,
+        TitleProps,
+        DescriptionProps,
+        HelpProps,
+        ErrorProps,
+        FormTemplate
+    } from "form/schema/templates/";
 
-
-    export interface FieldStateCommonFormTemplate {
-        loading: React.FunctionComponent,
-        view: React.FunctionComponent
-    }
+    import {Defaults} from 'form/defaults';
+    import {Widgets} from 'form/schema/widgets';
+    import {FormProps} from "form/Form";
 
     export interface KeysSchema {
         [name: `$${string}`]: any;
@@ -20,87 +25,49 @@ declare module '@jform/core' {
         id?: string,
     }
 
-    export interface SchemaItem<Text, T> extends HtmlConfigurable {
+    export interface FieldLayout extends HtmlConfigurable {
+        errorClassName?: string
+    }
+
+    export interface FieldStaticInfo<Text, T> extends HtmlConfigurable {
         text?: Text | ((arg: T) => Text),
         display?: boolean
-        template?: string | ((arg: T) => React.FunctionComponent<T>),
+        template?: React.FunctionComponent<T>,
     }
 
-    export interface SchemaErrorItem<T> extends SchemaItem<string[], T> {
+    export interface FieldTitle extends FieldStaticInfo<string, TitleProps> {
+        required?: FieldStaticInfoProps<string, TitleProps>
+    }
+
+    export interface FieldError extends FieldStaticInfo<string[], ErrorProps> {
         errorClassName?: string
     }
 
-    export interface FieldLabelProps extends HtmlConfigurable {
-        required?: SchemaItem<string, FieldLabelProps>,
-        text?: string | ((arg: FieldLabelProps) => string),
-        display?: boolean
+    export interface FieldHidden extends HtmlConfigurable {
+        enable?: boolean
     }
 
-    export interface LayoutProps extends HtmlConfigurable {
-        errorClassName?: string
-    }
+    export interface Widget {
 
-    export interface TypeProps extends HtmlConfigurable {
-        schema: JSONSchema7,
-        configSchema?: ConfigSchema,
-        disabled: boolean,
-        autofocus: boolean,
-        data: any,
-        required: boolean,
-        onChange: Function,
-        onBlur: Function,
-        onFocus: Function,
-        errors: SchemaErrorItem<any>,
-        placeholder?: string
-    }
-
-    export interface StringTypeProps extends TypeProps {
-        options?: any[]
-    }
-
-    export interface WidgetProps<T> extends HtmlConfigurable {
-        autofocus?: boolean,
-        schema: JSONSchema7,
-        configSchema?: ConfigSchema,
-        disabled: boolean,
-        required: boolean,
-        onChange: Function,
-        onBlur: Function,
-        onFocus: Function,
-        errors: SchemaErrorItem<any>,
-        value: T,
-        emptyValue?: T,
-        placeholder?: string,
-        defaultValue?: string
-    }
-
-    export interface SelectOption<T> {
-        schema?: JSONSchema7,
-        label: string,
-        value: T,
-    }
-
-    export interface StringWidgetProps extends WidgetProps<string> {
-        options?: SelectOption<string>[],
-        disabledOptions?: string[]
     }
 
 
     export interface ConfigSchema extends KeysSchema, HtmlConfigurable {
-        layout?: LayoutProps,
+        layout?: FieldLayout,
         field?: React.FunctionComponent,
-        title?: FieldLabelProps | string | ((arg: any) => string),
-        description?: SchemaItem<string, any> | string | ((arg: any) => string),
-        help?: SchemaItem<string, any> | string | ((arg: any) => string),
-        error?: SchemaErrorItem<any> | string[] | ((arg: any) => string[]),
-        hidden?: boolean | (HtmlConfigurable & { enable?: boolean }),
+        title?: FieldTitle | string | ((arg: any) => string),
+        description?: FieldStaticInfo<string, DescriptionProps> | string | ((arg: any) => string),
+        help?: FieldStaticInfo<string, HelpProps> | string | ((arg: any) => string),
+        error?: FieldError | string[] | ((arg: any) => string[]),
+        hidden?: FieldHidden | boolean,
         disabled?: boolean,
         autofocus?: boolean,
-        enumNames?: string,
+        enumNames?: string[],
         placeholder?: string,
         type?: string,
-        widget?: HtmlConfigurable | Function,
-        disabledOptions?: any[]
+        widget?: Widget | Function,
+        disabledOptions?: any[],
+        empty?: any
     }
 
     export interface ReadSchema extends KeysSchema {
@@ -113,6 +80,9 @@ declare module '@jform/core' {
     }
 
     export interface EventSchema extends KeysSchema {
+        onChange?: Function,
+        onBlur?: Function,
+        onFocus?: Function
     }
 
     export interface RulesSchema {
@@ -127,96 +97,9 @@ declare module '@jform/core' {
         rulesSchema?: RulesSchema
     }
 
-    export interface FieldHiddenProps extends HtmlConfigurable {
-        enable?: boolean
-    }
-
-    export interface FieldLayoutProps extends LayoutProps {
-        title: React.FunctionComponent<FieldLabelProps>,
-        description: React.FunctionComponent<SchemaItem<string, any>>,
-        help: React.FunctionComponent<SchemaItem<string, any>>,
-        titleProps: FieldLabelProps,
-        descriptionProps: SchemaItem<string, any>,
-        helpProps: SchemaItem<string, any>,
-        errors: React.FunctionComponent<SchemaErrorItem<any>>,
-        errorsProps: SchemaErrorItem<any>,
-        hidden?: FieldHiddenProps
-    }
-
-    export interface FieldCommonFormTemplate {
-        layout: React.FunctionComponent<FieldLayoutProps>,
-        title: React.FunctionComponent<FieldLabelProps>,
-        description: React.FunctionComponent<SchemaItem<string, any>>,
-        help: React.FunctionComponent<SchemaItem<string, any>>,
-        error: React.FunctionComponent<SchemaErrorItem<any>>,
-        state: FieldStateCommonFormTemplate
-    }
-
-    export interface CommonFormTemplate {
-        field: FieldCommonFormTemplate,
-        button: React.FunctionComponent,
-        tip: React.FunctionComponent,
-        error: React.FunctionComponent,
-        actions: React.FunctionComponent
-    }
-
-    export interface JsonTypeFormTemplate extends FieldCommonFormTemplate {
-        format: { [k: string]: string | object }
-    }
-
-    export interface Defaults {
-        common?: JSchema,
-        type?: { [k in JSONSchema7TypeName]?: JSchema },
-        widget?: { [k in JSONSchema7TypeName]?: { [v: string]: JSchema } },
-        rules?: ((arg: JSchema) => JSchema | undefined)[]
-    }
-
-    export interface Widgets {
-        // @ts-ignore
-        [k in JSONSchema7TypeName]: { [v: string]: FunctionComponent<WidgetProps> }
-    }
-
-    export interface FormTemplate {
-        common: CommonFormTemplate,
-        type?: { [k in JSONSchema7TypeName]: JsonTypeFormTemplate },
-        button?: object
-    }
-
-    export interface SchemaProps {
-        data: string,
-        schema: JSONSchema7,
-        configSchema?: ConfigSchema,
-        readSchema?: ReadSchema,
-        eventSchema?: EventSchema,
-        errors?: string[],
-        propertyKeyModified?: boolean,
-        modifiedName?: string,
-        required?: boolean,
-        className?: string
-    }
-
-    export interface FormProps {
-        data: string,
-        schema: JSONSchema7,
-        configSchema?: ConfigSchema,
-        readSchema?: ReadSchema,
-        validationSchema?: ValidationSchema,
-        eventSchema?: EventSchema,
-        template?: FormTemplate,
-        widgets?: Widgets,
-        errors?: string[],
-        rulesSchema?: RulesSchema,
-        defaults?: Defaults,
-        schemaInitialized?: (arg: JSchema) => void
-    }
-
-
-    export function Schema(props: React.PropsWithChildren<SchemaProps>): React.FunctionComponent;
-
     export default function Form(props: React.PropsWithChildren<FormProps>): React.FunctionComponent;
-
     export function getDefaultTemplate(): FormTemplate;
-
     export function getDefaultWidgets(): Widgets;
+    export function getDefaults(): Defaults;
 
 }

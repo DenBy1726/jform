@@ -1,8 +1,10 @@
 import React, {PropsWithChildren} from "react"
-import {SchemaItem} from "@jform/core";
+import {FieldStaticInfoProps} from "./index";
 
+export interface HelpProps extends FieldStaticInfoProps<string, HelpProps> {
+}
 
-export default (props: PropsWithChildren<SchemaItem<string, any>>) => {
+export default (props: PropsWithChildren<HelpProps>) => {
     const {text, id, className = "", style} = props;
     if (!text) {
         return null;

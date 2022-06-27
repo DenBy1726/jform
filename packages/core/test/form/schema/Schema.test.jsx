@@ -49,6 +49,9 @@ describe("Schema", () => {
                             className: "Bar",
                             id: "match"
                         }
+                    },
+                    schemaInitialized: ({configSchema}) => {
+                        console.log(configSchema)
                     }
                 });
                 expect(node.querySelectorAll("#match.Bar").length).to.equal(1)

@@ -1,8 +1,13 @@
 import {JSONSchema7} from "json-schema";
-import {retrieveSchema} from "../reference";
-import {resolveReference} from "./$ref";
-import {mergeSchemas, isObject} from "@jform/utils/index";
+import {retrieveSchema} from "./index";
+import {mergeSchemas, isObject, findSchemaDefinition} from "../index";
 import {isValid} from "./if";
+
+const resolveReference = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 =>  {
+    const $refSchema = findSchemaDefinition(schema.$ref as string, rootSchema);
+    const {$ref, ...localSchema} = schema;
+    return retrieveSchema({...$refSchema, ...localSchema}, rootSchema, data);
+}
 
 const withExactlyOneSubschema = (schema: JSONSchema7, rootSchema: JSONSchema7, data: any, dependencyKey: string, oneOf: JSONSchema7[]) => {
     const validSubschemas = oneOf.filter(subschema => {
@@ -144,7 +149,7 @@ export function getMatchingOption<T = any>(data: T, options: any[], rootSchema: 
     return 0;
 }
 
-export const resolveDependencies = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
+export const _resolveDependencies = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
     // Drop the dependencies from the source schema.
     let {dependencies = {}, ...resolvedSchema} = schema;
     if (resolvedSchema.oneOf !== undefined) {
@@ -157,7 +162,7 @@ export const resolveDependencies = <T extends any>(schema: JSONSchema7, rootSche
     return processDependencies(dependencies, resolvedSchema, rootSchema, data);
 }
 
-export const resolveDependenciesRecursive = <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
-    const resolvedSchema = resolveDependencies(schema, rootSchema, data);
+export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {
+    const resolvedSchema = _resolveDependencies(schema, rootSchema, data);
     return retrieveSchema(resolvedSchema, rootSchema, data);
 }

@@ -1,6 +1,5 @@
-import {expect} from "chai";
-
-import {retrieveSchema} from "../../../../src/form/schema/reference"
+//@ts-nocheck
+import {retrieveSchema} from "../../src"
 
 describe("if", () => {
 
@@ -70,8 +69,8 @@ describe("if", () => {
 
         const resultSchema = retrieveSchema(schema, schema, formData);
 
-        expect(resultSchema.properties.zipcode).not.null;
-        expect(resultSchema.properties.postal_code).to.be.undefined;
+        expect(resultSchema.properties.zipcode).not.toBeNull();
+        expect(resultSchema.properties.postal_code).toBeUndefined();
     });
 
     it("should pick else when condition is false", () => {
@@ -80,8 +79,8 @@ describe("if", () => {
         };
         const resultSchema = retrieveSchema(schema, schema, formData);
 
-        expect(resultSchema.properties.zipcode).to.be.undefined;
-        expect(resultSchema.properties.postal_code).not.null;
+        expect(resultSchema.properties.zipcode).toBeUndefined();
+        expect(resultSchema.properties.postal_code).not.toBeNull();
     });
 
     it("An empty formData will make the conditional evaluate to true because no properties are required in the if statement", () => {
@@ -90,8 +89,8 @@ describe("if", () => {
 
         // An empty formData will make the conditional evaluate to true because no properties are required in the if statement
         // Please see https://github.com/epoberezkin/ajv/issues/913
-        expect(resultSchema.properties.zipcode).not.null;
-        expect(resultSchema.properties.postal_code).to.be.undefined;
+        expect(resultSchema.properties.zipcode).not.toBeNull();
+        expect(resultSchema.properties.postal_code).toBeUndefined();
     });
 
     it("should pick then when condition is true with reference", () => {
@@ -100,8 +99,8 @@ describe("if", () => {
         };
         const resultSchema = retrieveSchema(schemaWithRef, schemaWithRef, formData);
 
-        expect(resultSchema.properties.zipcode).not.null;
-        expect(resultSchema.properties.postal_code).to.be.undefined;
+        expect(resultSchema.properties.zipcode).not.toBeNull();
+        expect(resultSchema.properties.postal_code).toBeUndefined();
     });
 
     it("should pick else when condition is false with reference", () => {
@@ -110,8 +109,8 @@ describe("if", () => {
         };
         const resultSchema = retrieveSchema(schemaWithRef, schemaWithRef, formData);
 
-        expect(resultSchema.properties.zipcode).to.be.undefined;
-        expect(resultSchema.properties.postal_code).not.null;
+        expect(resultSchema.properties.zipcode).toBeUndefined();
+        expect(resultSchema.properties.postal_code).not.toBeNull();
     });
 
     describe("allOf if then else", () => {
@@ -164,9 +163,9 @@ describe("if", () => {
             };
             const resultSchema = retrieveSchema(schemaWithAllOf, schemaWithAllOf, formData);
 
-            expect(resultSchema.properties.zipcode).not.null;
-            expect(resultSchema.properties.postcode).to.be.undefined;
-            expect(resultSchema.properties.telephone).to.be.undefined;
+            expect(resultSchema.properties.zipcode).not.toBeNull();
+            expect(resultSchema.properties.postcode).toBeUndefined();
+            expect(resultSchema.properties.telephone).toBeUndefined();
         });
 
         it("should pick correctly when condition is false in allOf (1)", () => {
@@ -175,9 +174,9 @@ describe("if", () => {
             };
             const resultSchema = retrieveSchema(schemaWithAllOf, schemaWithAllOf, formData);
 
-            expect(resultSchema.properties.zipcode).to.be.undefined;
-            expect(resultSchema.properties.postcode).to.be.undefined;
-            expect(resultSchema.properties.telephone).to.be.undefined;
+            expect(resultSchema.properties.zipcode).toBeUndefined();
+            expect(resultSchema.properties.postcode).toBeUndefined();
+            expect(resultSchema.properties.telephone).toBeUndefined();
         });
 
         it("should render correctly when condition is true in allof (2)", () => {
@@ -186,9 +185,9 @@ describe("if", () => {
             };
             const resultSchema = retrieveSchema(schemaWithAllOf, schemaWithAllOf, formData);
 
-            expect(resultSchema.properties.postcode).not.null;
-            expect(resultSchema.properties.zipcode).to.be.undefined;
-            expect(resultSchema.properties.telephone).to.be.undefined;
+            expect(resultSchema.properties.postcode).not.toBeNull();
+            expect(resultSchema.properties.zipcode).toBeUndefined();
+            expect(resultSchema.properties.telephone).toBeUndefined();
         });
 
         it("should render correctly when condition is true in allof (3)", () => {
@@ -197,9 +196,9 @@ describe("if", () => {
             };
             const resultSchema = retrieveSchema(schemaWithAllOf, schemaWithAllOf, formData);
 
-            expect(resultSchema.properties.postcode).to.be.undefined;
-            expect(resultSchema.properties.zipcode).to.be.undefined;
-            expect(resultSchema.properties.telephone).not.null;
+            expect(resultSchema.properties.postcode).toBeUndefined();
+            expect(resultSchema.properties.zipcode).toBeUndefined();
+            expect(resultSchema.properties.telephone).not.toBeNull();
         });
 
         const schemaWithAllOfRef = {
@@ -240,9 +239,9 @@ describe("if", () => {
             };
             const resultSchema = retrieveSchema(schemaWithAllOfRef, schemaWithAllOfRef, formData);
 
-            expect(resultSchema.properties.postcode).not.null;
-            expect(resultSchema.properties.zipcode).to.be.undefined;
-            expect(resultSchema.properties.telephone).to.be.undefined;
+            expect(resultSchema.properties.postcode).not.toBeNull();
+            expect(resultSchema.properties.zipcode).toBeUndefined();
+            expect(resultSchema.properties.telephone).toBeUndefined();
         });
     });
 });

@@ -1,23 +1,23 @@
+import {default as resolveAdditional} from "./additionalProperties"
+import {resolveAllOfMerge, resolveAllOf} from "./allOf"
+import {default as resolveDependencies} from "./dependencies"
+import {default as resolveCondition} from "./if"
+import {default as resolveProperties} from "./properties"
 import {JSONSchema7, JSONSchema7Definition} from "json-schema";
 import {isObject} from "lodash";
-import {resolveCondition} from "./handlers/if";
-import {stubExistingAdditionalProperties} from "./handlers/additionalProperties";
-import {resolveProperties} from "./handlers/properties";
-import {resolveAllOf, resolveAllOfMerge} from "./handlers/allOf";
-import {resolveDependenciesRecursive} from "./handlers/dependencies";
-import {resolveReference} from "@jform/utils/index";
+import {resolveReference} from "../index";
 
 const handlers = {
     $ref: resolveReference,
-    dependencies: resolveDependenciesRecursive,
+    dependencies: resolveDependencies,
     allOf_before: resolveAllOf,
     if: resolveCondition,
     properties: resolveProperties,
     allOf_after: resolveAllOfMerge,
-    additionalProperties: stubExistingAdditionalProperties
+    additionalProperties: resolveAdditional
 }
 
-export function retrieveSchema<T = any>(schema: JSONSchema7Definition, rootSchema: JSONSchema7, data?: T): JSONSchema7 {
+export const retrieveSchema =  <T extends any>(schema: JSONSchema7Definition, rootSchema: JSONSchema7, data?: T): JSONSchema7 => {
     if (!isObject(schema)) {
         return {};
     }

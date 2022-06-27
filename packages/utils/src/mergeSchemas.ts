@@ -1,27 +1,25 @@
-import {getSchemaType} from "./getSchemaType";
-import {union} from "lodash";
+import {isArray, mergeWith, union} from "lodash";
 import {isObject} from "./isObject";
+import {getSchemaType} from "./getSchemaType";
 
-export const mergeSchemas = (obj1: { [k: string]: any }, obj2: { [k: string]: any }): object => {
-    const acc = Object.assign({}, obj1); // Prevent mutation of source object.
-    return Object.keys(obj2).reduce((acc, key) => {
-        const left = obj1 ? obj1[key] : {},
-            right = obj2[key];
-        if (obj1 && obj1.hasOwnProperty(key) && isObject(right)) {
-            acc[key] = mergeSchemas(left, right);
-        } else if (
-            obj1 &&
-            obj2 &&
-            (getSchemaType(obj1) === 'object' || getSchemaType(obj2) === 'object') &&
-            key === 'required' &&
-            Array.isArray(left) &&
-            Array.isArray(right)
-        ) {
-            // Don't include duplicate values when merging 'required' fields.
-            acc[key] = union(left, right);
-        } else {
-            acc[key] = right;
+const customizer = (a: any, b: any, key: string, object: any, source: any): any => {
+    if (key === "required" && isArray(a) && isArray(b)) {
+        if(getSchemaType(object) === 'object' || getSchemaType(source) === 'object') {
+            return union(a, b);
         }
-        return acc;
-    }, acc);
+    }
+    if (key.endsWith("lassName") && typeof a === 'string' && typeof b === 'string') {
+        return `${a || ""} ${b || ""}`
+    }
+    if (isArray(a) && isObject(b)) {
+        return a;
+    }
+    if (isObject(a) && isArray(b)) {
+        return a;
+    }
+    return undefined;
+}
+
+export const mergeSchemas = (...args: any[]): object => {
+    return mergeWith({}, ...args, customizer);
 }

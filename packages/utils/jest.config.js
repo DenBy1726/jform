@@ -1,7 +1,7 @@
 module.exports = {
     verbose: true,
     // setupFilesAfterEnv: ["../../setup-jsdom.js"],
-    testMatch: ["**/test/**/*.test.ts"],
+    testRegex: "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
     preset: 'ts-jest/presets/js-with-ts',
     testEnvironment: 'node',
     // transform: {

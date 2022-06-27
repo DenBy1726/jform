@@ -1,14 +1,21 @@
 import React, {PropsWithChildren} from "react"
-import {FieldLabelProps} from "@jform/core";
+import {FieldStaticInfoProps} from "./index";
 
+export interface TitleProps extends FieldStaticInfoProps<string, TitleProps> {
+    required?: RequiredProps
+}
 
-export default (props: PropsWithChildren<FieldLabelProps>) => {
+export interface RequiredProps extends FieldStaticInfoProps<string, RequiredProps> {
+    display?: boolean
+}
+
+export default (props: PropsWithChildren<TitleProps>) => {
     const {text, required = {}, id, className = "", style} = props;
     if (!text) {
         return null;
     }
     let computedText = typeof text === "function" ? text(props) : text;
-    let computedRequired = typeof required.text === "function" ? required.text(props) : required.text;
+    let computedRequired = typeof required.text === "function" ? required.text(required) : required.text;
     return (
         <label style={style} className={className} id={id}>
             {computedText}
