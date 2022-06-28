@@ -6,6 +6,11 @@ import Form from "@jform/core"
 //schema={{title: "Title", description: "description"}} configSchema={{help:"Help", error:["1", "2", "3"]}}
 
 render(
-    <Form data="ff" schema={{title: "Title", description: "description"}}
-          configSchema={{help: "Help", error: ["1", "2", "3"], placeholder: "Gg"}}/>
+    <Form onSubmit={console.log}
+          schema={{ type: "string", enum: ["foo", "bar"]}}
+          configSchema={{help: "Help", error: ["1", "2", "3"], placeholder: "Gg"}}
+          eventSchema={{
+              onChange: console.log
+          }}
+          onChange={console.log} onBlur={() => console.log("blur")} onFocus={() => console.log("focus")}/>
     , document.getElementById("app"));

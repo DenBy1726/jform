@@ -7,7 +7,8 @@ import {
     FieldStaticInfo,
     FieldTitle,
     HtmlConfigurable,
-    ReadSchema
+    ReadSchema,
+    Widget
 } from "@jform/core";
 import {JSONSchema7} from "json-schema";
 import {getSchemaType, retrieveSchema} from "@jform/utils/index";
@@ -25,7 +26,10 @@ interface SchemaProps extends HtmlConfigurable {
     errors?: string[],
     propertyKeyModified?: boolean,
     modifiedName?: string,
-    required?: boolean
+    required?: boolean,
+    onChange: (arg: any) => void,
+    onBlur: () => void,
+    onFocus: () => void,
 }
 
 const getFieldItemHandler = (item: FieldStaticInfo<any, any>, def: FunctionComponent): FunctionComponent<any> => {
@@ -86,15 +90,16 @@ function getTypeTemplate(schema: JSONSchema7, configSchema?: ConfigSchema): Func
 
 }
 
+// function get(template,props,configSchema) {
+//     return template!.common!.field!.layout({...props, ...configSchema?.layout})();
+// }
+
 function getFieldTemplate(configSchema: ConfigSchema | undefined, template: FormTemplate): FunctionComponent<FieldLayoutProps> {
-    if (configSchema?.layout) {
-        if (typeof configSchema.layout === 'function') {
-            return configSchema.layout;
-        } else {
-            return (props) => template!.common!.field!.layout({...props, ...configSchema?.layout});
-        }
+    if (configSchema?.layout && typeof configSchema.layout === 'function') {
+        return configSchema.layout;
+    } else {
+        return template!.common!.field!.layout;
     }
-    return template!.common!.field!.layout;
 }
 
 export default (props: PropsWithChildren<SchemaProps>) => {
@@ -104,9 +109,11 @@ export default (props: PropsWithChildren<SchemaProps>) => {
         configSchema,
         eventSchema,
         errors,
-        required
+        required,
+        onBlur,
+        onFocus,
+        onChange
     } = props;
-
 
     const {template} = useContext(JFormContext);
 
@@ -145,12 +152,10 @@ export default (props: PropsWithChildren<SchemaProps>) => {
                           hidden={configSchema?.hidden as FieldHidden}
                           errors={ErrorsField}
                           errorsProps={errorProps}
-                          className={configSchema?.layout?.className}
-                          errorClassName={configSchema?.layout?.errorClassName}
-                          style={configSchema?.layout?.style}
-                          id={configSchema?.layout?.id}>
+                          configSchema={configSchema}
+    >
         <TypeTemplate
-            type={configSchema?.type || 'undefined'}
+            type={(configSchema?.widget as Widget)?.type}
             schema={computedSchema}
             configSchema={configSchema}
             autofocus={!!(configSchema?.autofocus)}
@@ -159,6 +164,9 @@ export default (props: PropsWithChildren<SchemaProps>) => {
             required={false}
             eventSchema={eventSchema}
             errors={errorProps}
+            onChange={onChange}
+            onBlur={onBlur}
+            onFocus={onFocus}
         />
     </FieldTemplate>;
 }

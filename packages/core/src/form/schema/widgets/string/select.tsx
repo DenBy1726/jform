@@ -16,7 +16,8 @@ function SelectWidget(props: StringWidgetProps) {
         className,
         id,
         style,
-        defaultValue
+        schema,
+        configSchema
     } = props;
 
 
@@ -25,15 +26,15 @@ function SelectWidget(props: StringWidgetProps) {
             id={id}
             style={style}
             className={className}
-            value={typeof value === "undefined" ? defaultValue : value}
+            value={value || configSchema?.empty}
             required={required}
             disabled={disabled}
             autoFocus={autofocus}
-            onBlur={e => onBlur(e.target.value)}
-            onFocus={e => onFocus(e.target.value)}
+            onBlur={() => onBlur()}
+            onFocus={() => onFocus()}
             onChange={e => onChange(e.target.value)}
         >
-            {defaultValue === undefined && (<option value="">{placeholder}</option>)}
+            {schema.default === undefined && (<option value="">{placeholder}</option>)}
             {options?.map(({value, label}, i) => {
                 const disabled = disabledOptions && disabledOptions.indexOf(value) != -1;
                 return (

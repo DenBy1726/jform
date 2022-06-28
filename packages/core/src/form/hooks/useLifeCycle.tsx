@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 
 export default () => {
     const [init, setInit] = useState(false);
@@ -12,7 +12,7 @@ export default () => {
         }
     }
 
-    const didUpdate = useCallback((handler, deps) => {
+    const didUpdate = (handler: Function, deps: any[]) => {
         useEffect(() => {
             if (!init) {
                 setInit(true);
@@ -20,8 +20,7 @@ export default () => {
                 handler();
             }
         }, deps);
-    }, []);
-
+    }
 
     return [didMount, didUpdate]
 };

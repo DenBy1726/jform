@@ -1,9 +1,9 @@
 import React, {PropsWithChildren} from "react"
-import {FieldError, FieldHidden, FieldStaticInfo, FieldTitle, HtmlConfigurable} from "@jform/core";
-import {DescriptionProps, HelpProps, TitleProps, ErrorProps} from "./index";
+import {ConfigSchema, FieldError, FieldHidden, FieldLayout, FieldStaticInfo, FieldTitle} from "@jform/core";
+import {DescriptionProps, ErrorProps, HelpProps, TitleProps} from "./index";
 
 
-export interface FieldLayoutProps extends HtmlConfigurable {
+export interface FieldLayoutProps {
     title: React.FunctionComponent<TitleProps>,
     description: React.FunctionComponent<DescriptionProps>,
     help: React.FunctionComponent<HelpProps>,
@@ -13,7 +13,7 @@ export interface FieldLayoutProps extends HtmlConfigurable {
     helpProps: FieldStaticInfo<string, HelpProps>,
     errorsProps: FieldError,
     hidden?: FieldHidden,
-    errorClassName?: string
+    configSchema?: ConfigSchema
 }
 
 
@@ -28,17 +28,16 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
         errors,
         errorsProps,
         hidden,
-        children,
-        className = "",
-        errorClassName = "",
-        style,
-        id
+        configSchema,
+        children
     } = props;
 
     const Title = title;
     const Description = description;
     const Help = help;
     const Errors = errors;
+
+    const {className = "", errorClassName = "", style, id} = (configSchema?.layout || {}) as FieldLayout
 
     if (hidden?.enable === true) {
         const {className = "", id, style} = hidden;

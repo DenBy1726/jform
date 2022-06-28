@@ -1,10 +1,6 @@
 import React from "react";
 import {StringWidgetProps} from "./index";
 
-const processValue = (value: string, empty?: string): string | undefined => {
-    return value === "" ? empty : value
-}
-
 function TextWidget(props: StringWidgetProps) {
     const {
         autofocus,
@@ -13,13 +9,12 @@ function TextWidget(props: StringWidgetProps) {
         onFocus,
         onBlur,
         value,
-        empty,
-        defaultValue,
         id,
         style,
         className,
         placeholder,
-        examples
+        examples,
+        schema
     } = props;
 
 
@@ -30,15 +25,15 @@ function TextWidget(props: StringWidgetProps) {
             style={style}
             disabled={disabled}
             autoFocus={autofocus}
-            value={value == null ? defaultValue : value}
+            value={value}
             placeholder={placeholder}
-            onChange={onChange && (e => onChange(processValue(e.target.value, empty)))}
-            onBlur={onBlur && (e => onBlur(processValue(e.target.value, empty)))}
-            onFocus={onFocus && (e => onFocus(processValue(e.target.value, empty)))}
+            onChange={e => onChange(e.target.value)}
+            onBlur={() => onBlur()}
+            onFocus={() => onFocus()}
         />
         {examples ? (
             <datalist>
-                {[...new Set((examples).concat(defaultValue ? [defaultValue] : [])),]
+                {[...new Set((examples).concat(schema.default ? [schema.default] : [])),]
                     .map(example => (
                         <option key={example} value={example}/>
                     ))}

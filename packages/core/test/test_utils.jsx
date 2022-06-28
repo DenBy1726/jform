@@ -4,29 +4,38 @@ import {renderIntoDocument, act, Simulate} from "react-dom/test-utils";
 import {findDOMNode, render} from "react-dom";
 
 import Form from "../src";
+import {cloneDeep} from "lodash";
 
 export function createComponent(Component, props) {
     // const onChange = sinon.spy();
     // const onError = sinon.spy();
     // const onSubmit = sinon.spy();
     const comp = renderIntoDocument(
-        <div>
             <Component
                 //         onSubmit={onSubmit}
                 // onError={onError}
                 // onChange={onChange}
                 {...props}
             />
-        </div>
     );
-    const node = findDOMNode(comp);
+    const node = findDOMNode(comp).parentNode;
     // return { comp, node, onChange, onError, onSubmit };
     return {comp, node};
 
 }
 
+export class TestForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = cloneDeep(this.props);
+    }
+    render() {
+        return <Form {...this.state} ></Form>
+    }
+}
+
 export function createFormComponent(props) {
-    return createComponent(Form, {...props});
+    return createComponent(TestForm, {...props});
 }
 
 export function createSandbox() {
@@ -34,27 +43,11 @@ export function createSandbox() {
     return sandbox;
 }
 
-// export function setProps(comp, newProps) {
-//     const node = findDOMNode(comp);
-//     render(React.createElement(comp.constructor, newProps), node.parentNode);
-// }
-//
-// /* Run a group of tests with different combinations of omitExtraData and liveOmit as form props.
-//  */
-// export function describeRepeated(title, fn) {
-//     const formExtraPropsList = [
-//         {omitExtraData: false},
-//         {omitExtraData: true},
-//         {omitExtraData: true, liveOmit: true},
-//     ];
-//     for (let formExtraProps of formExtraPropsList) {
-//         const createFormComponentFn = props =>
-//             createFormComponent({...props, ...formExtraProps});
-//         describe(title + " " + JSON.stringify(formExtraProps), () =>
-//             fn(createFormComponentFn)
-//         );
-//     }
-// }
+export function setProps(node, newProps) {
+    render(
+        <div><Form  {...newProps} /></div>
+        , node);
+}
 
 export function submitForm(node) {
     act(() => {

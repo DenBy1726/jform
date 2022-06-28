@@ -26,7 +26,7 @@ describe("defaults", () => {
                     }
                 }
             }, schemaInitialized: ({configSchema}) => {
-                expect(configSchema.type).to.equal("text")
+                expect(configSchema.widget.type).to.equal("text")
                 done();
             }
         });
@@ -34,10 +34,10 @@ describe("defaults", () => {
 
     it("should modify schema by type and widget (1)", done => {
         const schema = {
-            "type": "string"
+            type: "string"
         };
         const configSchema = {
-            "type": "text"
+            widget: "text"
         }
 
         createFormComponent({
@@ -52,7 +52,7 @@ describe("defaults", () => {
                     }
                 }
             }, schemaInitialized: ({configSchema}) => {
-                expect(configSchema.className).to.equal("bar")
+                expect(configSchema.className).to.equal("form-control string-field bar")
                 done();
             }
         });
@@ -82,7 +82,7 @@ describe("defaults", () => {
                     }
                 }
             }, schemaInitialized: ({configSchema}) => {
-                expect(configSchema.type).to.equal("text")
+                expect(configSchema.widget.type).to.equal("text")
                 done();
             }
         });
@@ -90,10 +90,10 @@ describe("defaults", () => {
 
     it("should not override user defined", done => {
         const schema = {
-            "type": "string"
+            type: "string"
         };
         const configSchema = {
-            "type": "text"
+            widget: "text"
         }
 
         createFormComponent({
@@ -115,7 +115,7 @@ describe("defaults", () => {
                     }
                 }
             }, schemaInitialized: ({configSchema}) => {
-                expect(configSchema.type).to.equal("text")
+                expect(configSchema.widget.type).to.equal("text")
                 done();
             }
         });
@@ -173,7 +173,7 @@ describe("defaults", () => {
                     }
                 }
             }, schemaInitialized: ({configSchema}) => {
-                expect(configSchema.$foo.$baz.className).to.equal("foo")
+                expect(configSchema.$foo.$baz.className).to.equal("foo text-widget")
                 expect(configSchema.$bar).not.to.be.undefined
                 done()
             }
@@ -254,7 +254,7 @@ describe("defaults", () => {
                 }
             }, schemaInitialized: ({schema, configSchema}) => {
                 expect(schema.format).to.equal("bar")
-                expect(configSchema.type).to.equal("text")
+                expect(configSchema.widget.type).to.equal("text")
                 done()
             }
         });
@@ -267,9 +267,9 @@ describe("defaults", () => {
 
         createFormComponent({
             schema, defaults: {
-                rules: [({schema}) => schema?.enum && {configSchema: {type: "select"}}]
-            }, schemaInitialized: ({schema, configSchema}) => {
-                expect(configSchema.type).to.equal("select")
+                rules: [({schema}) => schema?.enum && {configSchema: {widget: "select"}}]
+            }, schemaInitialized: ({configSchema}) => {
+                expect(configSchema.widget.type).to.equal("select")
                 done()
             }
         });
@@ -296,9 +296,9 @@ describe("defaults", () => {
                         }
                     }
                 },
-                rules: [({schema}) => schema?.enum && {configSchema: {type: "select"}}]
+                rules: [({schema}) => schema?.enum && {configSchema: {widget: "select"}}]
             }, schemaInitialized: ({schema, configSchema}) => {
-                expect(configSchema.type).to.equal("select")
+                expect(configSchema.widget.type).to.equal("select")
                 expect(schema.title).to.equal("bar")
                 done()
             }
@@ -322,7 +322,7 @@ describe("defaults", () => {
 
             createFormComponent({
                 schema, schemaInitialized: ({configSchema}) => {
-                    expect(configSchema.type).to.equal("text")
+                    expect(configSchema.widget.type).to.equal("text")
                     done()
                 }
             });
@@ -333,7 +333,18 @@ describe("defaults", () => {
 
             createFormComponent({
                 schema, schemaInitialized: ({configSchema}) => {
-                    expect(configSchema.type).to.equal("select")
+                    expect(configSchema.widget.type).to.equal("select")
+                    done()
+                }
+            });
+        })
+
+        it("canonization for widget", done => {
+            const configSchema = {widget: "text"};
+
+            createFormComponent({
+                configSchema, schemaInitialized: ({configSchema}) => {
+                    expect(configSchema.widget.type).to.equal("text")
                     done()
                 }
             });

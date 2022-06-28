@@ -73,7 +73,8 @@ export {
     DescriptionProps,
     ErrorProps,
     HelpProps,
-    TitleProps
+    TitleProps,
+    FieldLayoutProps
 }
 
 export default (): FormTemplate => cloneDeep(defaultTemplate);

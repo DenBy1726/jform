@@ -1,10 +1,10 @@
 import React, {createContext, PropsWithChildren, useMemo, useState} from "react";
 import Schema from "./schema";
 import {ConfigSchema, EventSchema, JSchema, ReadSchema, RulesSchema, ValidationSchema,} from "@jform/core";
-import {merge} from "lodash"
+import {isEqual, merge} from "lodash"
 import getDefaultTemplate, {FormTemplate} from "./schema/templates";
 import getDefaultWidgets, {Widgets} from "./schema/widgets";
-import getDefaults, {applyDefaults, Defaults} from "./defaults";
+import getDefaults, {applyDefaults, canonizeDefaults, computeInitials, Defaults} from "./defaults";
 import {JSONSchema7} from "json-schema";
 import {useLifeCycle} from "./hooks";
 
@@ -21,7 +21,11 @@ export interface FormProps {
     errors?: string[],
     rulesSchema?: RulesSchema,
     defaults?: Defaults,
-    schemaInitialized?: (arg: JSchema) => void
+    schemaInitialized?: (arg: JSchema & {data: any}) => void,
+    onChange?: (arg: any) => void,
+    onBlur?: () => void,
+    onFocus?: () => void,
+    onSubmit?:(arg: any) => void
 }
 
 
@@ -29,38 +33,66 @@ export interface FormProps {
 export const JFormContext = createContext<{ template: FormTemplate, widgets: Widgets, schema: JSONSchema7 }>({});
 
 export default function Form(props: PropsWithChildren<FormProps>) {
-    let {data, template, widgets, defaults = {}, schemaInitialized, errors} = props;
+    let {template, widgets, defaults = {}, schemaInitialized, errors} = props;
 
-    const computedTemplate = useMemo(() => merge(getDefaultTemplate(), template), [template]);
-    const computedWidgets = useMemo(() => merge(getDefaultWidgets(), widgets), [widgets]);
-    const computedDefaults = useMemo(() => merge(getDefaults(), defaults), [defaults]);
-
+    const [data, setData] = useState(props.data);
     const [schema, setSchema] = useState(props.schema || {});
     const [configSchema, setConfigSchema] = useState(props.configSchema || {});
     const [readSchema, setReadSchema] = useState(props.readSchema || {});
     const [eventSchema, setEventSchema] = useState(props.eventSchema || {});
 
+    const computedTemplate = useMemo(() => merge(getDefaultTemplate(), template), [template]);
+    const computedWidgets = useMemo(() => merge(getDefaultWidgets(), widgets), [widgets]);
+    const computedDefaults = useMemo(() => canonizeDefaults(merge(getDefaults(), defaults)), [defaults]);
+
+    const onBlur = () => props.onBlur && props.onBlur();
+    const onFocus = () => props.onFocus && props.onFocus();
+    const onChange = (value: any) => {
+        if (isEqual(value, data)) {
+            return;
+        }
+        if (props.onChange) {
+            props.onChange(value)
+        }
+        updateData(value)
+    }
+
+    const onSubmit = () => {
+        props?.onSubmit?.(data);
+    }
+
     const extendSchemas = () => {
         const {schema, configSchema, eventSchema, readSchema} = applyDefaults(props, computedDefaults);
-        setSchema(schema || {})
+        const dataWithDefaults = computeInitials(schema as JSONSchema7, schema as JSONSchema7, data);
+        setData(dataWithDefaults);
+        setSchema(schema || {});
         setConfigSchema(configSchema || {});
         setReadSchema(readSchema || {});
         setEventSchema(eventSchema || {});
         if (schemaInitialized) {
-            schemaInitialized({schema, configSchema, eventSchema, readSchema});
+            schemaInitialized({schema, configSchema, eventSchema, readSchema, data});
         }
+        return {schema, configSchema, eventSchema, readSchema}
     }
 
-    const [didMount, didUpdate] = useLifeCycle();
+    const updateData = (data: any) => {
+        setData(data)
+    };
 
-    // @ts-ignore
+
+    const [didMount, didUpdate] = useLifeCycle();
+    const [, didUpdateData] = useLifeCycle();
+
+    //@ts-ignore
     didMount(extendSchemas);
     didUpdate(extendSchemas, [props.schema, props.configSchema]);
+    didUpdateData(() => updateData(props.data), [props.data])
 
 
     return <JFormContext.Provider
-        value={{template: computedTemplate, widgets: computedWidgets, schema: schema}}>
-        <Schema data={data} schema={schema} configSchema={configSchema} readSchema={readSchema}
-                eventSchema={eventSchema} errors={errors}/>
+        value={{template: computedTemplate, widgets: computedWidgets, schema}}>
+        <Schema data={data} schema={schema || {}} configSchema={configSchema} readSchema={readSchema}
+                eventSchema={eventSchema} errors={errors} onBlur={onBlur} onFocus={onFocus} onChange={onChange}/>
+        {props.onSubmit && <button onClick={onSubmit}>Submit</button>}
     </JFormContext.Provider>
 }

@@ -8,11 +8,12 @@ declare module '@jform/core' {
         DescriptionProps,
         HelpProps,
         ErrorProps,
-        FormTemplate
+        FormTemplate,
+        FieldLayoutProps
     } from "form/schema/templates/";
 
     import {Defaults} from 'form/defaults';
-    import {Widgets} from 'form/schema/widgets';
+    import {WidgetProps, Widgets} from 'form/schema/widgets';
     import {FormProps} from "form/Form";
 
     export interface KeysSchema {
@@ -48,12 +49,12 @@ declare module '@jform/core' {
     }
 
     export interface Widget {
-
+        type: string | React.FunctionComponent<WidgetProps<any>>
     }
 
 
     export interface ConfigSchema extends KeysSchema, HtmlConfigurable {
-        layout?: FieldLayout,
+        layout?: FieldLayout | React.FunctionComponent<FieldLayoutProps>,
         field?: React.FunctionComponent,
         title?: FieldTitle | string | ((arg: any) => string),
         description?: FieldStaticInfo<string, DescriptionProps> | string | ((arg: any) => string),
@@ -64,8 +65,7 @@ declare module '@jform/core' {
         autofocus?: boolean,
         enumNames?: string[],
         placeholder?: string,
-        type?: string,
-        widget?: Widget | Function,
+        widget?: string | React.FunctionComponent<WidgetProps<any>> | Widget,
         disabledOptions?: any[],
         empty?: any
     }

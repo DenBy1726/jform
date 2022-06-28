@@ -3,17 +3,36 @@ import {JFormContext} from "../../Form";
 import {TypeProps} from "./index";
 import {StringWidgetProps} from "../widgets/index";
 import {getOptions, getWidget, isSelect} from "@jform/utils/index";
+import {EventSchema} from "@jform/core";
 
 const processValue = (value: string, empty?: string): string | undefined => {
-    return value === "" ? empty : value
+    if (value === "") {
+        return empty;
+    } else {
+        return value;
+    }
 }
 
-const wrapEvent = (event?: Function, empty?: string): Function => {
-    if (event) {
-        return (value: string) => event(processValue(value, empty));
-    } else {
-        return () => {
+const wrapEvent = (event: Function, userHandler?: Function, empty?: string): ((arg: any) => void) => {
+    const processedEvent = (value: string) => event(processValue(value, empty));
+    if (userHandler) {
+        return (value: string) => {
+            userHandler(value);
+            processedEvent(value);
         }
+    } else {
+        return processedEvent;
+    }
+};
+
+const wrapNoArgEvent = (event: Function, userHandler?: Function): Function => {
+    if (userHandler) {
+        return () => {
+            userHandler();
+            event();
+        }
+    } else {
+        return event;
     }
 };
 
@@ -27,7 +46,10 @@ const StringField = (props: TypeProps): ReactElement<StringWidgetProps, any> => 
         disabled,
         autofocus,
         errors,
-        type
+        type,
+        onBlur,
+        onFocus,
+        onChange
     } = props;
     const {widgets} = useContext(JFormContext);
 
@@ -36,16 +58,21 @@ const StringField = (props: TypeProps): ReactElement<StringWidgetProps, any> => 
         options = getOptions<string>(schema, configSchema);
     }
 
-    const {widget = {}} = configSchema;
-    const {default: defaultValue} = schema;
+    const {examples} = schema;
 
-    let {onChange, onBlur, onFocus} = eventSchema;
+    let {onChange: onChangeEvent, onBlur: onBlurEvent, onFocus: onFocusEvent, ...events} = Object.keys(eventSchema)
+        .filter(key => !key.startsWith("$"))
+        .reduce((obj, key) => {
+            //@ts-ignore
+            obj[key] = eventSchema[key];
+            return obj;
+        }, {}) as EventSchema;
 
-    let _onChange = wrapEvent(onChange);
-    let _onBlur = wrapEvent(onBlur);
-    let _onFocus = wrapEvent(onFocus);
+    let _onChange = wrapEvent(onChange, onChangeEvent, configSchema?.empty);
+    let _onBlur = wrapNoArgEvent(onBlur, onBlurEvent);
+    let _onFocus = wrapNoArgEvent(onFocus, onFocusEvent);
 
-    const {placeholder, empty, disabledOptions, className, id, style} = configSchema;
+    const {placeholder, disabledOptions, className, id, style} = configSchema;
 
     const widgetProps = {
         options,
@@ -60,23 +87,23 @@ const StringField = (props: TypeProps): ReactElement<StringWidgetProps, any> => 
         onBlur: _onBlur,
         onFocus: _onFocus,
         errors,
-        empty,
         placeholder,
         className,
         id,
         style,
-        defaultValue: defaultValue as string
+        events,
+        examples
     }
 
-
     let Widget;
-    if (typeof widget === 'function') {
-        Widget = widget;
-    } else {
+    if (typeof type === 'string') {
         Widget = getWidget<StringWidgetProps>("string", type, widgets);
+    } else {
+        Widget = type;
     }
 
     return (
+        //@ts-ignore
         <Widget {...widgetProps}/>
     )
 

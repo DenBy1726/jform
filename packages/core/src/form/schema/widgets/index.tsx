@@ -16,15 +16,14 @@ export interface WidgetProps<T> extends HtmlConfigurable {
     configSchema?: ConfigSchema,
     disabled: boolean,
     required: boolean,
-    onChange: Function,
-    onBlur: Function,
-    onFocus: Function,
+    onChange: (arg: T) => void,
+    onBlur: () => void,
+    onFocus: () => void,
     errors: ErrorProps,
     value: T,
-    empty?: T,
     placeholder?: string,
-    defaultValue?: string,
-    examples?: any[]
+    examples?: any[],
+    events: { [k: string]: Function }
 }
 
 const defaultWidgets: Widgets = {
