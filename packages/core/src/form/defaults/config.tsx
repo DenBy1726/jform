@@ -1,12 +1,12 @@
 import {cloneDeep} from "lodash";
-import {Defaults} from "form/defaults/index";
+import {Defaults} from "../defaults";
+import {checkboxLayout} from "../schema/widgets/boolean";
+import {getSchemaType} from "@jform/utils/index";
+import {JSchema} from "@jform/core";
 
 
 const defaults: Defaults = {
     common: {
-        schema: {
-            type: "string"
-        },
         configSchema: {
             title: {
                 className: "jform-title",
@@ -31,15 +31,22 @@ const defaults: Defaults = {
             },
             hidden: {
                 className: "jform-hidden"
-            }
+            },
+            className: "form-control"
         }
     },
     type: {
         string: {
             configSchema: {
                 widget: "text",
-                className: "form-control string-field",
+                className: "string-field",
                 empty: ""
+            }
+        },
+        boolean: {
+            configSchema: {
+                widget: "checkbox",
+                className: "boolean-field",
             }
         }
     },
@@ -56,12 +63,25 @@ const defaults: Defaults = {
                     empty: null
                 }
             }
+        },
+        boolean: {
+            checkbox: {
+                configSchema: {
+                    className: "checkbox-widget",
+                    layout: checkboxLayout
+                }
+            }
         }
     },
     rules: [
-        ({schema}) => schema?.enum && {configSchema: {widget: "select"}}
+        ({configSchema}) => configSchema?.enumNames  ? {configSchema: {widget: "select"}} : undefined,
+        ({schema}) => schema?.enum  ? {configSchema: {widget: "select"}} : undefined
     ]
 };
+
+export const defaultRules: ((arg: JSchema) => JSchema | undefined)[] = [
+    ({schema}) => !schema?.type ? {schema: {type: getSchemaType(schema || {})}} : undefined
+]
 
 
 export default (): Defaults => cloneDeep(defaults);

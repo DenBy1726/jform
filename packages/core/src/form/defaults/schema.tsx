@@ -1,23 +1,22 @@
 import {ConfigSchema, JSchema} from "@jform/core";
-import {traverse} from "@jform/utils/traverse";
-import {JSONSchema7} from "json-schema";
+import {traverse, mergeSchemas} from "@jform/utils/index";
+import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 import {merge} from "lodash";
-import {getSchemaType} from "@jform/utils/getSchemaType";
-import {mergeSchemas} from "@jform/utils/mergeSchemas";
 import {FormProps} from "form/Form";
 import {canonizationRules, Defaults} from "./";
+import {defaultRules} from "./config";
 
 
 const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
     let {schema, ...additional} = _schema;
-    const rules = [...(defaults?.rules || []), ...canonizationRules];
+    const rules = [...(defaults?.rules || []), ...(defaultRules || []), ...canonizationRules];
     // @ts-ignore
     schema = traverse(schema as JSONSchema7, additional, (schema, other) => {
         return rules.map(x => x({schema, ...other})).reduce((a, b) => merge(a, b))
     });
     //@ts-ignore
     schema = traverse(schema as JSONSchema7, additional, (schema, other) => {
-        let type = getSchemaType(schema);
+        let type = schema.type as JSONSchema7TypeName;
         let mergeCases: any = {defined: {schema, ...other}, common: defaults.common};
 
         if (Array.isArray(type)) {
@@ -34,6 +33,18 @@ const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
             if (typeof futureWidget === 'string' && defaults?.widget?.[futureType]?.[futureWidget]) {
                 const {schema: mergeSchema, ...mergeOther} = defaults?.widget?.[futureType]?.[futureWidget] || {};
                 mergeCases.widget = {schema: mergeSchema, ...mergeOther};
+            }
+        }
+        //for const schema not merge schema
+        if (schema.const) {
+            if (mergeCases?.common?.schema) {
+                mergeCases.common.schema = undefined;
+            }
+            if (mergeCases?.type?.schema) {
+                mergeCases.type.schema = undefined;
+            }
+            if (mergeCases?.widget?.schema) {
+                mergeCases.widget.schema = undefined;
             }
         }
         ({schema, ...other} = Object.keys(mergeCases.defined)

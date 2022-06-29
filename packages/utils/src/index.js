@@ -11,6 +11,7 @@ import {getOptions, SelectOption} from "./getOptions";
 import {retrieveSchema} from "./handlers/index";
 import {isConstant} from "./isConstant";
 import {isSelect} from "./isSelect";
+import {schemaRequiresTrueValue} from "./schemaRequiresTrueValue";
 
 
 export {
@@ -26,5 +27,6 @@ export {
     getOptions, SelectOption,
     retrieveSchema,
     isConstant,
-    isSelect
+    isSelect,
+    schemaRequiresTrueValue
 }

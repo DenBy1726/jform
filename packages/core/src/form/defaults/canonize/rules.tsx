@@ -14,5 +14,6 @@ export const canonizationRules: ((arg: JSchema) => JSchema | undefined)[] = [
     ({configSchema}) => strOrFunc(configSchema?.description) ? {configSchema: {description: {text: configSchema?.description}}} as JSchema : undefined,
     ({configSchema}) => strOrFunc(configSchema?.title) ? {configSchema: {title: {text: configSchema?.title}}} as JSchema : undefined,
     ({configSchema}) => arrayOrFunc(configSchema?.error) ? {configSchema: {error: {text: configSchema?.error}}} as JSchema : undefined,
+    ({configSchema}) => strOrFunc(configSchema?.layout) ? {configSchema: {layout: {template: configSchema?.layout}}} as JSchema : undefined,
     ({configSchema}) => configSchema?.hidden === true ? {configSchema: {hidden: {enable: true}}} as JSchema : undefined
 ]

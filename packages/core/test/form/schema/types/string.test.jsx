@@ -381,29 +381,6 @@ describe("String type", () => {
             expect(node.querySelector("#custom")).to.exist;
         });
 
-        //TODO: for boolean
-        //
-        // it("should render a select element with first option 'false' if the default value is false", () => {
-        //     const schema = {
-        //         type: "object",
-        //         properties: {
-        //             foo: {
-        //                 type: "string",
-        //                 enum: [false, true],
-        //                 default: false,
-        //             },
-        //         },
-        //     };
-        //
-        //     const { node } = createFormComponent({
-        //         schema,
-        //     });
-        //
-        //     const options = node.querySelectorAll("option");
-        //     expect(options[0].innerHTML).eql("false");
-        //     expect(options.length).eql(2);
-        // });
-
         it("should render a select element and the option's length is equal the enum's length, if set the enum and the default value is empty.", () => {
             const schema = {
                 type: "string",

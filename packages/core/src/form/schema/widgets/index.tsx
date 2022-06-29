@@ -6,6 +6,8 @@ import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 import {ConfigSchema, HtmlConfigurable} from "@jform/core";
 import {ErrorProps} from "../templates";
 import {StringWidgetProps} from "./string"
+import {BooleanWidgetProps} from "./boolean"
+import checkbox from "./boolean/checkbox";
 
 export interface Widgets extends Record <JSONSchema7TypeName, { [v: string]: FunctionComponent<WidgetProps<any>> }> {
 }
@@ -23,7 +25,8 @@ export interface WidgetProps<T> extends HtmlConfigurable {
     value: T,
     placeholder?: string,
     examples?: any[],
-    events: { [k: string]: Function }
+    events: { [k: string]: Function },
+    theme: object
 }
 
 const defaultWidgets: Widgets = {
@@ -33,12 +36,15 @@ const defaultWidgets: Widgets = {
     },
     number: {},
     integer: {},
-    boolean: {},
+    boolean: {
+        checkbox: checkbox,
+        select: select
+    },
     object: {},
     array: {},
     null: {}
 };
 
-export {StringWidgetProps}
+export {StringWidgetProps, BooleanWidgetProps}
 
 export default (): Widgets => cloneDeep(defaultWidgets);

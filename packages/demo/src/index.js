@@ -7,7 +7,7 @@ import Form from "@jform/core"
 
 render(
     <Form onSubmit={console.log}
-          schema={{ type: "string", enum: ["foo", "bar"]}}
+          schema={{ title: "Boolean", description: "boolean description"}}
           configSchema={{help: "Help", error: ["1", "2", "3"], placeholder: "Gg"}}
           eventSchema={{
               onChange: console.log

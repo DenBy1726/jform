@@ -17,6 +17,35 @@ describe("Schema", () => {
             sandbox.restore();
         });
 
+        it("should pass extra (theme) props", () => {
+            const CustomCheckboxWidget = ({theme}) => {
+                return (
+                    <div id="custom-theme-props">
+                        {theme.test}
+                    </div>
+                );
+            };
+
+            const {node} = createFormComponent({
+                schema: {
+                    type: "boolean",
+                    description: "my description",
+                },
+                widgets: {
+                    boolean: {
+                        checkbox: CustomCheckboxWidget
+                    }
+                },
+                configSchema: {
+                    theme: {
+                        test: "foo"
+                    },
+                },
+            });
+
+            expect(node.querySelector("#custom-theme-props").textContent).to.eql("foo");
+        });
+
         describe("layout", () => {
 
             it("should use passed layout", () => {
@@ -438,6 +467,27 @@ describe("Schema", () => {
                 expect(node.querySelector("#match").style[0]).to.equal("width")
                 expect(node.querySelector("#match").style[1]).to.equal("margin")
             })
+
+            it("should render the description using provided description field", () => {
+                const {node} = createFormComponent({
+                    schema: {
+                        type: "boolean",
+                        description: "my description",
+                    },
+                    template: {
+                        type: {
+                            boolean: {
+                                description: ({text}) => (
+                                    <div className="field-description">{text} overridden</div>
+                                )
+                            }
+                        }
+                    }
+                });
+
+                expect(node.querySelector(".field-description").textContent).eql("my description overridden");
+            });
+
         });
 
         describe("error", () => {
@@ -530,6 +580,5 @@ describe("Schema", () => {
                 expect(node.getElementsByClassName("jform-error").length).to.equal(2)
             })
         });
-
     })
 })

@@ -20,7 +20,7 @@ const ignore = {
     properties: true,
     patternProperties: true,
     dependencies: true,
-    "^\d+$": true
+    "\\d+": true
 };
 
 const ignorePaths = Object.keys(ignore).join('|');

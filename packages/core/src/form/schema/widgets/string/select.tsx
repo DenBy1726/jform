@@ -1,5 +1,15 @@
 import React from "react";
 import {StringWidgetProps} from "./index";
+import {JSONSchema7} from "json-schema";
+
+
+const processValue = (schema: JSONSchema7, value: string): any => {
+    const {type} = schema;
+    if (type === "boolean") {
+        return value === "true";
+    }
+    return value;
+}
 
 function SelectWidget(props: StringWidgetProps) {
     const {
@@ -32,7 +42,7 @@ function SelectWidget(props: StringWidgetProps) {
             autoFocus={autofocus}
             onBlur={() => onBlur()}
             onFocus={() => onFocus()}
-            onChange={e => onChange(e.target.value)}
+            onChange={e => onChange(processValue(schema, e.target.value))}
         >
             {schema.default === undefined && (<option value="">{placeholder}</option>)}
             {options?.map(({value, label}, i) => {

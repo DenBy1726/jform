@@ -10,12 +10,13 @@ import {
     ReadSchema,
     Widget
 } from "@jform/core";
-import {JSONSchema7} from "json-schema";
-import {getSchemaType, retrieveSchema} from "@jform/utils/index";
+import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
+import {getWidget, retrieveSchema} from "@jform/utils/index";
 import types, {TypeProps} from "./types";
 import {JFormContext} from "../Form";
 import {FormTemplate} from "./templates";
 import {FieldLayoutProps} from "./templates/layout";
+import {StringWidgetProps} from "form/schema/widgets";
 
 interface SchemaProps extends HtmlConfigurable {
     data: string,
@@ -32,11 +33,12 @@ interface SchemaProps extends HtmlConfigurable {
     onFocus: () => void,
 }
 
-const getFieldItemHandler = (item: FieldStaticInfo<any, any>, def: FunctionComponent): FunctionComponent<any> => {
+const getFieldItemHandler = (item: FieldStaticInfo<any, any>, _def: FunctionComponent, type?: FunctionComponent): FunctionComponent<any> => {
     const {text, template, ...otherProps} = item;
     if (template) {
         return (props) => template({...props, ...otherProps});
     } else {
+        const def = type || _def;
         return (props) => def({title: text || props?.title, ...props, ...otherProps})
     }
 }
@@ -67,17 +69,9 @@ const canonizeErrorFieldProps = (item?: FieldError, standard?: string[]): FieldE
     }
 }
 
-function getTypeTemplate(schema: JSONSchema7, configSchema?: ConfigSchema): FunctionComponent<TypeProps> {
+function getTypeTemplate(type: JSONSchema7TypeName, configSchema?: ConfigSchema): FunctionComponent<TypeProps> {
     if (configSchema?.field !== undefined) {
         return configSchema.field;
-    }
-    const type = getSchemaType(schema);
-    let typeTemplate;
-
-    if (typeof type === "string") {
-        typeTemplate = types[type];
-    } else {
-        typeTemplate = types[type[0]];
     }
 
     // // If the type is not defined and the schema uses 'anyOf' or 'oneOf', don't
@@ -86,21 +80,54 @@ function getTypeTemplate(schema: JSONSchema7, configSchema?: ConfigSchema): Func
     //     return () => null;
     // }
 
-    return typeTemplate;
+    if (type === undefined) {
+        throw new Error(`unknown type ${type}. Supported: ${Object.keys(types).join(",")}`)
+    }
+    //@ts-ignore
+    return types[type];
 
 }
 
-// function get(template,props,configSchema) {
-//     return template!.common!.field!.layout({...props, ...configSchema?.layout})();
-// }
-
-function getFieldTemplate(configSchema: ConfigSchema | undefined, template: FormTemplate): FunctionComponent<FieldLayoutProps> {
-    if (configSchema?.layout && typeof configSchema.layout === 'function') {
-        return configSchema.layout;
+function getFieldTemplate(type: JSONSchema7TypeName, configSchema: ConfigSchema | undefined, template: FormTemplate): FunctionComponent<FieldLayoutProps> {
+    if (typeof configSchema?.layout !== "function" && configSchema?.layout?.template && typeof configSchema.layout?.template === 'function') {
+        return configSchema.layout?.template;
     } else {
+        if (template?.type?.[type]?.layout !== undefined) {
+            return template?.type?.[type]?.layout;
+        }
         return template!.common!.field!.layout;
     }
 }
+
+const processValue = (value: string, empty?: string): string | undefined => {
+    if (value === "") {
+        return empty;
+    } else {
+        return value;
+    }
+}
+
+const wrapEvent = (event: Function, userHandler?: Function): (arg: any) => void => {
+    if (userHandler) {
+        return (value: any) => {
+            userHandler(value);
+            event(value);
+        }
+    } else {
+        return val => event(val);
+    }
+};
+
+const wrapNoArgEvent = (event: Function, userHandler?: Function): () => void => {
+    if (userHandler) {
+        return () => {
+            userHandler();
+            event();
+        }
+    } else {
+        return () => event();
+    }
+};
 
 export default (props: PropsWithChildren<SchemaProps>) => {
     const {
@@ -115,7 +142,26 @@ export default (props: PropsWithChildren<SchemaProps>) => {
         onChange
     } = props;
 
-    const {template} = useContext(JFormContext);
+    let {
+        onChange: onChangeEvent,
+        onBlur: onBlurEvent,
+        onFocus: onFocusEvent,
+        ...events
+    } = Object.keys(eventSchema || {})
+        .filter(key => !key.startsWith("$"))
+        .reduce((obj, key) => {
+            //@ts-ignore
+            obj[key] = eventSchema[key];
+            return obj;
+        }, {}) as EventSchema;
+
+    const type = schema.type as JSONSchema7TypeName;
+
+    const _onChange = wrapEvent((x: any) => onChange(processValue(x, configSchema?.empty)), onChangeEvent);
+    const _onBlur = wrapNoArgEvent(onBlur, onBlurEvent);
+    const _onFocus = wrapNoArgEvent(onFocus, onFocusEvent);
+
+    const {template, widgets} = useContext(JFormContext);
 
     const titleProps: FieldTitle = canonizeFieldItemProps(configSchema?.title as FieldStaticInfo<any, any>, schema.title) as FieldTitle;
     //@ts-ignore
@@ -125,10 +171,14 @@ export default (props: PropsWithChildren<SchemaProps>) => {
     const helpProps: FieldStaticInfo<string, any> = canonizeFieldItemProps(configSchema?.help as FieldStaticInfo<any, any>);
     const errorProps: FieldError = canonizeErrorFieldProps(configSchema?.error as FieldError, errors);
 
-    const TitleField: FunctionComponent = useMemo(() => getFieldItemHandler(titleProps, template!.common!.field!.title as FunctionComponent), [titleProps]);
-    const DescriptionField: FunctionComponent = useMemo(() => getFieldItemHandler(descProps, template!.common!.field!.description), [descProps]);
-    const HelpField: FunctionComponent = useMemo(() => getFieldItemHandler(helpProps, template!.common!.field!.help), [helpProps]);
-    const ErrorsField: FunctionComponent = useMemo(() => getFieldItemHandler(errorProps, template!.common!.field!.error), [errorProps]);
+    const TitleField: FunctionComponent = useMemo(() =>
+        getFieldItemHandler(titleProps, template!.common!.field!.title as FunctionComponent, template?.type?.[type]?.title), [titleProps]);
+    const DescriptionField: FunctionComponent = useMemo(() =>
+        getFieldItemHandler(descProps, template!.common!.field!.description, template?.type?.[type]?.description), [descProps]);
+    const HelpField: FunctionComponent = useMemo(() =>
+        getFieldItemHandler(helpProps, template!.common!.field!.help, template?.type?.[type]?.help), [helpProps]);
+    const ErrorsField: FunctionComponent = useMemo(() =>
+        getFieldItemHandler(errorProps, template!.common!.field!.error, template?.type?.[type]?.error), [errorProps]);
 
     // if(propertyKeyModified) {
     //     titleProps.text = modifiedName;
@@ -140,8 +190,9 @@ export default (props: PropsWithChildren<SchemaProps>) => {
     const computedSchema = useMemo(() => retrieveSchema(schema, schema, data), [schema, data]);
     console.log(computedSchema);
 
-    const FieldTemplate = getFieldTemplate(configSchema, template);
-    const TypeTemplate = getTypeTemplate(computedSchema, configSchema);
+    const FieldTemplate = getFieldTemplate(type, configSchema, template);
+    const TypeTemplate = getTypeTemplate(type, configSchema);
+    let widget = getWidget<StringWidgetProps>(type, (configSchema?.widget as Widget)?.type, widgets);
 
     return <FieldTemplate title={TitleField}
                           description={DescriptionField}
@@ -155,7 +206,7 @@ export default (props: PropsWithChildren<SchemaProps>) => {
                           configSchema={configSchema}
     >
         <TypeTemplate
-            type={(configSchema?.widget as Widget)?.type}
+            widget={widget}
             schema={computedSchema}
             configSchema={configSchema}
             autofocus={!!(configSchema?.autofocus)}
@@ -164,9 +215,11 @@ export default (props: PropsWithChildren<SchemaProps>) => {
             required={false}
             eventSchema={eventSchema}
             errors={errorProps}
-            onChange={onChange}
-            onBlur={onBlur}
-            onFocus={onFocus}
+            onChange={_onChange}
+            onBlur={_onBlur}
+            onFocus={_onFocus}
+            //@ts-ignore
+            events={events}
         />
     </FieldTemplate>;
 }

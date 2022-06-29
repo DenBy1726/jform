@@ -22,7 +22,7 @@ export const canonizeDefaults = (defaults: Defaults): Defaults => {
         return (arg: any) => {
             //@ts-ignore
             const result = rule({...arg})
-            return canonizationRules.map(x => x({...result})).reduce((a, b) => merge(a, b))
+            return [arg, result, ...canonizationRules.map(x => x({...result}))].reduce((a, b) => merge(a, b))
         }
     })
     return defaults;

@@ -27,7 +27,8 @@ declare module '@jform/core' {
     }
 
     export interface FieldLayout extends HtmlConfigurable {
-        errorClassName?: string
+        errorClassName?: string,
+        template?: React.FunctionComponent<FieldLayoutProps>
     }
 
     export interface FieldStaticInfo<Text, T> extends HtmlConfigurable {
@@ -67,7 +68,8 @@ declare module '@jform/core' {
         placeholder?: string,
         widget?: string | React.FunctionComponent<WidgetProps<any>> | Widget,
         disabledOptions?: any[],
-        empty?: any
+        empty?: any,
+        theme?: object
     }
 
     export interface ReadSchema extends KeysSchema {
