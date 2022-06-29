@@ -5,6 +5,7 @@
     "build": "rimraf dist && tsdx build --format cjs,es && cross-env NODE_ENV=production BABEL_ENV=umd webpack --config webpack.config.dist.js",
     "start": "tsdx watch",
     "test": "tsdx test",
+    "coverage": "jest  --coverage",
     "publish-to-npm": "npm run build && npm publish"
   },
   "main": "dist/index.js",

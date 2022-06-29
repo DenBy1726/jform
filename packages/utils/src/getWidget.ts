@@ -7,6 +7,10 @@ export const getWidget = <T extends any>(type: string, widget: string | Function
     if (widgets?.[type]?.[widget]) {
         return widgets[type][widget];
     } else {
-        throw new Error(`No widget "${widget}" for type ${type}. Supported: ${Object.keys(widgets[type]).join(",")}`);
+        if(widgets[type]) {
+            throw new Error(`No widget "${widget}" for type ${type}. Supported: ${Object.keys(widgets[type]).join(",")}`);
+        } else {
+            throw new Error(`No widget "${widget}" for type ${type}}`);
+        }
     }
 }
