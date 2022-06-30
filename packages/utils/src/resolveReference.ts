@@ -23,20 +23,12 @@ interface DereferencerOptions {
 
 
 const copyOrNot = (s1: any, s2: JSONSchema7) => {
-    if (
-        s1.$ref !== undefined &&
-        Object.keys(s1).length > 1 &&
-        (s2 !== true && s2 !== false)
-    ) {
-        const reflessCopy = {
-            ...s2,
-            ...s1
-        };
-        delete reflessCopy.$ref;
-        return reflessCopy;
-    } else {
-        return s2;
-    }
+    const reflessCopy = {
+        ...s2,
+        ...s1
+    };
+    delete reflessCopy.$ref;
+    return reflessCopy;
 }
 
 /**
@@ -172,5 +164,4 @@ class Dereferencer {
 
 export const resolveReference = (schema: JSONSchema7, rootSchema: JSONSchema7): JSONSchema7 => {
     return new Dereferencer(schema, {rootSchema}).resolve();
-
 }

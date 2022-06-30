@@ -2,7 +2,7 @@
 import {JSONSchema7} from "json-schema";
 import {guessType, isObject, retrieveSchema} from "../index";
 
-const ADDITIONAL_PROPERTY_FLAG = "__additional_property";
+export const ADDITIONAL_PROPERTY_FLAG = "__additional_property";
 
 //add additional data definitions to schema
 export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, data: T): JSONSchema7 => {

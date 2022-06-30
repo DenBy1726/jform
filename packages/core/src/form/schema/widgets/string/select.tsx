@@ -5,6 +5,9 @@ import {JSONSchema7} from "json-schema";
 
 const processValue = (schema: JSONSchema7, value: string): any => {
     const {type} = schema;
+    if (value === "" && schema?.enum?.indexOf("") === -1) {
+        return null;
+    }
     if (type === "boolean") {
         return value === "true";
     }

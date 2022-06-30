@@ -1,14 +1,14 @@
 import {ConfigSchema, JSchema} from "@jform/core";
-import {traverse, mergeSchemas} from "@jform/utils/index";
+import {traverse, mergeSchemas, resolveReference} from "@jform/utils/index";
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 import {merge} from "lodash";
-import {FormProps} from "form/Form";
 import {canonizationRules, Defaults} from "./";
 import {defaultRules} from "./config";
 
 
 const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
     let {schema, ...additional} = _schema;
+    schema = resolveReference(schema as JSONSchema7, schema as JSONSchema7);
     const rules = [...(defaults?.rules || []), ...(defaultRules || []), ...canonizationRules];
     // @ts-ignore
     schema = traverse(schema as JSONSchema7, additional, (schema, other) => {
@@ -19,19 +19,15 @@ const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
         let type = schema.type as JSONSchema7TypeName;
         let mergeCases: any = {defined: {schema, ...other}, common: defaults.common};
 
-        if (Array.isArray(type)) {
-            type = type[0];
-        }
         if (defaults?.type?.[type]) {
-            const {schema: mergeSchema, configSchema = {}, ...mergeOther} = defaults.type[type] || {};
+            const {schema: mergeSchema, configSchema, ...mergeOther} = defaults.type[type] || {};
             mergeCases.type = {schema: mergeSchema, configSchema, ...mergeOther};
 
-            const futureType = type || defaults.common?.schema?.type;
             //@ts-ignore
             const futureWidget = (other?.configSchema as ConfigSchema)?.widget?.type || configSchema?.widget?.type;
 
-            if (typeof futureWidget === 'string' && defaults?.widget?.[futureType]?.[futureWidget]) {
-                const {schema: mergeSchema, ...mergeOther} = defaults?.widget?.[futureType]?.[futureWidget] || {};
+            if (typeof futureWidget === 'string' && defaults?.widget?.[type]?.[futureWidget]) {
+                const {schema: mergeSchema, ...mergeOther} = defaults?.widget?.[type]?.[futureWidget] || {};
                 mergeCases.widget = {schema: mergeSchema, ...mergeOther};
             }
         }
@@ -63,7 +59,7 @@ const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
     return {schema, ...additional};
 };
 
-export const applyDefaults = (props: FormProps, defaults: Defaults): JSchema => {
+export const applyDefaults = (props: JSchema, defaults: Defaults): JSchema => {
     let {schema, configSchema, eventSchema, readSchema} = props;
-    return _applyDefaults({schema, configSchema, eventSchema, readSchema}, defaults || {});
+    return _applyDefaults({schema, configSchema, eventSchema, readSchema}, defaults);
 }

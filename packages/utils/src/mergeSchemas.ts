@@ -9,7 +9,7 @@ const customizer = (a: any, b: any, key: string, object: any, source: any): any 
         }
     }
     if (key.endsWith("lassName") && typeof a === 'string' && typeof b === 'string') {
-        return `${a || ""} ${b || ""}`
+        return union(a.split(" "), b.split(" ")).join(" ");
     }
     if (isArray(a) && isObject(b)) {
         return a;

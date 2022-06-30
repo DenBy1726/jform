@@ -8,6 +8,7 @@ import {ErrorProps} from "../templates";
 import {StringWidgetProps} from "./string"
 import {BooleanWidgetProps} from "./boolean"
 import checkbox from "./boolean/checkbox";
+import grid from "./object/grid";
 
 export interface Widgets extends Record <JSONSchema7TypeName, { [v: string]: FunctionComponent<WidgetProps<any>> }> {
 }
@@ -40,7 +41,9 @@ const defaultWidgets: Widgets = {
         checkbox: checkbox,
         select: select
     },
-    object: {},
+    object: {
+        grid: grid
+    },
     array: {},
     null: {}
 };

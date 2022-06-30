@@ -6,13 +6,15 @@ export interface ErrorProps extends FieldStaticInfoProps<string[], ErrorProps> {
 }
 
 export default (props: PropsWithChildren<ErrorProps>) => {
-    const {text = [], id, className = "", style, errorClassName = ""} = props;
+    const {text = [], id, className = "", style, errorClassName = "",tag: Tag = "ul"} = props;
     if (text.length === 0) {
         return null;
     }
     let computedErrors = typeof text === "function" ? text(props) : text;
     return <div>
-        <ul id={id} style={style} className={className}>
+        {/*
+        // @ts-ignore */}
+        <Tag id={id} style={style} className={className}>
             {computedErrors
                 .filter(elem => !!elem)
                 .map((error, index) => {
@@ -22,6 +24,6 @@ export default (props: PropsWithChildren<ErrorProps>) => {
                         </li>
                     );
                 })}
-        </ul>
+        </Tag>
     </div>
 }

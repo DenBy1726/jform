@@ -131,6 +131,7 @@ describe("String type", () => {
             let onChange = sandbox.spy();
             const {node} = createFormComponent({
                 schema: {type: "string"},
+                configSchema: {empty: ""},
                 data: "x",
                 onChange
             });
@@ -164,6 +165,9 @@ describe("String type", () => {
                 schema: {
                     type: "string",
                     default: "a",
+                },
+                configSchema: {
+                    empty: ""
                 },
                 onChange
             });
@@ -296,7 +300,11 @@ describe("String type", () => {
                 schema: {
                     type: "string",
                     enum: ["foo", "bar"],
-                }, onChange
+                },
+                configSchema: {
+                    empty:""
+                },
+                onChange
             });
 
             Simulate.change(node.querySelector("select"), {

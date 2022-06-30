@@ -72,6 +72,10 @@ const cases: { schema: object; expected: string }[] = [
     {
         schema: {enum: [false]},
         expected: 'boolean',
+    },
+    {
+        schema: {enum: []},
+        expected: 'string',
     }
 ];
 

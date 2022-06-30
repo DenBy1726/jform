@@ -21,11 +21,11 @@ export interface FormProps {
     errors?: string[],
     rulesSchema?: RulesSchema,
     defaults?: Defaults,
-    schemaInitialized?: (arg: JSchema & {data: any}) => void,
+    schemaInitialized?: (arg: JSchema & { data: any }) => void,
     onChange?: (arg: any) => void,
     onBlur?: () => void,
     onFocus?: () => void,
-    onSubmit?:(arg: any) => void
+    onSubmit?: (arg: any) => void
 }
 
 
@@ -62,17 +62,16 @@ export default function Form(props: PropsWithChildren<FormProps>) {
     }
 
     const extendSchemas = () => {
-        const {schema, configSchema, eventSchema, readSchema} = applyDefaults(props, computedDefaults);
-        const dataWithDefaults = computeInitials(schema as JSONSchema7, schema as JSONSchema7, data);
+        const applied = applyDefaults({schema, configSchema, eventSchema, readSchema}, computedDefaults);
+        const dataWithDefaults = computeInitials(applied.schema as JSONSchema7, applied.schema as JSONSchema7, data);
         setData(dataWithDefaults);
-        setSchema(schema || {});
-        setConfigSchema(configSchema || {});
-        setReadSchema(readSchema || {});
-        setEventSchema(eventSchema || {});
+        setSchema(applied.schema || {});
+        setConfigSchema(applied.configSchema || {});
+        setReadSchema(applied.readSchema || {});
+        setEventSchema(applied.eventSchema || {});
         if (schemaInitialized) {
-            schemaInitialized({schema, configSchema, eventSchema, readSchema, data});
+            schemaInitialized({...applied, data});
         }
-        return {schema, configSchema, eventSchema, readSchema}
     }
 
     const updateData = (data: any) => {

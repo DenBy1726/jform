@@ -7,8 +7,83 @@ import Form from "@jform/core"
 
 render(
     <Form onSubmit={console.log}
-          schema={{ title: "Boolean", description: "boolean description"}}
-          configSchema={{help: "Help", error: ["1", "2", "3"], placeholder: "Gg"}}
+          schema={{
+              type: "object",
+              title: "my object",
+              description: "my description",
+              required: ["foo"],
+              default: {
+                  foo: "hey",
+                  bar: true,
+              },
+              properties: {
+                  foo: {
+                      title: "Foo",
+                      type: "string",
+                  },
+                  bar: {
+                      type: "boolean",
+                  },
+                  baz: {
+                      type: "object",
+                      title: "my object",
+                      description: "my description",
+                      required: ["foo"],
+                      default: {
+                          foo: "hey",
+                          bar: true,
+                      },
+                      properties: {
+                          foo: {
+                              title: "Foo",
+                              type: "string",
+                          },
+                          bar: {
+                              type: "boolean",
+                          },
+                          baz: {
+                              type: "object",
+                              title: "my object",
+                              description: "my description",
+                              required: ["foo"],
+                              default: {
+                                  foo: "hey",
+                                  bar: true,
+                              },
+                              properties: {
+                                  foo: {
+                                      title: "Foo",
+                                      type: "string",
+                                  },
+                                  bar: {
+                                      type: "boolean",
+                                  },
+                                  baz: {
+                                      type: "object",
+                                      title: "my object",
+                                      description: "my description",
+                                      required: ["foo"],
+                                      default: {
+                                          foo: "hey",
+                                          bar: true,
+                                      },
+                                      properties: {
+                                          foo: {
+                                              title: "Foo",
+                                              type: "string",
+                                          },
+                                          bar: {
+                                              type: "boolean",
+                                          },
+                                      },
+                                  }
+                              },
+                          }
+                      },
+                  }
+              },
+          }}
+          configSchema={{help: "Help", error: ["1", "2", "3"], placeholder: "Gg", $foo: {autofocus: true}}}
           eventSchema={{
               onChange: console.log
           }}

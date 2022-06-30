@@ -23,4 +23,13 @@ describe('getWidget()', () => {
         expect(() => getWidget('string', 'bar', {})).toThrow('No widget \"bar\" for type string');
     })
 
+    it(`should throw if not found with more informative message`, () => {
+        expect(() => getWidget('string', 'bar', {
+            string: {
+                baz: () => {},
+                foo: () => {}
+            }
+        })).toThrow('No widget \"bar\" for type string. Supported: baz,foo');
+    })
+
 });

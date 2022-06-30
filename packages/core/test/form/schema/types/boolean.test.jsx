@@ -261,7 +261,7 @@ describe("Boolean type", () => {
             expect($select.value).eql("");
 
             Simulate.change($select, {target: {value: "true"}});
-            expect($select.value).eql("true");
+            expect(node.querySelector("select").value).eql("true");
             expect(onChange.lastCall.args[0]).eql(true);
         });
 

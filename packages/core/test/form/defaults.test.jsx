@@ -53,7 +53,7 @@ describe("defaults", () => {
                     }
                 }
             }, schemaInitialized: ({configSchema}) => {
-                expect(configSchema.className).to.equal("form-control string-field bar")
+                expect(configSchema.className).to.equal("form-control bar")
                 done();
             }
         });
@@ -492,22 +492,6 @@ describe("defaults", () => {
             expect(node.getElementsByClassName("boolean-field").length).to.equal(1)
         })
 
-        it("default empty value for select is null", done => {
-            const schema = {enum: ["foo", "bar"]};
-
-            const {node} = createFormComponent({
-                schema, onSubmit: value => {
-                    expect(value).to.be.null
-                    done();
-                }
-            });
-
-            Simulate.change(node.querySelector("select"), {
-                target: {value: ""},
-            });
-            Simulate.click(node.querySelector("button"));
-        })
-
         it("default class for select widget", () => {
             const schema = {enum: ["foo", "bar"]};
 
@@ -548,7 +532,7 @@ describe("defaults", () => {
                 }
             }, schemaInitialized: ({schema, configSchema}) => {
                 expect(schema.type).to.be.equals("boolean")
-                expect(configSchema.className).to.be.equals("form-control boolean-field")
+                expect(configSchema.className).to.be.equals("form-control")
                 expect(schema.const).to.be.true
                 done();
             }

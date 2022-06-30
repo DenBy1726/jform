@@ -1,10 +1,10 @@
 import React, {FunctionComponent, PropsWithChildren} from "react"
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 import string from "./string";
-import {ConfigSchema, EventSchema, FieldError, HtmlConfigurable} from "@jform/core";
+import {ConfigSchema, EventSchema, FieldError, HtmlConfigurable, ReadSchema} from "@jform/core";
 import {WidgetProps} from "form/schema/widgets";
 import boolean from "./boolean";
-import booleanLayout from "../widgets/boolean/checkboxLayout"
+import object from "./object";
 
 export interface Types extends Record<JSONSchema7TypeName, FunctionComponent<PropsWithChildren<TypeProps>>> {
 }
@@ -17,6 +17,7 @@ export interface TypeProps extends HtmlConfigurable {
     data: any,
     required: boolean,
     eventSchema?: EventSchema,
+    readSchema?: ReadSchema,
     errors: FieldError,
     widget: React.FunctionComponent<WidgetProps<any>>,
     onChange: (arg: any) => void,
@@ -30,11 +31,9 @@ const types: Types = {
     number: () => <></>,
     integer: () => <></>,
     boolean: boolean,
-    object: () => <></>,
+    object: object,
     array: () => <></>,
     null: () => <></>
 };
 
 export default types;
-
-export {booleanLayout};

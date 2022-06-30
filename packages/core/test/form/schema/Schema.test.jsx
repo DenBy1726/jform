@@ -101,16 +101,39 @@ describe("Schema", () => {
                 expect(node.querySelector("#match").style[0]).to.equal("width")
                 expect(node.querySelector("#match").style[1]).to.equal("margin")
             })
+
+            it("should change render of components", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        layout: {
+                            render: ({Title, Description, Children, Help, Errors}) => <div>
+                                <div id="id1"><Title/></div>
+                                <div id="id2"><Description/></div>
+                                <div id="id3"><Children/></div>
+                                <div id="id4"><Help/></div>
+                                <div id="id5"><Errors/></div>
+                            </div>
+
+                        }
+                    }
+                });
+
+                expect(node.querySelectorAll("#id1").length).to.equal(1)
+                expect(node.querySelectorAll("#id2").length).to.equal(1)
+                expect(node.querySelectorAll("#id3").length).to.equal(1)
+                expect(node.querySelectorAll("#id4").length).to.equal(1)
+                expect(node.querySelectorAll("#id5").length).to.equal(1)
+            })
+
         });
 
         describe("title", () => {
             it("should use passed title template", () => {
                 const template = getDefaultTemplate();
-                template.common.field.title = () => "Bar";
-                template.common.field.layout = ({title}) => title()
+                template.common.field.title = () => <label id="match">Bar</>;
 
                 const {node} = createFormComponent({schema: {}, template});
-                expect(node.textContent).to.equal("Bar")
+                expect(node.querySelector("#match").textContent).to.equal("Bar")
             })
 
             it("should use text from schema", () => {
@@ -305,11 +328,10 @@ describe("Schema", () => {
         describe("help", () => {
             it("should use passed help template", () => {
                 const template = getDefaultTemplate();
-                template.common.field.help = () => "Bar";
-                template.common.field.layout = ({help}) => help()
+                template.common.field.help = () => <label id="match">Bar</label>
 
                 const {node} = createFormComponent({configSchema: {help: "Foo"}, template});
-                expect(node.textContent).to.equal("Bar")
+                expect(node.querySelector("#match").textContent).to.equal("Bar")
             })
 
             it("should use text from config schema", () => {
@@ -385,11 +407,10 @@ describe("Schema", () => {
         describe("description", () => {
             it("should use passed description template", () => {
                 const template = getDefaultTemplate();
-                template.common.field.description = () => "Bar";
-                template.common.field.layout = ({description}) => description()
+                template.common.field.description = () => <label id="match">Bar</label>;
 
                 const {node} = createFormComponent({schema: {description: "Foo"}, template});
-                expect(node.textContent).to.equal("Bar")
+                expect(node.querySelector("#match").textContent).to.equal("Bar")
             })
 
             it("should use text from config schema", () => {
@@ -493,11 +514,10 @@ describe("Schema", () => {
         describe("error", () => {
             it("should use passed error template", () => {
                 const template = getDefaultTemplate();
-                template.common.field.error = () => "Bar";
-                template.common.field.layout = ({errors}) => errors()
+                template.common.field.error = () => <label id="match">Bar</label>;
 
                 const {node} = createFormComponent({schema: {description: "Foo"}, template});
-                expect(node.textContent).to.equal("Bar")
+                expect(node.querySelector("#match").textContent).to.equal("Bar")
             })
 
             it("should overlap from config schema", () => {

@@ -31,16 +31,7 @@ interface SchemaProps extends HtmlConfigurable {
     onChange: (arg: any) => void,
     onBlur: () => void,
     onFocus: () => void,
-}
-
-const getFieldItemHandler = (item: FieldStaticInfo<any, any>, _def: FunctionComponent, type?: FunctionComponent): FunctionComponent<any> => {
-    const {text, template, ...otherProps} = item;
-    if (template) {
-        return (props) => template({...props, ...otherProps});
-    } else {
-        const def = type || _def;
-        return (props) => def({title: text || props?.title, ...props, ...otherProps})
-    }
+    name?: string
 }
 
 const canonizeFieldItemProps = (item?: FieldStaticInfo<any, any>, standard?: string): FieldStaticInfo<any, any> => {
@@ -139,7 +130,8 @@ export default (props: PropsWithChildren<SchemaProps>) => {
         required,
         onBlur,
         onFocus,
-        onChange
+        onChange,
+        name
     } = props;
 
     let {
@@ -171,14 +163,7 @@ export default (props: PropsWithChildren<SchemaProps>) => {
     const helpProps: FieldStaticInfo<string, any> = canonizeFieldItemProps(configSchema?.help as FieldStaticInfo<any, any>);
     const errorProps: FieldError = canonizeErrorFieldProps(configSchema?.error as FieldError, errors);
 
-    const TitleField: FunctionComponent = useMemo(() =>
-        getFieldItemHandler(titleProps, template!.common!.field!.title as FunctionComponent, template?.type?.[type]?.title), [titleProps]);
-    const DescriptionField: FunctionComponent = useMemo(() =>
-        getFieldItemHandler(descProps, template!.common!.field!.description, template?.type?.[type]?.description), [descProps]);
-    const HelpField: FunctionComponent = useMemo(() =>
-        getFieldItemHandler(helpProps, template!.common!.field!.help, template?.type?.[type]?.help), [helpProps]);
-    const ErrorsField: FunctionComponent = useMemo(() =>
-        getFieldItemHandler(errorProps, template!.common!.field!.error, template?.type?.[type]?.error), [errorProps]);
+
 
     // if(propertyKeyModified) {
     //     titleProps.text = modifiedName;
@@ -188,22 +173,27 @@ export default (props: PropsWithChildren<SchemaProps>) => {
     // }
 
     const computedSchema = useMemo(() => retrieveSchema(schema, schema, data), [schema, data]);
-    console.log(computedSchema);
 
     const FieldTemplate = getFieldTemplate(type, configSchema, template);
     const TypeTemplate = getTypeTemplate(type, configSchema);
     let widget = getWidget<StringWidgetProps>(type, (configSchema?.widget as Widget)?.type, widgets);
 
-    return <FieldTemplate title={TitleField}
-                          description={DescriptionField}
-                          help={HelpField}
-                          titleProps={titleProps}
-                          descriptionProps={descProps}
-                          helpProps={helpProps}
+    const layout = (configSchema?.layout || {}) as FieldLayoutProps;
+    return <FieldTemplate title={titleProps}
+                          description={descProps}
+                          help={helpProps}
                           hidden={configSchema?.hidden as FieldHidden}
-                          errors={ErrorsField}
-                          errorsProps={errorProps}
+                          errors={errorProps}
                           configSchema={configSchema}
+                          name={name}
+                          className={layout.className}
+                          errorClassName={layout.errorClassName}
+                          rootClassName={layout.rootClassName}
+                          style={layout.style}
+                          id={layout.id}
+                          tag={layout.tag}
+                          render={layout.render}
+                          type={type}
     >
         <TypeTemplate
             widget={widget}
@@ -212,7 +202,7 @@ export default (props: PropsWithChildren<SchemaProps>) => {
             autofocus={!!(configSchema?.autofocus)}
             disabled={!!(configSchema?.disabled || schema.readOnly)}
             data={data}
-            required={false}
+            required={!!required}
             eventSchema={eventSchema}
             errors={errorProps}
             onChange={_onChange}

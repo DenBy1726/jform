@@ -15,6 +15,7 @@ declare module '@jform/core' {
     import {Defaults} from 'form/defaults';
     import {WidgetProps, Widgets} from 'form/schema/widgets';
     import {FormProps} from "form/Form";
+    import {ReactElement} from "react";
 
     export interface KeysSchema {
         [name: `$${string}`]: any;
@@ -24,11 +25,14 @@ declare module '@jform/core' {
         className?: string,
         style?: CSS.Properties,
         id?: string,
+        tag?: string
     }
 
     export interface FieldLayout extends HtmlConfigurable {
         errorClassName?: string,
-        template?: React.FunctionComponent<FieldLayoutProps>
+        rootClassName?: string
+        template?: React.FunctionComponent<FieldLayoutProps>,
+        render?: (arg: any) => ReactElement
     }
 
     export interface FieldStaticInfo<Text, T> extends HtmlConfigurable {
@@ -38,7 +42,8 @@ declare module '@jform/core' {
     }
 
     export interface FieldTitle extends FieldStaticInfo<string, TitleProps> {
-        required?: FieldStaticInfoProps<string, TitleProps>
+        required?: FieldStaticInfoProps<string, TitleProps>,
+        useName?: boolean
     }
 
     export interface FieldError extends FieldStaticInfo<string[], ErrorProps> {
@@ -55,6 +60,7 @@ declare module '@jform/core' {
 
 
     export interface ConfigSchema extends KeysSchema, HtmlConfigurable {
+        additionalProperties?: ConfigSchema,
         layout?: FieldLayout | React.FunctionComponent<FieldLayoutProps>,
         field?: React.FunctionComponent,
         title?: FieldTitle | string | ((arg: any) => string),
@@ -69,10 +75,12 @@ declare module '@jform/core' {
         widget?: string | React.FunctionComponent<WidgetProps<any>> | Widget,
         disabledOptions?: any[],
         empty?: any,
-        theme?: object
+        theme?: object,
+        order?: string[]
     }
 
     export interface ReadSchema extends KeysSchema {
+        additionalProperties?: ReadSchema,
         always?: boolean
         href?: string,
         widget?: string
@@ -82,6 +90,7 @@ declare module '@jform/core' {
     }
 
     export interface EventSchema extends KeysSchema {
+        additionalProperties?: EventSchema,
         onChange?: Function,
         onBlur?: Function,
         onFocus?: Function

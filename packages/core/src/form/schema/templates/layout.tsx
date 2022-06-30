@@ -1,43 +1,73 @@
-import React, {PropsWithChildren} from "react"
-import {ConfigSchema, FieldError, FieldHidden, FieldLayout, FieldStaticInfo, FieldTitle} from "@jform/core";
+import React, {FunctionComponent, PropsWithChildren, ReactElement, useContext, useMemo} from "react"
+import {
+    ConfigSchema,
+    FieldError,
+    FieldHidden,
+    FieldStaticInfo,
+    FieldTitle,
+    HtmlConfigurable
+} from "@jform/core";
 import {DescriptionProps, ErrorProps, HelpProps, TitleProps} from "./index";
+import {JFormContext} from "../../Form";
+import {JSONSchema7TypeName} from "json-schema";
 
 
-export interface FieldLayoutProps {
-    title: React.FunctionComponent<TitleProps>,
-    description: React.FunctionComponent<DescriptionProps>,
-    help: React.FunctionComponent<HelpProps>,
-    errors: React.FunctionComponent<ErrorProps>,
-    titleProps: FieldTitle,
-    descriptionProps: FieldStaticInfo<string, DescriptionProps>,
-    helpProps: FieldStaticInfo<string, HelpProps>,
-    errorsProps: FieldError,
+export interface FieldLayoutProps extends HtmlConfigurable {
+    title: FieldTitle,
+    description: FieldStaticInfo<string, DescriptionProps>,
+    help: FieldStaticInfo<string, HelpProps>,
+    errors: FieldError,
     hidden?: FieldHidden,
-    configSchema?: ConfigSchema
+    configSchema?: ConfigSchema,
+    name?: string,
+    type: JSONSchema7TypeName,
+    render: (arg: any) => ReactElement,
+    errorClassName: string,
+    rootClassName: string,
 }
 
+const getFieldItemHandler = (item: FieldStaticInfo<any, any>, _def: FunctionComponent, type?: FunctionComponent): FunctionComponent<any> => {
+    const {text, template, ...otherProps} = item;
+    if (template) {
+        return (props) => template({...props, ...otherProps});
+    } else {
+        const def = type || _def;
+        return (props) => def({title: text || props?.title, ...props, ...otherProps})
+    }
+}
+
+export const layoutRender = ({Title, Description, Children, Errors, Help}: any) => <><Title/> <Description/> <Children/>
+    <Errors/> <Help/></>;
 
 export default (props: PropsWithChildren<FieldLayoutProps>) => {
     const {
         title,
-        titleProps,
         description,
-        descriptionProps,
         help,
-        helpProps,
         errors,
-        errorsProps,
         hidden,
-        configSchema,
-        children
+        children,
+        name,
+        type,
+        className = "",
+        errorClassName = "",
+        rootClassName = "",
+        style,
+        id,
+        tag: Tag = "div",
+        render = layoutRender
     } = props;
 
-    const Title = title;
-    const Description = description;
-    const Help = help;
-    const Errors = errors;
+    const {template} = useContext(JFormContext);
 
-    const {className = "", errorClassName = "", style, id} = (configSchema?.layout || {}) as FieldLayout
+    const TitleField: FunctionComponent<TitleProps> = useMemo(() =>
+        getFieldItemHandler(title, template!.common!.field!.title as FunctionComponent, template?.type?.[type]?.title), [title]);
+    const DescriptionField: FunctionComponent<DescriptionProps> = useMemo(() =>
+        getFieldItemHandler(description, template!.common!.field!.description, template?.type?.[type]?.description), [description]);
+    const HelpField: FunctionComponent<HelpProps> = useMemo(() =>
+        getFieldItemHandler(help, template!.common!.field!.help, template?.type?.[type]?.help), [help]);
+    const ErrorsField: FunctionComponent<ErrorProps> = useMemo(() =>
+        getFieldItemHandler(errors, template!.common!.field!.error, template?.type?.[type]?.error), [errors]);
 
     if (hidden?.enable === true) {
         const {className = "", id, style} = hidden;
@@ -46,17 +76,24 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
 
     let errorClass = "";
     //@ts-ignore
-    if (errorsProps?.display !== false && errorsProps?.text?.length > 0) {
+    if (errors?.display !== false && errors?.text?.length > 0) {
         errorClass = errorClassName;
     }
 
     return (
-        <div className={`${[className, errorClass].filter(x => x?.length > 0).join(" ")}`} style={style} id={id}>
-            {titleProps.display !== false && <Title {...titleProps} />}
-            {descriptionProps.display !== false && <Description {...descriptionProps}/>}
-            {children}
-            {errorsProps.display !== false && <Errors {...errorsProps}/>}
-            {helpProps.display !== false && <Help {...helpProps}/>}
-        </div>
+        //@ts-ignore
+        <Tag
+            className={`${[name ? undefined : rootClassName, className, errorClass].filter(x => x && x.length > 0).join(" ")}`}
+            style={style} id={id}>
+            {
+                render({
+                    Title: title.display !== false && (() => <TitleField key="title" name={name} {...title} />),
+                    Description: description.display !== false && (() => <DescriptionField
+                        key="description" {...description}/>),
+                    Children: () => children,
+                    Errors: errors.display !== false && (() => <ErrorsField key="errors" {...errors}/>),
+                    Help: help.display !== false && (() => <HelpField key="help" {...help}/>)
+                })}
+        </Tag>
     );
 }

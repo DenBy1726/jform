@@ -1,6 +1,6 @@
+import React from "react"
 import {cloneDeep} from "lodash";
 import {Defaults} from "../defaults";
-import {checkboxLayout} from "../schema/widgets/boolean";
 import {getSchemaType} from "@jform/utils/index";
 import {JSchema} from "@jform/core";
 
@@ -26,8 +26,16 @@ const defaults: Defaults = {
                 className: "jform-help"
             },
             layout: {
-                className: "jform-field-layout-root",
-                errorClassName: "error-field"
+                className: "jform-field-layout",
+                rootClassName: "jform-field-layout-root",
+                errorClassName: "error-field",
+                render: ({Title, Description, Children, Errors, Help}: any) => <>
+                    <Title/>
+                    <Description/>
+                    <Children/>
+                    <Errors/>
+                    <Help/>
+                </>
             },
             hidden: {
                 className: "jform-hidden"
@@ -39,14 +47,28 @@ const defaults: Defaults = {
         string: {
             configSchema: {
                 widget: "text",
-                className: "string-field",
-                empty: ""
+                layout: {
+                    className: "string-field",
+                }
             }
         },
         boolean: {
             configSchema: {
                 widget: "checkbox",
-                className: "boolean-field",
+                layout: {
+                    className: "boolean-field"
+                }
+            }
+        },
+        object: {
+            configSchema: {
+                widget: "grid",
+                title: {
+                    tag: "legend"
+                },
+                layout: {
+                    className: "object-field",
+                }
             }
         }
     },
@@ -59,8 +81,7 @@ const defaults: Defaults = {
             },
             select: {
                 configSchema: {
-                    className: "select-widget",
-                    empty: null
+                    className: "select-widget"
                 }
             }
         },
@@ -68,14 +89,35 @@ const defaults: Defaults = {
             checkbox: {
                 configSchema: {
                     className: "checkbox-widget",
-                    layout: checkboxLayout
+                    layout: {
+                        render: ({Title, Description, Children, Errors, Help}: any) => <>
+                            <Description/>
+                            <label>
+                                <Children/>
+                                <Title/>
+                            </label>
+                            <Errors/>
+                            <Help/>
+                        </>
+                    }
+                }
+            }
+        },
+        object: {
+            grid: {
+                configSchema: {
+                    className: "grid-widget",
+                    layout: {
+                        tag: "fieldset",
+                        render: ({Title, Description, Children}: any) => <> <Title/> <Description/> <Children/> </>
+                    }
                 }
             }
         }
     },
     rules: [
-        ({configSchema}) => configSchema?.enumNames  ? {configSchema: {widget: "select"}} : undefined,
-        ({schema}) => schema?.enum  ? {configSchema: {widget: "select"}} : undefined
+        ({configSchema}) => configSchema?.enumNames ? {configSchema: {widget: "select"}} : undefined,
+        ({schema}) => schema?.enum ? {configSchema: {widget: "select"}} : undefined
     ]
 };
 

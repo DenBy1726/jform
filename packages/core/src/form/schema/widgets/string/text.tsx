@@ -14,18 +14,21 @@ function TextWidget(props: StringWidgetProps) {
         className,
         placeholder,
         examples,
-        schema
+        schema,
+        required
     } = props;
 
 
     return <>
         <input
+            type="text"
             className={className}
             id={id}
             style={style}
             disabled={disabled}
             autoFocus={autofocus}
-            value={value}
+            required={required}
+            value={value == null ? "" : value}
             placeholder={placeholder}
             onChange={e => onChange(e.target.value)}
             onBlur={() => onBlur()}
