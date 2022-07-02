@@ -1,15 +1,9 @@
 import React, {FunctionComponent, PropsWithChildren, ReactElement, useContext, useMemo} from "react"
-import {
-    ConfigSchema,
-    FieldError,
-    FieldHidden,
-    FieldStaticInfo,
-    FieldTitle,
-    HtmlConfigurable
-} from "@jform/core";
+import {ConfigSchema, FieldError, FieldHidden, FieldStaticInfo, FieldTitle, HtmlConfigurable} from "@jform/core";
 import {DescriptionProps, ErrorProps, HelpProps, TitleProps} from "./index";
 import {JFormContext} from "../../Form";
 import {JSONSchema7TypeName} from "json-schema";
+import {isArray} from "lodash";
 
 
 export interface FieldLayoutProps extends HtmlConfigurable {
@@ -26,17 +20,44 @@ export interface FieldLayoutProps extends HtmlConfigurable {
     rootClassName: string,
 }
 
+const computeItem = (cfg: object, props: object, name: string) => {
+    switch (typeof cfg) {
+        case "function":
+            return cfg(props);
+        case "object":
+            if (isArray(cfg)) {
+                return cfg
+            } else {
+                //@ts-ignore
+                return computeDynamicConfigurable(cfg, props[name])
+            }
+        default:
+            return cfg;
+    }
+}
+
+const computeDynamicConfigurable = (dyna: object, props: any): HtmlConfigurable | null => {
+    if (dyna === null) {
+        return null;
+    }
+    return Object.entries(dyna).map(([_name, cfg]) => ({[_name]: computeItem(cfg, props, _name)})).reduce((a, b) => ({...a, ...b}));
+}
+
 const getFieldItemHandler = (item: FieldStaticInfo<any, any>, _def: FunctionComponent, type?: FunctionComponent): FunctionComponent<any> => {
-    const {text, template, ...otherProps} = item;
+    const {template, ...otherProps} = item;
     if (template) {
         return (props) => template({...props, ...otherProps});
     } else {
         const def = type || _def;
-        return (props) => def({title: text || props?.title, ...props, ...otherProps})
+        return (props) => {
+            let merged = {...props, ...otherProps};
+            let mergedItem = computeDynamicConfigurable(item, merged);
+            return def({...merged, ...mergedItem})
+        }
     }
 }
 
-export const layoutRender = ({Title, Description, Children, Errors, Help}: any) => <><Title/> <Description/> <Children/>
+export const layoutRender = ({Title, Description, children, Errors, Help}: any) => <><Title/> <Description/> {children}
     <Errors/> <Help/></>;
 
 export default (props: PropsWithChildren<FieldLayoutProps>) => {
@@ -87,12 +108,11 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
             style={style} id={id}>
             {
                 render({
-                    Title: title.display !== false && (() => <TitleField key="title" name={name} {...title} />),
-                    Description: description.display !== false && (() => <DescriptionField
-                        key="description" {...description}/>),
-                    Children: () => children,
-                    Errors: errors.display !== false && (() => <ErrorsField key="errors" {...errors}/>),
-                    Help: help.display !== false && (() => <HelpField key="help" {...help}/>)
+                    Title: title.display !== false && (() => <TitleField key="title" name={name}/>),
+                    Description: description.display !== false && (() => <DescriptionField key="description"/>),
+                    children,
+                    Errors: errors.display !== false && (() => <ErrorsField key="errors"/>),
+                    Help: help.display !== false && (() => <HelpField key="help"/>)
                 })}
         </Tag>
     );

@@ -8,8 +8,8 @@ import description, {DescriptionProps} from "./description";
 import error, {ErrorProps} from "./error";
 import {JSONSchema7TypeName} from "json-schema";
 
-interface FieldStaticInfoProps<Text, T> extends HtmlConfigurable {
-    text?: Text | ((arg: T) => Text)
+interface FieldStaticInfoProps<Text> extends HtmlConfigurable {
+    text?: Text
 }
 
 interface FormTemplate {

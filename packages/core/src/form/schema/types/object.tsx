@@ -68,24 +68,28 @@ const ObjectField = (props: TypeProps): ReactElement<any, any> => {
         events,
     } = props;
 
-    const properties = orderProperties(Object.keys(schema.properties || {}), configSchema?.order).map(name => {
-        const _schema = schema?.properties?.[name];
-        //@ts-ignore
-        const isAdditional = _schema?.[ADDITIONAL_PROPERTY_FLAG];
-        return {
-            [name]: {
-                onChange: onPropertyChanged(name, data, onChange),
-                onBlur,
-                onFocus,
-                schema: _schema,
-                configSchema: isAdditional ? configSchema?.additionalProperties : configSchema?.[`$${name}`],
-                eventSchema: isAdditional ? eventSchema?.additionalProperties : eventSchema?.[`$${name}`],
-                readSchema: isAdditional ? readSchema?.additionalProperties : readSchema?.[`$${name}`],
-                required: isRequired(schema, name),
-                value: data[name]
+    let propertiesList = orderProperties(Object.keys(schema.properties || {}), configSchema?.order);
+    let properties = {};
+    if(propertiesList.length > 0) {
+        properties = propertiesList.map(name => {
+            const _schema = schema?.properties?.[name];
+            //@ts-ignore
+            const isAdditional = _schema?.[ADDITIONAL_PROPERTY_FLAG];
+            return {
+                [name]: {
+                    onChange: onPropertyChanged(name, data, onChange),
+                    onBlur,
+                    onFocus,
+                    schema: _schema,
+                    configSchema: isAdditional ? configSchema?.additionalProperties : configSchema?.[`$${name}`],
+                    eventSchema: isAdditional ? eventSchema?.additionalProperties : eventSchema?.[`$${name}`],
+                    readSchema: isAdditional ? readSchema?.additionalProperties : readSchema?.[`$${name}`],
+                    required: isRequired(schema, name),
+                    value: data[name]
+                }
             }
-        }
-    }).reduce((a, b) => ({...a, ...b}));
+        }).reduce((a, b) => ({...a, ...b}));
+    }
     const {className, id, style, theme} = configSchema || {};
 
     const widgetProps = {

@@ -6,7 +6,6 @@ const ignore = {
     additionalItems: true,
     items: true,
     contains: true,
-    additionalProperties: true,
     propertyNames: true,
     not: true,
     if: true,
@@ -29,7 +28,7 @@ export const traverse = (_schema: JSONSchema7, _additionalSchemas: { [k: string]
     return _traverse(_schema || {}, (schemaOrSubschema: JSONSchema7, _b: boolean, _path: string) => {
         const propertyPath = _path.replace(new RegExp(ignorePaths, "g"), "").split("/")
             .filter(x => x !== "")
-            .map(x => "$" + x);
+            .map(x => x === "additionalProperties" ? x : "$" + x);
 
         let _additionalSubSchemas;
         if (propertyPath.length > 0) {

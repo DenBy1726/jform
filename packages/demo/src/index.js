@@ -9,80 +9,11 @@ render(
     <Form onSubmit={console.log}
           schema={{
               type: "object",
-              title: "my object",
-              description: "my description",
-              required: ["foo"],
-              default: {
-                  foo: "hey",
-                  bar: true,
-              },
-              properties: {
-                  foo: {
-                      title: "Foo",
-                      type: "string",
-                  },
-                  bar: {
-                      type: "boolean",
-                  },
-                  baz: {
-                      type: "object",
-                      title: "my object",
-                      description: "my description",
-                      required: ["foo"],
-                      default: {
-                          foo: "hey",
-                          bar: true,
-                      },
-                      properties: {
-                          foo: {
-                              title: "Foo",
-                              type: "string",
-                          },
-                          bar: {
-                              type: "boolean",
-                          },
-                          baz: {
-                              type: "object",
-                              title: "my object",
-                              description: "my description",
-                              required: ["foo"],
-                              default: {
-                                  foo: "hey",
-                                  bar: true,
-                              },
-                              properties: {
-                                  foo: {
-                                      title: "Foo",
-                                      type: "string",
-                                  },
-                                  bar: {
-                                      type: "boolean",
-                                  },
-                                  baz: {
-                                      type: "object",
-                                      title: "my object",
-                                      description: "my description",
-                                      required: ["foo"],
-                                      default: {
-                                          foo: "hey",
-                                          bar: true,
-                                      },
-                                      properties: {
-                                          foo: {
-                                              title: "Foo",
-                                              type: "string",
-                                          },
-                                          bar: {
-                                              type: "boolean",
-                                          },
-                                      },
-                                  }
-                              },
-                          }
-                      },
-                  }
-              },
+              additionalProperties: {
+                  type: "string",
+              }
           }}
+          data={{foo: "foo", "bar": "bar", baz: "baz"}}
           configSchema={{help: "Help", error: ["1", "2", "3"], placeholder: "Gg", $foo: {autofocus: true}}}
           eventSchema={{
               onChange: console.log

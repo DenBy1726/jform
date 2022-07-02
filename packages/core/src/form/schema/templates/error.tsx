@@ -1,7 +1,7 @@
 import React, {PropsWithChildren} from "react"
 import {FieldStaticInfoProps} from "./index";
 
-export interface ErrorProps extends FieldStaticInfoProps<string[], ErrorProps> {
+export interface ErrorProps extends FieldStaticInfoProps<string[]> {
     errorClassName?: string
 }
 
@@ -10,12 +10,11 @@ export default (props: PropsWithChildren<ErrorProps>) => {
     if (text.length === 0) {
         return null;
     }
-    let computedErrors = typeof text === "function" ? text(props) : text;
     return <div>
         {/*
         // @ts-ignore */}
         <Tag id={id} style={style} className={className}>
-            {computedErrors
+            {text
                 .filter(elem => !!elem)
                 .map((error, index) => {
                     return (

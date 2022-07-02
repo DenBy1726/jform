@@ -106,10 +106,10 @@ describe("Schema", () => {
                 const {node} = createFormComponent({
                     configSchema: {
                         layout: {
-                            render: ({Title, Description, Children, Help, Errors}) => <div>
+                            render: ({Title, Description, children, Help, Errors}) => <div>
                                 <div id="id1"><Title/></div>
                                 <div id="id2"><Description/></div>
-                                <div id="id3"><Children/></div>
+                                <div id="id3">{children}></div>
                                 <div id="id4"><Help/></div>
                                 <div id="id5"><Errors/></div>
                             </div>
@@ -170,15 +170,36 @@ describe("Schema", () => {
                 expect(node.querySelector("#match").textContent).to.equal("Bar")
             })
 
+            it("should support custom tag", () => {
+                const {node} = createFormComponent({
+                    schema: {title: "Foo"}, configSchema: {
+                        title: {
+                            text: () => "!",
+                            id: () => "id",
+                            tag: "div"
+                        }
+                    }
+                });
+                expect(node.querySelector("div#id").textContent).to.equal("!")
+            })
+
             it("should support function in object initialization", () => {
                 const {node} = createFormComponent({
                     schema: {title: "Foo"}, configSchema: {
                         title: {
-                            text: (props) => "Bar", id: "match"
+                            text: () => "!",
+                            display: () => true,
+                            id: () => "id",
+                            style: () => ({color: "green"}),
+                            className: () => "className",
+                            tag: () => "div"
                         }
                     }
                 });
-                expect(node.querySelector("#match").textContent).to.equal("Bar")
+                expect(node.querySelector("#id").textContent).to.equal("!")
+                expect(node.querySelector(".className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").style[0]).to.equal("color")
             })
 
             it("should support custom template from props", () => {
@@ -251,6 +272,46 @@ describe("Schema", () => {
                 });
                 expect(node.getElementsByClassName("jform-label-required")[0].textContent).to.equal("!")
             })
+
+            it("should support custom tag", () => {
+                const {node} = createFormComponent({
+                    schema: {title: "Foo"}, configSchema: {
+                        title: {
+                            text: "Foo",
+                            required: {
+                                text: () => "!",
+                                id: () => "id",
+                                tag: "div",
+                                display: true
+                            }
+                        }
+                    }
+                });
+                expect(node.querySelector("div#id").textContent).to.equal("!")
+            })
+
+            it("should support function in object initialization", () => {
+                const {node} = createFormComponent({
+                    schema: {title: "Foo"}, configSchema: {
+                        title: {
+                            text: "Foo",
+                            required: {
+                                text: () => "!",
+                                display: () => true,
+                                id: () => "id",
+                                style: () => ({color: "green"}),
+                                className: () => "className",
+                                tag: () => "div"
+                            }
+                        }
+                    }
+                });
+                expect(node.querySelector("#id").textContent).to.equal("!")
+                expect(node.querySelector(".className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").style[0]).to.equal("color")
+            })
+
 
             it("should support additional class", () => {
                 const {node} = createFormComponent({
@@ -355,15 +416,37 @@ describe("Schema", () => {
                 expect(node.querySelector("#match").textContent).to.equal("Bar")
             })
 
-            it("should support function in object initialization", () => {
+
+            it("should support custom tag", () => {
                 const {node} = createFormComponent({
-                    configSchema: {
+                    schema: {description: "Foo"}, configSchema: {
                         help: {
-                            text: (props) => "Bar", id: "match"
+                            text: () => "!",
+                            id: () => "id",
+                            tag: "div"
                         }
                     }
                 });
-                expect(node.querySelector("#match").textContent).to.equal("Bar")
+                expect(node.querySelector("div#id").textContent).to.equal("!")
+            })
+
+            it("should support function in object initialization", () => {
+                const {node} = createFormComponent({
+                    schema: {description: "Foo"}, configSchema: {
+                        help: {
+                            text: () => "!",
+                            display: () => true,
+                            id: () => "id",
+                            style: () => ({color: "green"}),
+                            className: () => "className",
+                            tag: () => "div"
+                        }
+                    }
+                });
+                expect(node.querySelector("#id").textContent).to.equal("!")
+                expect(node.querySelector(".className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").style[0]).to.equal("color")
             })
 
             it("should support custom template from props", () => {
@@ -441,15 +524,36 @@ describe("Schema", () => {
                 expect(node.querySelector("#match").textContent).to.equal("Bar")
             })
 
-            it("should support function in object initialization", () => {
+            it("should support custom tag", () => {
                 const {node} = createFormComponent({
-                    configSchema: {
+                    schema: {description: "Foo"}, configSchema: {
                         description: {
-                            text: (props) => "Bar", id: "match"
+                            text: () => "!",
+                            id: () => "id",
+                            tag: "div"
                         }
                     }
                 });
-                expect(node.querySelector("#match").textContent).to.equal("Bar")
+                expect(node.querySelector("div#id").textContent).to.equal("!")
+            })
+
+            it("should support function in object initialization", () => {
+                const {node} = createFormComponent({
+                    schema: {description: "Foo"}, configSchema: {
+                        description: {
+                            text: () => "!",
+                            display: () => true,
+                            id: () => "id",
+                            style: () => ({color: "green"}),
+                            className: () => "className",
+                            tag: () => "div"
+                        }
+                    }
+                });
+                expect(node.querySelector("#id").textContent).to.equal("!")
+                expect(node.querySelector(".className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").style[0]).to.equal("color")
             })
 
             it("should support custom template from props", () => {
@@ -536,6 +640,39 @@ describe("Schema", () => {
                     }
                 });
                 expect(node.getElementsByClassName("jform-error").length).to.equal(2)
+            })
+
+
+            it("should support custom tag", () => {
+                const {node} = createFormComponent({
+                    schema: {description: "Foo"}, configSchema: {
+                        error: {
+                            text: () => ["!"],
+                            id: () => "id",
+                            tag: "div"
+                        }
+                    }
+                });
+                expect(node.querySelector("div#id").textContent).to.equal("!")
+            })
+
+            it("should support function in object initialization", () => {
+                const {node} = createFormComponent({
+                    schema: {description: "Foo"}, configSchema: {
+                        error: {
+                            text: () => ["!"],
+                            display: () => true,
+                            id: () => "id",
+                            style: () => ({color: "green"}),
+                            className: () => "className",
+                            tag: () => "div"
+                        }
+                    }
+                });
+                expect(node.querySelector("#id").textContent).to.equal("!")
+                expect(node.querySelector(".className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").textContent).to.equal("!")
+                expect(node.querySelector("div.className").style[0]).to.equal("color")
             })
 
             it("should support custom template from props", () => {

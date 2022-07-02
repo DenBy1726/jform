@@ -28,14 +28,7 @@ const defaults: Defaults = {
             layout: {
                 className: "jform-field-layout",
                 rootClassName: "jform-field-layout-root",
-                errorClassName: "error-field",
-                render: ({Title, Description, Children, Errors, Help}: any) => <>
-                    <Title/>
-                    <Description/>
-                    <Children/>
-                    <Errors/>
-                    <Help/>
-                </>
+                errorClassName: "error-field"
             },
             hidden: {
                 className: "jform-hidden"
@@ -90,10 +83,10 @@ const defaults: Defaults = {
                 configSchema: {
                     className: "checkbox-widget",
                     layout: {
-                        render: ({Title, Description, Children, Errors, Help}: any) => <>
+                        render: ({Title, Description, children, Errors, Help}: any) => <>
                             <Description/>
                             <label>
-                                <Children/>
+                                {children}
                                 <Title/>
                             </label>
                             <Errors/>
@@ -109,7 +102,7 @@ const defaults: Defaults = {
                     className: "grid-widget",
                     layout: {
                         tag: "fieldset",
-                        render: ({Title, Description, Children}: any) => <> <Title/> <Description/> <Children/> </>
+                        render: ({Title, Description, children}: any) => <> <Title/> <Description/> {children} </>
                     }
                 }
             }

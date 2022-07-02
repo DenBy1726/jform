@@ -158,19 +158,11 @@ export default (props: PropsWithChildren<SchemaProps>) => {
     const titleProps: FieldTitle = canonizeFieldItemProps(configSchema?.title as FieldStaticInfo<any, any>, schema.title) as FieldTitle;
     //@ts-ignore
     titleProps?.required?.display = required || titleProps?.required?.display || false;
+    titleProps.text = titleProps?.text || (titleProps?.useName && name || undefined);
 
     const descProps: FieldStaticInfo<string, any> = canonizeFieldItemProps(configSchema?.description as FieldStaticInfo<any, any>, schema.description);
     const helpProps: FieldStaticInfo<string, any> = canonizeFieldItemProps(configSchema?.help as FieldStaticInfo<any, any>);
     const errorProps: FieldError = canonizeErrorFieldProps(configSchema?.error as FieldError, errors);
-
-
-
-    // if(propertyKeyModified) {
-    //     titleProps.text = modifiedName;
-    // }
-    // if (required) {
-    //     titleProps.required = required;
-    // }
 
     const computedSchema = useMemo(() => retrieveSchema(schema, schema, data), [schema, data]);
 
@@ -210,6 +202,7 @@ export default (props: PropsWithChildren<SchemaProps>) => {
             onFocus={_onFocus}
             //@ts-ignore
             events={events}
+            name={name}
         />
     </FieldTemplate>;
 }

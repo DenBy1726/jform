@@ -35,14 +35,18 @@ declare module '@jform/core' {
         render?: (arg: any) => ReactElement
     }
 
-    export interface FieldStaticInfo<Text, T> extends HtmlConfigurable {
+    export type Dynamic<T> = {
+        [P in keyof T]?: T[P] | ((arg: any) => T[P]);
+    };
+
+    export interface FieldStaticInfo<Text, T> extends Dynamic<HtmlConfigurable> {
         text?: Text | ((arg: T) => Text),
         display?: boolean
         template?: React.FunctionComponent<T>,
     }
 
     export interface FieldTitle extends FieldStaticInfo<string, TitleProps> {
-        required?: FieldStaticInfoProps<string, TitleProps>,
+        required?: FieldStaticInfoProps<string>,
         useName?: boolean
     }
 
@@ -109,8 +113,11 @@ declare module '@jform/core' {
     }
 
     export default function Form(props: React.PropsWithChildren<FormProps>): React.FunctionComponent;
+
     export function getDefaultTemplate(): FormTemplate;
+
     export function getDefaultWidgets(): Widgets;
+
     export function getDefaults(): Defaults;
 
 }

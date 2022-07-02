@@ -10,6 +10,8 @@ export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, dat
     schema = {...schema};
     if (schema.properties) {
         schema.properties = {...schema.properties};
+    } else {
+        schema.properties = {};
     }
 
     data = isObject(data) ? data : {};

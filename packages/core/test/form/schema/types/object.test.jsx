@@ -88,7 +88,7 @@ describe("Object type", () => {
         });
 
         it("should render a customized title", () => {
-            const CustomTitleField = ({title}) => <div id="custom">{title}</div>;
+            const CustomTitleField = ({text}) => <div id="custom">{text}</div>;
 
             const {node} = createFormComponent({
                 schema,
@@ -321,18 +321,18 @@ describe("Object type", () => {
                     testdef: {
                         type: "object",
                         properties: {
-                            foo: { type: "string" },
-                            bar: { type: "string" },
+                            foo: {type: "string"},
+                            bar: {type: "string"},
                         },
                     },
                 },
                 type: "object",
                 properties: {
-                    root: { $ref: "#/definitions/testdef" },
+                    root: {$ref: "#/definitions/testdef"},
                 },
             };
 
-            const { node } = createFormComponent({
+            const {node} = createFormComponent({
                 schema: refSchema,
                 configSchema: {
                     $root: {
@@ -358,12 +358,12 @@ describe("Object type", () => {
             const schema = {
                 type: "object",
                 properties: {
-                    foo: { type: "string" },
-                    bar: { type: "string" },
+                    foo: {type: "string"},
+                    bar: {type: "string"},
                 },
             };
 
-            const { node } = createFormComponent({
+            const {node} = createFormComponent({
                 schema,
                 configSchema: {
                     order: ["bar", "foo"],
@@ -381,5 +381,200 @@ describe("Object type", () => {
         });
 
     });
+
+    describe("additionalProperties", () => {
+
+        const schema = {
+            type: "object",
+            additionalProperties: {
+                type: "string",
+            },
+        };
+
+        it("should automatically add a property field if in formData", () => {
+            const {node} = createFormComponent({
+                schema,
+                data: {first: "1"},
+            });
+
+            expect(node.querySelectorAll(".string-field")).to.have.lengthOf(1);
+        });
+
+        it("should apply configSchema to additionalProperties", () => {
+            const {node} = createFormComponent({
+                schema,
+                configSchema: {
+                    additionalProperties: {
+                        title: "CustomName",
+                    },
+                },
+                data: {
+                    property1: "test",
+                },
+            });
+            const labels = node.querySelectorAll(".jform-title");
+            expect(labels[0].textContent).eql("CustomName");
+        });
+
+        //todo: validation schema
+        //
+        // it("should not throw validation errors if additionalProperties is undefined", () => {
+        //     const undefinedAPSchema = {
+        //         ...schema,
+        //         properties: { second: { type: "string" } },
+        //     };
+        //     delete undefinedAPSchema.additionalProperties;
+        //     const { node, onSubmit, onError } = createFormComponent({
+        //         schema: undefinedAPSchema,
+        //         formData: { nonschema: 1 },
+        //     });
+        //
+        //     submitForm(node);
+        //     sinon.assert.calledWithMatch(onSubmit.lastCall, {
+        //         formData: { nonschema: 1 },
+        //     });
+        //
+        //     sinon.assert.notCalled(onError);
+        // });
+
+        //todo: validation schema
+        //
+        // it("should throw a validation error if additionalProperties is false", () => {
+        //     const { node, onSubmit, onError } = createFormComponent({
+        //         schema: {
+        //             ...schema,
+        //             additionalProperties: false,
+        //             properties: { second: { type: "string" } },
+        //         },
+        //         formData: { nonschema: 1 },
+        //     });
+        //     submitForm(node);
+        //     sinon.assert.notCalled(onSubmit);
+        //     sinon.assert.calledWithMatch(onError.lastCall, [
+        //         {
+        //             message: "is an invalid additional property",
+        //             name: "additionalProperties",
+        //             params: { additionalProperty: "nonschema" },
+        //             property: "['nonschema']",
+        //             schemaPath: "#/additionalProperties",
+        //             stack: "['nonschema'] is an invalid additional property",
+        //         },
+        //     ]);
+        // });
+
+        it("should still obey properties if additionalProperties is defined", () => {
+            const {node} = createFormComponent({
+                schema: {
+                    ...schema,
+                    properties: {
+                        definedProperty: {
+                            type: "string",
+                        },
+                    },
+                },
+            });
+
+            expect(node.querySelectorAll(".string-field")).to.have.lengthOf(1);
+        });
+
+        it("should render a label for the additional property key", () => {
+            const {node} = createFormComponent({
+                schema,
+                configSchema: {
+                    additionalProperties: {
+                        title: {
+                            text: "title",
+                            id: "first"
+                        }
+                    }
+                },
+                data: {first: 1},
+            });
+
+            expect(node.querySelector("#first").textContent).eql("title");
+        });
+
+        it("should render a label for the additional property with support of define label", () => {
+            const {node} = createFormComponent({
+                schema,
+                configSchema: {
+                    additionalProperties: {
+                        title: {
+                            text: ({name}) => ({
+                                first: "first",
+                                middle: "middle",
+                                last: "last",
+                            }[name]),
+                            id: ({name}) => ({
+                                first: "first",
+                                middle: "middle",
+                                last: "last",
+                            }[name])
+                        }
+                    }
+                },
+                data: {first: 1, middle: 2, last: 3},
+            });
+
+            expect(node.querySelector("#first").textContent).eql("first");
+            expect(node.querySelector("#middle").textContent).eql("middle");
+            expect(node.querySelector("#last").textContent).eql("last");
+
+        });
+
+        it("should render a label for the additional property key if additionalProperties is true", () => {
+            const {node} = createFormComponent({
+                schema: {...schema, additionalProperties: true},
+                data: {first: 1},
+                configSchema: {
+                    additionalProperties: {
+                        title: {
+                            useName: true,
+                            id: ({name}) => name
+                        }
+                    }
+                },
+            });
+
+            expect(node.querySelector("#first").textContent).eql("first");
+        });
+
+        it("should not render a label for the additional property key if additionalProperties is false", () => {
+            const {node} = createFormComponent({
+                schema: {...schema, additionalProperties: false},
+                data: {first: 1},
+                configSchema: {
+                    additionalProperties: {
+                        title: {
+                            useName: true,
+                        },
+                        id: ({name}) => name
+                    }
+                },
+            });
+
+            expect(node.querySelector("#first")).eql(null);
+        });
+
+        it("should render a text input for the additional property key", () => {
+            const {node} = createFormComponent({
+                schema,
+                data: {first: "first"},
+                configSchema: {
+                    additionalProperties: {
+                        title: {
+                            useName: true,
+
+                        },
+                        id: "first"
+                    }
+                },
+            });
+
+            expect(node.querySelector("#first").value).eql("first");
+        });
+
+    })
+
 
 });
