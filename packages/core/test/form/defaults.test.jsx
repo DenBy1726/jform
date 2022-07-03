@@ -143,7 +143,7 @@ describe("defaults", () => {
         });
     })
 
-    //TODO: object
+    //TODO: array
     //
     // it("should initialize nested properties", done => {
     //     const schema = {
@@ -183,7 +183,7 @@ describe("defaults", () => {
     //     });
     // })
 
-    //TODO: object
+    //TODO: array
     //
     // it("should support common rules", done => {
     //     const schema = {

@@ -11,7 +11,8 @@ interface ObjectItem {
     eventSchema?: EventSchema,
     readSchema?: ReadSchema,
     required: boolean,
-    value: any
+    value: any,
+    isAdditional: boolean
 }
 
 export interface ObjectWidgetProps extends WidgetProps<object> {

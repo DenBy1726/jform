@@ -100,6 +100,15 @@ const defaults: Defaults = {
             grid: {
                 configSchema: {
                     className: "grid-widget",
+                    widget: {
+                        type: "grid",
+                        itemClassName: "grid-item",
+                        additionalItemClassName: "additional-item",
+                        actionsClassName: "actions-item",
+                        actionClassName: "action-item",
+                        addKeyButton: "add-key-button",
+                        removeKeyButton: "remove-key-button"
+                    },
                     layout: {
                         tag: "fieldset",
                         render: ({Title, Description, children}: any) => <> <Title/> <Description/> {children} </>
@@ -115,7 +124,7 @@ const defaults: Defaults = {
 };
 
 export const defaultRules: ((arg: JSchema) => JSchema | undefined)[] = [
-    ({schema}) => !schema?.type ? {schema: {type: getSchemaType(schema || {})}} : undefined
+    ({schema}) => schema !== true && !schema?.type ? {schema: {type: getSchemaType(schema || {})}} : undefined
 ]
 
 

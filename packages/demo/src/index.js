@@ -16,7 +16,8 @@ render(
           data={{foo: "foo", "bar": "bar", baz: "baz"}}
           configSchema={{help: "Help", error: ["1", "2", "3"], placeholder: "Gg", $foo: {autofocus: true}}}
           eventSchema={{
-              onChange: console.log
+              onRemoveKey: ({removeKey}) => removeKey(),
+              onAddKey: () => ({1: "1"})
           }}
           onChange={console.log} onBlur={() => console.log("blur")} onFocus={() => console.log("focus")}/>
     , document.getElementById("app"));

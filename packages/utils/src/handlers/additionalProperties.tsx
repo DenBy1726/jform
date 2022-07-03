@@ -28,7 +28,9 @@ export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, dat
         } else if (schema.additionalProperties.type) {
             additionalProperties = {...schema.additionalProperties};
         } else {
-            additionalProperties = {type: guessType(data[key])};
+            const guessed = guessType(data[key]);
+            //disable inference type from nullable value. set it to string
+            additionalProperties = {type: guessed !== "null" ? guessed : "string"};
         }
 
         // The type of our new key should match the additionalProperties value;

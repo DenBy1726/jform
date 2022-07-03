@@ -24,6 +24,7 @@ const ignore = {
 
 const ignorePaths = Object.keys(ignore).join('|');
 
+//TODO: arrays support
 export const traverse = (_schema: JSONSchema7, _additionalSchemas: { [k: string]: {} }, handler: (arg0: JSONSchema7, arg1: { [k: string]: {} }) => { [k: string]: {} }): JSONSchema7 => {
     return _traverse(_schema || {}, (schemaOrSubschema: JSONSchema7, _b: boolean, _path: string) => {
         const propertyPath = _path.replace(new RegExp(ignorePaths, "g"), "").split("/")

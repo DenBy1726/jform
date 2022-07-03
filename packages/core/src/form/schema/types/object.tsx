@@ -43,7 +43,7 @@ const isRequired = (schema: JSONSchema7, name: string): boolean => {
     return Array.isArray(schema.required) && schema.required.indexOf(name) !== -1
 }
 
-const onPropertyChanged = (name: string, data: object, onChange: Function): ((arg: any) => void) => {
+const onPropertyChanged = (name: string, data: any, onChange: Function): ((arg: any) => void) => {
     return (value: any) => {
         const newData = {...data, [name]: value};
         onChange(newData);
@@ -70,7 +70,7 @@ const ObjectField = (props: TypeProps): ReactElement<any, any> => {
 
     let propertiesList = orderProperties(Object.keys(schema.properties || {}), configSchema?.order);
     let properties = {};
-    if(propertiesList.length > 0) {
+    if (propertiesList.length > 0) {
         properties = propertiesList.map(name => {
             const _schema = schema?.properties?.[name];
             //@ts-ignore
@@ -85,12 +85,13 @@ const ObjectField = (props: TypeProps): ReactElement<any, any> => {
                     eventSchema: isAdditional ? eventSchema?.additionalProperties : eventSchema?.[`$${name}`],
                     readSchema: isAdditional ? readSchema?.additionalProperties : readSchema?.[`$${name}`],
                     required: isRequired(schema, name),
-                    value: data[name]
+                    value: data[name],
+                    isAdditional
                 }
             }
         }).reduce((a, b) => ({...a, ...b}));
     }
-    const {className, id, style, theme} = configSchema || {};
+    const {className, id, style, theme, widget} = configSchema || {};
 
     const widgetProps = {
         properties,
@@ -105,6 +106,7 @@ const ObjectField = (props: TypeProps): ReactElement<any, any> => {
         events,
         value: data,
         theme,
+        widget,
         onChange,
         onBlur,
         onFocus

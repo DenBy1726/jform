@@ -45,7 +45,7 @@ const BooleanField = (props: TypeProps): ReactElement<BooleanWidgetProps, any> =
     let options = getBooleanOptions(schema, configSchema);
 
     const {examples} = schema;
-    const {placeholder, className, id, style, theme} = configSchema;
+    const {placeholder, className, id, style, theme, widget} = configSchema;
 
     const widgetProps = {
         options,
@@ -65,7 +65,8 @@ const BooleanField = (props: TypeProps): ReactElement<BooleanWidgetProps, any> =
         style,
         events,
         examples,
-        theme
+        theme,
+        widget
     }
 
 

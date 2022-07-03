@@ -187,6 +187,40 @@ describe("Object type", () => {
 
             expect(onFocus.calledOnce).to.be.true;
         });
+
+        it("should change content of value input to boolean false", () => {
+            const onChange = sandbox.spy();
+            const {node} = createFormComponent({
+                schema: {
+                    ...schema,
+                    additionalProperties: true,
+                }, onChange, data: {first: true},
+            });
+
+            Simulate.change(node.querySelector(".additional-item .form-control"), {
+                target: {checked: false},
+            });
+
+            sinon.assert.calledWithMatch(onChange.lastCall, {first: false});
+        });
+
+        it("should change content of value input to null", () => {
+            const onChange = sandbox.spy();
+            const {node} = createFormComponent({
+                schema: {
+                    ...schema,
+                    additionalProperties: true,
+                }, onChange,
+                data: {first: "str"},
+            });
+
+            Simulate.change(node.querySelector(".additional-item .form-control"), {
+                target: {value: null},
+            });
+
+            sinon.assert.calledWithMatch(onChange.lastCall, {first: null});
+        });
+
     });
 
     describe("fields ordering", () => {
@@ -525,7 +559,7 @@ describe("Object type", () => {
         it("should render a label for the additional property key if additionalProperties is true", () => {
             const {node} = createFormComponent({
                 schema: {...schema, additionalProperties: true},
-                data: {first: 1},
+                data: {first: "1"},
                 configSchema: {
                     additionalProperties: {
                         title: {
@@ -556,7 +590,7 @@ describe("Object type", () => {
             expect(node.querySelector("#first")).eql(null);
         });
 
-        it("should render a text input for the additional property key", () => {
+        it("should render a text input for the additional property", () => {
             const {node} = createFormComponent({
                 schema,
                 data: {first: "first"},
@@ -574,6 +608,129 @@ describe("Object type", () => {
             expect(node.querySelector("#first").value).eql("first");
         });
 
+        it("should have an expand button", () => {
+            const {node} = createFormComponent({
+                schema, eventSchema: {
+                    onAddKey: () => {
+                    }
+                }
+            });
+
+            expect(node.querySelector("div.actions-item button")).not.eql(null);
+        });
+
+        it("should not have an expand button if expandable not allowed", () => {
+            const {node} = createFormComponent({
+                schema: {type: "object"}, eventSchema: {
+                    onAddKey: () => {
+                    }
+                }
+            });
+
+            expect(node.querySelector("div.actions-item button")).to.be.null;
+        });
+
+        it("should add a new property when clicking the expand button", () => {
+            const onChange = sandbox.spy();
+            const {node} = createFormComponent({
+                schema, onChange, eventSchema: {
+                    onAddKey: () => ({newKey: "New Value"})
+                }
+            });
+
+            Simulate.click(node.querySelector(".actions-item button"));
+
+            sinon.assert.calledWithMatch(onChange.lastCall, {newKey: "New Value"});
+        });
+
+        it("should not provide an expand button if length equals maxProperties", () => {
+            const {node} = createFormComponent({
+                schema: {maxProperties: 1, ...schema},
+                data: {first: 1},
+                eventSchema: {
+                    onAddKey: () => ({newKey: "New Value"})
+                }
+            });
+
+            expect(node.querySelector(".actions-item button")).to.be.null;
+        });
+
+        it("should provide an expand button if length is less than maxProperties", () => {
+            const {node} = createFormComponent({
+                schema: {maxProperties: 2, ...schema},
+                data: {first: 1},
+                eventSchema: {
+                    onAddKey: () => ({newKey: "New Value"})
+                }
+            });
+
+            expect(node.querySelector(".actions-item button")).not.eql(null);
+        });
+
+        it("should have delete button", () => {
+            const {node} = createFormComponent({
+                schema, eventSchema: {
+                    onRemoveKey: ({removeKey}) => removeKey()
+                }, data: {first: 1},
+            });
+
+            expect(node.querySelector(".remove-key-button")).to.not.be.null
+        });
+
+        it("delete button should delete key-value pair", () => {
+            const {node} = createFormComponent({
+                schema,
+                eventSchema: {
+                    onRemoveKey: ({removeKey}) => removeKey()
+                }, data: {first: 1},
+            });
+
+            expect(node.querySelector(".form-control.text-widget").value).to.eql("1");
+            Simulate.click(node.querySelector(".remove-key-button"));
+
+            expect(node.querySelector(".form-control.text-widget")).to.not.exist;
+        });
+
+        it("delete button should delete correct pair", () => {
+            const {node} = createFormComponent({
+                schema, eventSchema: {
+                    onRemoveKey: ({removeKey}) => removeKey()
+                }, configSchema: {
+                    additionalProperties: {
+                        title: {
+                            useName: true
+                        }
+                    }
+                },
+                data: {first: 1, second: 2, third: 3},
+            });
+
+            expect(node.querySelectorAll(".remove-key-button").length).to.eql(3);
+            Simulate.click(node.querySelectorAll(".remove-key-button")[1]);
+            expect([].map.call(node.querySelectorAll(".jform-title"), l => l.textContent)).to.eql(["first", "third"]);
+            expect(node.querySelectorAll(".remove-key-button").length).to.eql(2);
+        });
+
+        it("deleting content of value input should not delete pair", () => {
+            const onChange = sandbox.spy();
+            const {node} = createFormComponent({
+                schema, onChange,
+                configSchema: {
+                    additionalProperties: {
+                        title: {
+                            useName: true
+                        }
+                    }
+                },
+                data: {first: 1},
+            });
+
+            Simulate.change(node.querySelector(".form-control.text-widget"), {
+                target: {value: ""},
+            });
+
+            sinon.assert.calledWithMatch(onChange.lastCall, {first: undefined});
+        });
     })
 
 

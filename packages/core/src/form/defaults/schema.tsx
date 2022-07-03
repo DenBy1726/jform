@@ -32,7 +32,8 @@ const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
             }
         }
         //for const schema not merge schema
-        if (schema.const) {
+        const isTruthSchema = schema === true;
+        if (schema.const || isTruthSchema) {
             if (mergeCases?.common?.schema) {
                 mergeCases.common.schema = undefined;
             }
@@ -54,6 +55,10 @@ const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
                 }
             ))
             .reduce((a, b) => ({...a, ...b})));
+        if(isTruthSchema) {
+            //@ts-ignore
+            schema = true;
+        }
         return {schema, ...other};
     })
     return {schema, ...additional};

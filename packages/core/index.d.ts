@@ -59,6 +59,7 @@ declare module '@jform/core' {
     }
 
     export interface Widget {
+        [k: string]: any,
         type: string | React.FunctionComponent<WidgetProps<any>>
     }
 

@@ -27,7 +27,8 @@ export interface WidgetProps<T> extends HtmlConfigurable {
     placeholder?: string,
     examples?: any[],
     events: { [k: string]: Function },
-    theme: object
+    theme: object,
+    widget: object
 }
 
 const defaultWidgets: Widgets = {

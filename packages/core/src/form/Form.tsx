@@ -30,7 +30,7 @@ export interface FormProps {
 
 
 // @ts-ignore
-export const JFormContext = createContext<{ template: FormTemplate, widgets: Widgets, schema: JSONSchema7 }>({});
+export const JFormContext = createContext<{ template: FormTemplate, widgets: Widgets, schema: JSONSchema7, defaults: Defaults }>({});
 
 export default function Form(props: PropsWithChildren<FormProps>) {
     let {template, widgets, defaults = {}, schemaInitialized, errors} = props;
@@ -89,7 +89,7 @@ export default function Form(props: PropsWithChildren<FormProps>) {
 
 
     return <JFormContext.Provider
-        value={{template: computedTemplate, widgets: computedWidgets, schema}}>
+        value={{template: computedTemplate, widgets: computedWidgets, schema, defaults: computedDefaults}}>
         <Schema data={data} schema={schema || {}} configSchema={configSchema} readSchema={readSchema}
                 eventSchema={eventSchema} errors={errors} onBlur={onBlur} onFocus={onFocus} onChange={onChange}/>
         {props.onSubmit && <button onClick={onSubmit}>Submit</button>}

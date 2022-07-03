@@ -22,7 +22,7 @@ const StringField = (props: TypeProps): ReactElement<StringWidgetProps, any> => 
     let options = getOptions<string>(schema, configSchema);
 
     const {examples} = schema;
-    const {placeholder, disabledOptions, className, id, style, theme} = configSchema;
+    const {placeholder, disabledOptions, className, id, style, theme, widget} = configSchema;
 
     const widgetProps = {
         options,
@@ -43,7 +43,8 @@ const StringField = (props: TypeProps): ReactElement<StringWidgetProps, any> => 
         style,
         events,
         examples,
-        theme
+        theme,
+        widget
     }
     return (
         //@ts-ignore

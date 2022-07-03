@@ -153,7 +153,7 @@ export default (props: PropsWithChildren<SchemaProps>) => {
     const _onBlur = wrapNoArgEvent(onBlur, onBlurEvent);
     const _onFocus = wrapNoArgEvent(onFocus, onFocusEvent);
 
-    const {template, widgets} = useContext(JFormContext);
+    const {template, widgets, defaults} = useContext(JFormContext);
 
     const titleProps: FieldTitle = canonizeFieldItemProps(configSchema?.title as FieldStaticInfo<any, any>, schema.title) as FieldTitle;
     //@ts-ignore
@@ -168,7 +168,7 @@ export default (props: PropsWithChildren<SchemaProps>) => {
 
     const FieldTemplate = getFieldTemplate(type, configSchema, template);
     const TypeTemplate = getTypeTemplate(type, configSchema);
-    let widget = getWidget<StringWidgetProps>(type, (configSchema?.widget as Widget)?.type, widgets);
+    let widget = getWidget<StringWidgetProps>(type, (configSchema?.widget as Widget)?.type, widgets, defaults);
 
     const layout = (configSchema?.layout || {}) as FieldLayoutProps;
     return <FieldTemplate title={titleProps}
