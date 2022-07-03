@@ -131,7 +131,8 @@ export default (props: PropsWithChildren<SchemaProps>) => {
         onBlur,
         onFocus,
         onChange,
-        name
+        name,
+        children
     } = props;
 
     let {
@@ -204,5 +205,6 @@ export default (props: PropsWithChildren<SchemaProps>) => {
             events={events}
             name={name}
         />
+        {children}
     </FieldTemplate>;
 }

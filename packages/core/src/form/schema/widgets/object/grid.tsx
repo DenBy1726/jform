@@ -2,6 +2,8 @@ import {ObjectWidgetProps} from "./index";
 import React from "react";
 import Schema from "../../Schema";
 import {JSONSchema7} from "json-schema";
+import {Container, Row, Col} from 'react-grid';
+
 
 const handleRemoveKey = (handler: Function, name: string, data: object, onChange: Function) => {
     return () => {
@@ -37,6 +39,15 @@ const canExpand = (schema: JSONSchema7, data: any, handler: Function) => {
     return true;
 }
 
+const styles = {
+    breakpoints: {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200},
+    containerMaxWidths: {sm: 540, md: 720, lg: 960, xl: 1140},
+    columns: 24,
+    gutterWidth: 0
+};
+
+const defaultLayout = (properties: any) => Object.keys(properties).map(x => ({[x]: {md: 12}}))
+
 const GridWidget = (props: ObjectWidgetProps) => {
     const {
         autofocus,
@@ -46,7 +57,6 @@ const GridWidget = (props: ObjectWidgetProps) => {
         required,
         id,
         style,
-        tag: Tag = "div",
         widget,
         events,
         schema,
@@ -55,51 +65,81 @@ const GridWidget = (props: ObjectWidgetProps) => {
     } = props;
 
     //@ts-ignore
-    const {itemClassName,additionalItemClassName, actionsClassName, actionClassName, addKeyButton, removeKeyButton} = widget;
+    const {
+        itemClassName,
+        additionalItemClassName,
+        actionsClassName,
+        actionClassName,
+        addKeyButton,
+        removeKeyButton,
+        layout = defaultLayout(properties)
+    } = widget;
     const {onAddKey, onRemoveKey} = events;
 
     //@ts-ignore
-    return <Tag autoFocus={autofocus} required={required} disabled={disabled} className={className} id={id}
-                style={style}>
-        {Object.entries(properties).map(([name, {
-            onChange,
-            onBlur,
-            onFocus,
-            value,
-            schema,
-            required,
-            configSchema,
-            eventSchema,
-            readSchema,
-            isAdditional
-        }]) => {
+    return <Container styles={styles} autoFocus={autofocus} required={required} disabled={disabled}
+                      className={className} id={id}
+                      style={style}>
+        {
+            layout.map((row: any, index: any) => {
+                return <Row styles={styles} key={index}>
+                    {
+                        Object.keys(row).map((name: any) => {
+                            if (properties[name]) {
+                                const rowProps = row[name]
+                                const {
+                                    onChange,
+                                    onBlur,
+                                    onFocus,
+                                    value,
+                                    schema,
+                                    required,
+                                    configSchema,
+                                    eventSchema,
+                                    readSchema,
+                                    isAdditional
+                                } = properties[name];
 
-            return <div key={name} className={[itemClassName, isAdditional && additionalItemClassName].filter(x => x && x.length > 0).join(" ")}>
-                <Schema
-                    key={name}
-                    name={name}
-                    required={required}
-                    schema={schema}
-                    configSchema={configSchema}
-                    eventSchema={eventSchema}
-                    readSchema={readSchema}
-                    data={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    onFocus={onFocus}
-                />
-                {isAdditional && onRemoveKey &&
-                    <button className={removeKeyButton} onClick={handleRemoveKey(onRemoveKey, name, data, onChangeObject)}>Delete</button>}
-            </div>
-        })}
-        {canExpand(schema, data, onAddKey) &&
+                                return <Col styles={styles} {...rowProps} key={name} style={style}
+                                            className={[itemClassName, isAdditional && additionalItemClassName].filter(x => x && x.length > 0).join(" ")}>
+                                    <Schema
+                                        key={name}
+                                        name={name}
+                                        required={required}
+                                        schema={schema}
+                                        configSchema={configSchema}
+                                        eventSchema={eventSchema}
+                                        readSchema={readSchema}
+                                        data={value}
+                                        onChange={onChange}
+                                        onBlur={onBlur}
+                                        onFocus={onFocus}
+                                    >
+                                        {isAdditional && onRemoveKey &&
+                                            <button className={removeKeyButton}
+                                                    onClick={handleRemoveKey(onRemoveKey, name, data, onChangeObject)}>Delete</button>
+                                        }
+                                    </Schema>
+                                </Col>
+
+                            } else {
+                                return null;
+                            }
+                        })
+                    }
+                </Row>
+            })
+        }
+        {
+            canExpand(schema, data, onAddKey) &&
             <div className={actionsClassName}>
                 <p className={actionClassName}>
-                    <button className={addKeyButton} onClick={handleAddKey(onAddKey, data, onChangeObject)}>Add</button>
+                    <button className={addKeyButton} onClick={handleAddKey(onAddKey, data, onChangeObject)}>Add
+                    </button>
                 </p>
             </div>
         }
-    </Tag>
+    </Container>
 }
 
 export default GridWidget;

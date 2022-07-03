@@ -4,6 +4,7 @@ import {DescriptionProps, ErrorProps, HelpProps, TitleProps} from "./index";
 import {JFormContext} from "../../Form";
 import {JSONSchema7TypeName} from "json-schema";
 import {isArray} from "lodash";
+import {Container, Row, Col} from 'react-grid';
 
 
 export interface FieldLayoutProps extends HtmlConfigurable {
@@ -57,8 +58,27 @@ const getFieldItemHandler = (item: FieldStaticInfo<any, any>, _def: FunctionComp
     }
 }
 
-export const layoutRender = ({Title, Description, children, Errors, Help}: any) => <><Title/> <Description/> {children}
-    <Errors/> <Help/></>;
+export const layoutRender = ({Title, Description, children, Errors, Help}: any) => <Container>
+    <Row>
+        <Col><Title/></Col>
+        <Col>{children} </Col>
+    </Row>
+    <Row>
+        <Col>
+            <Description/>
+        </Col>
+    </Row>
+    <Row>
+        <Col>
+            <Errors/>
+        </Col>
+    </Row>
+    <Row>
+        <Col>
+            <Help/>
+        </Col>
+    </Row>
+</Container>;
 
 export default (props: PropsWithChildren<FieldLayoutProps>) => {
     const {
@@ -92,7 +112,7 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
 
     if (hidden?.enable === true) {
         const {className = "", id, style} = hidden;
-        return <div className={className} id={id} style={style}>{children}</div>;
+        return <div className={className} id={id} style={style}/>;
     }
 
     let errorClass = "";

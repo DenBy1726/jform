@@ -62,7 +62,7 @@ export default function Form(props: PropsWithChildren<FormProps>) {
     }
 
     const extendSchemas = () => {
-        const applied = applyDefaults({schema, configSchema, eventSchema, readSchema}, computedDefaults);
+        const applied = applyDefaults({...props}, computedDefaults);
         const dataWithDefaults = computeInitials(applied.schema as JSONSchema7, applied.schema as JSONSchema7, data);
         setData(dataWithDefaults);
         setSchema(applied.schema || {});

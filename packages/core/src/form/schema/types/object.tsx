@@ -2,6 +2,7 @@ import {TypeProps} from "./index";
 import React, {ReactElement} from "react";
 import {JSONSchema7} from "json-schema";
 import {ADDITIONAL_PROPERTY_FLAG} from "@jform/utils/handlers/additionalProperties";
+import {mergeSchemas} from "@jform/utils/mergeSchemas";
 
 const orderProperties = (properties: string[], order?: string[]) => {
     if (!Array.isArray(order)) {
@@ -81,9 +82,9 @@ const ObjectField = (props: TypeProps): ReactElement<any, any> => {
                     onBlur,
                     onFocus,
                     schema: _schema,
-                    configSchema: isAdditional ? configSchema?.additionalProperties : configSchema?.[`$${name}`],
-                    eventSchema: isAdditional ? eventSchema?.additionalProperties : eventSchema?.[`$${name}`],
-                    readSchema: isAdditional ? readSchema?.additionalProperties : readSchema?.[`$${name}`],
+                    configSchema: mergeSchemas(configSchema?.additionalProperties, configSchema?.[`$${name}`]),
+                    eventSchema: mergeSchemas(eventSchema?.additionalProperties, eventSchema?.[`$${name}`]),
+                    readSchema: mergeSchemas(readSchema?.additionalProperties, readSchema?.[`$${name}`]),
                     required: isRequired(schema, name),
                     value: data[name],
                     isAdditional

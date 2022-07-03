@@ -14,7 +14,32 @@ render(
               }
           }}
           data={{foo: "foo", "bar": "bar", baz: "baz"}}
-          configSchema={{help: "Help", error: ["1", "2", "3"], placeholder: "Gg", $foo: {autofocus: true}}}
+          configSchema={{
+              widget: {
+                  layout: [
+                      {
+                          foo: {},
+                          bar: {},
+                      },
+                      {
+                          baz: {
+                              offset: {md: 12}
+                          }
+                      }
+                  ]
+              }, help: "Help", error: ["1", "2", "3"], placeholder: "Gg", $foo: {
+                  autofocus: true
+              },
+              additionalProperties: {
+                  style: {
+                      color: "green",
+                  },   help: "Help", error: ["1", "2", "3"],  title: {
+                      useName: true,
+                  },
+                  description: "dsfsdfsdfsdfsdfsdfsdf dsfsdfsdfsdfsdfsdfsdf dsfsdfsdfsdfsdfsdfsdf dsfsdfsdfsdfsdfsdfsdf dsfsdfsdfsdfsdfsdfsdf dsfsdfsdfsdfsdfsdfsdf dsfsdfsdfsdfsdfsdfsdf dsfsdfsdfsdfsdfsdfsdf"
+
+              }
+          }}
           eventSchema={{
               onRemoveKey: ({removeKey}) => removeKey(),
               onAddKey: () => ({1: "1"})
