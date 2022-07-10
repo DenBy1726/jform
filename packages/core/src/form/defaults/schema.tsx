@@ -1,7 +1,6 @@
 import {ConfigSchema, JSchema} from "@jform/core";
 import {traverse, mergeSchemas, resolveReference} from "@jform/utils/index";
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
-import {merge} from "lodash";
 import {canonizationRules, Defaults} from "./";
 import {defaultRules} from "./config";
 
@@ -12,7 +11,7 @@ const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
     const rules = [...(defaults?.rules || []), ...(defaultRules || []), ...canonizationRules];
     // @ts-ignore
     schema = traverse(schema as JSONSchema7, additional, (schema, other) => {
-        return rules.map(x => x({schema, ...other})).reduce((a, b) => merge(a, b))
+        return rules.map(x => x({schema, ...other})).reduce((a, b) => mergeSchemas(a, b))
     });
     //@ts-ignore
     schema = traverse(schema as JSONSchema7, additional, (schema, other) => {
@@ -47,6 +46,7 @@ const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
         ({schema, ...other} = Object.keys(mergeCases.defined)
             .map(x => ({
                     [x]: mergeSchemas(
+                        {},
                         mergeCases?.common?.[x],
                         mergeCases?.type?.[x],
                         mergeCases?.widget?.[x],

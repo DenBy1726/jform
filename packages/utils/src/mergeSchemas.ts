@@ -12,14 +12,17 @@ const customizer = (a: any, b: any, key: string, object: any, source: any): any 
         return union(a.split(" "), b.split(" ")).join(" ");
     }
     if (isArray(a) && isObject(b)) {
-        return a;
+        return b;
     }
     if (isObject(a) && isArray(b)) {
-        return a;
+        return b;
+    }
+    if (isArray(a) && isArray(b)) {
+        return b;
     }
     return undefined;
 }
 
-export const mergeSchemas = (...args: any[]): object => {
-    return mergeWith({}, ...args, customizer);
+export const mergeSchemas = (arg: any, ...args: any[]): object => {
+    return mergeWith(arg, ...args, customizer);
 }

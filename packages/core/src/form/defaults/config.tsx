@@ -28,7 +28,22 @@ const defaults: Defaults = {
             layout: {
                 className: "jform-field-layout",
                 rootClassName: "jform-field-layout-root",
-                errorClassName: "error-field"
+                errorClassName: "error-field",
+                render: [
+                    {
+                        title: {},
+                        children: {}
+                    },
+                    {
+                        description: {}
+                    },
+                    {
+                        help: {}
+                    },
+                    {
+                        errors: {}
+                    }
+                ]
             },
             hidden: {
                 className: "jform-hidden"
@@ -107,11 +122,24 @@ const defaults: Defaults = {
                         actionsClassName: "actions-item",
                         actionClassName: "action-item",
                         addKeyButton: "add-key-button",
-                        removeKeyButton: "remove-key-button"
+                        removeKeyButton: "remove-key-button",
+                        layout: {
+                            md: 12
+                        }
                     },
                     layout: {
                         tag: "fieldset",
-                        render: ({Title, Description, children}: any) => <> <Title/> <Description/> {children} </>
+                        render: [
+                            {
+                                title: {}
+                            },
+                            {
+                                description: {}
+                            },
+                            {
+                                children: {}
+                            }
+                        ]
                     }
                 }
             }

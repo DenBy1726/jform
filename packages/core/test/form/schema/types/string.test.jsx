@@ -100,7 +100,7 @@ describe("String type", () => {
                 },
             });
 
-            expect(node.querySelectorAll(".jform-field-layout-root > datalist > option").length).to.equals(3);
+            expect(node.querySelectorAll("datalist > option").length).to.equals(3);
         });
 
         it("should render a string with examples that includes the default value", () => {
@@ -112,7 +112,7 @@ describe("String type", () => {
                 },
             });
             expect(node.querySelectorAll(".jform-field-layout-root input")[0].value).to.equals("Firefox");
-            expect(node.querySelectorAll(".jform-field-layout-root > datalist > option").length).to.equals(3);
+            expect(node.querySelectorAll("datalist > option").length).to.equals(3);
         });
 
         it("should render a string with examples that overlaps with the default value", () => {
@@ -124,7 +124,7 @@ describe("String type", () => {
                 },
             });
             expect(node.querySelectorAll(".jform-field-layout-root input")[0].value).to.equals("Firefox");
-            expect(node.querySelectorAll(".jform-field-layout-root > datalist > option").length).to.equals(3);
+            expect(node.querySelectorAll("datalist > option").length).to.equals(3);
         });
 
         it("should handle an empty string change event", () => {

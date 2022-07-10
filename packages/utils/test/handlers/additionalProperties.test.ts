@@ -8,9 +8,9 @@ describe("additional properties", () => {
         const schema: JSONSchema7 = {
             type: "object",
             properties: {
-                foo: { type: "string"},
-                bar: { type: "string"},
-                baz: { type: "string"},
+                foo: {type: "string"},
+                bar: {type: "string"},
+                baz: {type: "string"},
             },
             additionalProperties: {
                 type: "string"
@@ -25,9 +25,9 @@ describe("additional properties", () => {
         const schema: JSONSchema7 = {
             type: "object",
             properties: {
-                foo: { type: "string"},
-                bar: { type: "string"},
-                baz: { type: "string"},
+                foo: {type: "string"},
+                bar: {type: "string"},
+                baz: {type: "string"},
             },
             additionalProperties: {
                 type: "string"
@@ -50,11 +50,23 @@ describe("additional properties", () => {
         expect(schema).toEqual(resultSchema);
     });
 
+    it("should add properties if schema is object type and properties not present", () => {
+        const schema: JSONSchema7 = {
+            type: "object",
+            additionalProperties: {
+                type: "string"
+            }
+        };
+
+        const resultSchema = retrieveSchema(schema, schema, "bar");
+        expect({...schema, properties: {}}).toEqual(resultSchema);
+    });
+
     it("should merge additional properties to schema according to data", () => {
         const schema: JSONSchema7 = {
             type: "object",
             properties: {
-                foo: { type: "string"},
+                foo: {type: "string"},
             },
             additionalProperties: {
                 type: "string"
@@ -70,7 +82,7 @@ describe("additional properties", () => {
         const schema = {
             type: "object",
             properties: {
-                foo: { type: "string"},
+                foo: {type: "string"},
             },
             additionalProperties: true
         };
@@ -84,7 +96,7 @@ describe("additional properties", () => {
         const schema = {
             type: "object",
             properties: {
-                foo: { type: "string"},
+                foo: {type: "string"},
             },
             definitions: {
                 us: {

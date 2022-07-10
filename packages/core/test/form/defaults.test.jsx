@@ -513,6 +513,62 @@ describe("defaults", () => {
             expect(node.querySelectorAll("label > input").length).to.equal(1)
         })
 
+        it("default layout for grid", done => {
+            const schema = {type: "object"};
+
+            const {node} = createFormComponent({
+                schema, schemaInitialized: ({configSchema}) => {
+                    expect(configSchema.widget.layout).to.eql({md: 12});
+                    done();
+                }
+            });
+        })
+
+        it("default field layout for grid", done => {
+            const schema = {type: "object"};
+
+            const {node} = createFormComponent({
+                schema, schemaInitialized: ({configSchema}) => {
+                    expect(configSchema.layout.render).to.eql([
+                        {
+                            title: {}
+                        },
+                        {
+                            description: {}
+                        },
+                        {
+                            children: {}
+                        }
+                    ]);
+                    done();
+                }
+            });
+        })
+
+        it("default common field layout", done => {
+            const schema = {type: "string"};
+
+            const {node} = createFormComponent({
+                schema, schemaInitialized: ({configSchema}) => {
+                    expect(configSchema.layout.render).to.eql([
+                        {
+                            title: {},
+                            children: {}
+                        },
+                        {
+                            description: {}
+                        },
+                        {
+                            help: {}
+                        },
+                        {
+                            errors: {}
+                        }
+                    ]);
+                    done();
+                }
+            });
+        })
     })
 
     it("should not affect const schemas schema mutation", done => {

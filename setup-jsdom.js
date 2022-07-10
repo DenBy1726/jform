@@ -12,6 +12,7 @@ if (!global.hasOwnProperty("window")) {
 
 // atob
 global.atob = require("atob");
+global.HTMLElement = window.HTMLElement;
 
 // HTML debugging helper
 global.d = function d(node) {

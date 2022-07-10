@@ -1,10 +1,12 @@
-import React, {FunctionComponent, PropsWithChildren, ReactElement, useContext, useMemo} from "react"
+import React, {FunctionComponent, PropsWithChildren, useContext, useMemo} from "react"
 import {ConfigSchema, FieldError, FieldHidden, FieldStaticInfo, FieldTitle, HtmlConfigurable} from "@jform/core";
 import {DescriptionProps, ErrorProps, HelpProps, TitleProps} from "./index";
 import {JFormContext} from "../../Form";
 import {JSONSchema7TypeName} from "json-schema";
 import {isArray} from "lodash";
+//@ts-ignore
 import {Container, Row, Col} from 'react-grid';
+import {renderLayout} from "@jform/utils/index";
 
 
 export interface FieldLayoutProps extends HtmlConfigurable {
@@ -16,7 +18,7 @@ export interface FieldLayoutProps extends HtmlConfigurable {
     configSchema?: ConfigSchema,
     name?: string,
     type: JSONSchema7TypeName,
-    render: (arg: any) => ReactElement,
+    render: any,
     errorClassName: string,
     rootClassName: string,
 }
@@ -58,27 +60,30 @@ const getFieldItemHandler = (item: FieldStaticInfo<any, any>, _def: FunctionComp
     }
 }
 
-export const layoutRender = ({Title, Description, children, Errors, Help}: any) => <Container>
-    <Row>
-        <Col><Title/></Col>
-        <Col>{children} </Col>
-    </Row>
-    <Row>
-        <Col>
-            <Description/>
-        </Col>
-    </Row>
-    <Row>
-        <Col>
-            <Errors/>
-        </Col>
-    </Row>
-    <Row>
-        <Col>
-            <Help/>
-        </Col>
-    </Row>
-</Container>;
+export const defaultLayoutStyles = () => ({
+    breakpoints: {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200},
+    containerMaxWidths: {sm: 540, md: 720, lg: 960, xl: 1140},
+    columns: 12,
+    gutterWidth: 0
+});
+
+export const defaultLayout = (properties: any, config = ({md: 12})) => Object.keys(properties).map(x => ({[x]: {...config}}))
+
+export const defaultLayoutRender = [
+    {
+        title: {},
+        children: {}
+    },
+    {
+        description: {}
+    },
+    {
+        help: {}
+    },
+    {
+        errors: {}
+    }
+]
 
 export default (props: PropsWithChildren<FieldLayoutProps>) => {
     const {
@@ -96,7 +101,7 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
         style,
         id,
         tag: Tag = "div",
-        render = layoutRender
+        render
     } = props;
 
     const {template} = useContext(JFormContext);
@@ -121,19 +126,38 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
         errorClass = errorClassName;
     }
 
+    const rowElements: any = {
+        title: title.display !== false && (() => <TitleField key="title" name={name}/>),
+        description: description.display !== false && (() => <DescriptionField key="description"/>),
+        errors: errors.display !== false && (() => <ErrorsField key="errors"/>),
+        help: help.display !== false && (() => <HelpField key="help"/>),
+        children: () => children
+    }
+
+    let _render;
+    if (typeof render === "function") {
+        _render = render({
+            Title: rowElements.title,
+            Description: rowElements.description,
+            children: rowElements.children(),
+            Errors: rowElements.errors,
+            Help: rowElements.help
+        })
+    } else {
+        _render = renderLayout(render || defaultLayout(rowElements),
+            (name, rowProps) => <Col styles={defaultLayoutStyles()} {...rowProps}
+                                     key={name || "root"}>{rowElements[name]()}</Col>,
+            ((children, index) => <Row styles={defaultLayoutStyles()} key={index}>{children}</Row>))
+    }
+
     return (
         //@ts-ignore
         <Tag
             className={`${[name ? undefined : rootClassName, className, errorClass].filter(x => x && x.length > 0).join(" ")}`}
             style={style} id={id}>
-            {
-                render({
-                    Title: title.display !== false && (() => <TitleField key="title" name={name}/>),
-                    Description: description.display !== false && (() => <DescriptionField key="description"/>),
-                    children,
-                    Errors: errors.display !== false && (() => <ErrorsField key="errors"/>),
-                    Help: help.display !== false && (() => <HelpField key="help"/>)
-                })}
+            <Container styles={defaultLayoutStyles()}>
+                {_render}
+            </Container>
         </Tag>
     );
 }

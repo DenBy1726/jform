@@ -163,5 +163,5 @@ class Dereferencer {
 }
 
 export const resolveReference = (schema: JSONSchema7, rootSchema: JSONSchema7): JSONSchema7 => {
-    return new Dereferencer(schema, {rootSchema}).resolve();
+    return new Dereferencer(schema || {}, {rootSchema}).resolve();
 }

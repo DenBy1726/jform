@@ -1,8 +1,11 @@
 import {ObjectWidgetProps} from "./index";
 import React from "react";
 import Schema from "../../Schema";
-import {JSONSchema7} from "json-schema";
-import {Container, Row, Col} from 'react-grid';
+//@ts-ignore
+import {Col, Container, Row} from 'react-grid';
+import {canExpand, renderLayout} from "@jform/utils/index";
+import {defaultLayout, defaultLayoutStyles} from "../../templates/layout";
+import {isArray} from "lodash";
 
 
 const handleRemoveKey = (handler: Function, name: string, data: object, onChange: Function) => {
@@ -25,29 +28,6 @@ const handleAddKey = (handler: Function, data: object, onChange: Function) => {
     }
 }
 
-const canExpand = (schema: JSONSchema7, data: any, handler: Function) => {
-    if (!handler) {
-        return false;
-    }
-    if (!schema.additionalProperties) {
-        return false;
-    }
-
-    if (schema.maxProperties !== undefined) {
-        return Object.keys(data).length < schema.maxProperties;
-    }
-    return true;
-}
-
-const styles = {
-    breakpoints: {xs: 0, sm: 576, md: 768, lg: 992, xl: 1200},
-    containerMaxWidths: {sm: 540, md: 720, lg: 960, xl: 1140},
-    columns: 24,
-    gutterWidth: 0
-};
-
-const defaultLayout = (properties: any) => Object.keys(properties).map(x => ({[x]: {md: 12}}))
-
 const GridWidget = (props: ObjectWidgetProps) => {
     const {
         autofocus,
@@ -64,7 +44,6 @@ const GridWidget = (props: ObjectWidgetProps) => {
         onChange: onChangeObject
     } = props;
 
-    //@ts-ignore
     const {
         itemClassName,
         additionalItemClassName,
@@ -73,62 +52,93 @@ const GridWidget = (props: ObjectWidgetProps) => {
         addKeyButton,
         removeKeyButton,
         layout = defaultLayout(properties)
-    } = widget;
+    }: any = widget;
     const {onAddKey, onRemoveKey} = events;
 
+    let _layout;
+    if(isArray(layout)) {
+        _layout = layout;
+    } else {
+        _layout = defaultLayout(properties, layout);
+    }
+
     //@ts-ignore
-    return <Container styles={styles} autoFocus={autofocus} required={required} disabled={disabled}
+    return <Container styles={defaultLayoutStyles()} autoFocus={autofocus} required={required} disabled={disabled}
                       className={className} id={id}
                       style={style}>
         {
-            layout.map((row: any, index: any) => {
-                return <Row styles={styles} key={index}>
-                    {
-                        Object.keys(row).map((name: any) => {
-                            if (properties[name]) {
-                                const rowProps = row[name]
-                                const {
-                                    onChange,
-                                    onBlur,
-                                    onFocus,
-                                    value,
-                                    schema,
-                                    required,
-                                    configSchema,
-                                    eventSchema,
-                                    readSchema,
-                                    isAdditional
-                                } = properties[name];
+            renderLayout(_layout, ((name, rowProps) => {
+                const {optional, render, ...other} = rowProps;
+                let _style = style || {};
 
-                                return <Col styles={styles} {...rowProps} key={name} style={style}
-                                            className={[itemClassName, isAdditional && additionalItemClassName].filter(x => x && x.length > 0).join(" ")}>
-                                    <Schema
-                                        key={name}
-                                        name={name}
-                                        required={required}
-                                        schema={schema}
-                                        configSchema={configSchema}
-                                        eventSchema={eventSchema}
-                                        readSchema={readSchema}
-                                        data={value}
-                                        onChange={onChange}
-                                        onBlur={onBlur}
-                                        onFocus={onFocus}
-                                    >
-                                        {isAdditional && onRemoveKey &&
-                                            <button className={removeKeyButton}
-                                                    onClick={handleRemoveKey(onRemoveKey, name, data, onChangeObject)}>Delete</button>
-                                        }
-                                    </Schema>
-                                </Col>
+                //@ts-ignore
+                const isFilled = (fieldName: string) => !!(data[fieldName] && data[fieldName].length)
+                //@ts-ignore
+                const isTrue = (fieldName: string) => (data[fieldName])
 
-                            } else {
-                                return null;
+                const optionalApi = {
+                    isFilled,
+                    isTrue
+                }
+
+                if (optional && !optional({data, ...optionalApi})) {
+                    _style = {display: 'none'}
+                }
+                if (render) {
+                    const UIComponent = render;
+                    return (
+                        <Col {...other} key={name} style={_style}>
+                            <UIComponent
+                                /*
+                                @ts-ignore */
+                                data={data} key={name} name={name} required={required} schema={schema}
+                                configSchema={props.configSchema}
+                                {...(properties?.[name] || {})}
+                            />
+                        </Col>
+                    )
+                } else if (properties[name]) {
+                    const {
+                        onChange,
+                        onBlur,
+                        onFocus,
+                        value,
+                        schema,
+                        required,
+                        configSchema,
+                        eventSchema,
+                        readSchema,
+                        isAdditional
+                    } = properties[name];
+
+                    return <Col styles={defaultLayoutStyles()} {...other} key={name} style={_style}
+                                className={[itemClassName, isAdditional && additionalItemClassName].filter(x => x && x.length > 0).join(" ")}>
+                        <Schema
+                            key={name}
+                            name={name}
+                            required={required}
+                            schema={schema}
+                            configSchema={configSchema}
+                            eventSchema={eventSchema}
+                            readSchema={readSchema}
+                            data={value}
+                            onChange={onChange}
+                            onBlur={onBlur}
+                            onFocus={onFocus}
+                        >
+                            {isAdditional && onRemoveKey &&
+                                <button className={removeKeyButton}
+                                        onClick={handleRemoveKey(onRemoveKey, name, data, onChangeObject)}>Delete</button>
                             }
-                        })
-                    }
-                </Row>
-            })
+                        </Schema>
+                    </Col>
+
+                } else {
+                    return null;
+                }
+            }), ((children, index) => {
+                return <Row styles={defaultLayoutStyles()} key={index}>{children}</Row>;
+            }))
         }
         {
             canExpand(schema, data, onAddKey) &&

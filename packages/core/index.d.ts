@@ -28,12 +28,22 @@ declare module '@jform/core' {
         tag?: string
     }
 
+    export interface FieldLayoutPlacement {
+        title: {},
+        description: {},
+        children: {},
+        help: {},
+        errors: {}
+    }
+
     export interface FieldLayout extends HtmlConfigurable {
         errorClassName?: string,
         rootClassName?: string
         template?: React.FunctionComponent<FieldLayoutProps>,
-        render?: (arg: any) => ReactElement
+        render?: any
     }
+
+
 
     export type Dynamic<T> = {
         [P in keyof T]?: T[P] | ((arg: any) => T[P]);
@@ -60,6 +70,7 @@ declare module '@jform/core' {
 
     export interface Widget {
         [k: string]: any,
+
         type: string | React.FunctionComponent<WidgetProps<any>>
     }
 

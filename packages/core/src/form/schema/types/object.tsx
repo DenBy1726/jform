@@ -32,7 +32,7 @@ const orderProperties = (properties: string[], order?: string[]) => {
         return orderFiltered;
     }
     if (restIndex !== orderFiltered.lastIndexOf("*")) {
-        throw new Error("uiSchema order list contains more than one wildcard item");
+        throw new Error("configSchema order list contains more than one wildcard item");
     }
 
     const complete = [...orderFiltered];
@@ -82,9 +82,9 @@ const ObjectField = (props: TypeProps): ReactElement<any, any> => {
                     onBlur,
                     onFocus,
                     schema: _schema,
-                    configSchema: mergeSchemas(configSchema?.additionalProperties, configSchema?.[`$${name}`]),
-                    eventSchema: mergeSchemas(eventSchema?.additionalProperties, eventSchema?.[`$${name}`]),
-                    readSchema: mergeSchemas(readSchema?.additionalProperties, readSchema?.[`$${name}`]),
+                    configSchema: mergeSchemas({}, configSchema?.additionalProperties, configSchema?.[`$${name}`]),
+                    eventSchema: mergeSchemas({}, eventSchema?.additionalProperties, eventSchema?.[`$${name}`]),
+                    readSchema: mergeSchemas({}, readSchema?.additionalProperties, readSchema?.[`$${name}`]),
                     required: isRequired(schema, name),
                     value: data[name],
                     isAdditional

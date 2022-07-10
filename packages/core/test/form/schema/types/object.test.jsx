@@ -71,10 +71,7 @@ describe("Object type", () => {
                 }
             });
 
-            const legend = node.querySelector("fieldset > legend");
-
-            expect(legend.textContent).eql("my object");
-            expect(legend.id).eql("title");
+            expect(node.querySelector("#title").textContent).eql("my object");
         });
 
         it("should render a hidden object", () => {
@@ -100,7 +97,7 @@ describe("Object type", () => {
                     }
                 }
             });
-            expect(node.querySelector("fieldset > #custom").textContent).to.eql("my object");
+            expect(node.querySelector("#custom").textContent).to.eql("my object");
         });
 
         it("should render a default property label", () => {
@@ -733,5 +730,325 @@ describe("Object type", () => {
         });
     })
 
+    describe("grid", () => {
+        const schema = {
+            type: "object",
+            properties: {
+                foo: {
+                    type: "string"
+                },
+                bar: {
+                    type: "string"
+                },
+                baz: {
+                    type: "string"
+                }
+            }
+
+        }
+        it("should render fields in a grid", () => {
+            const {node} = createFormComponent({
+                schema,
+            });
+
+            expect(node.querySelectorAll("[class*='Container'] > [class*='Row'] > [class*='Col'] > input")).to.have.lengthOf(3);
+        })
+        it("should support reordering via layout fields in a grid", () => {
+            const {node} = createFormComponent({
+                schema,
+                configSchema:
+                    {
+                        widget: {
+                            layout: [
+                                {
+                                    bar: {},
+                                },
+                                {
+                                    baz: {}
+                                },
+                                {
+                                    foo: {}
+                                }
+                            ]
+                        },
+                        $foo: {
+                            id: "foo"
+                        },
+                        $bar: {
+                            id: "bar"
+                        },
+                        $baz: {
+                            id: "baz"
+                        }
+                    }
+            });
+
+            expect([...node.querySelectorAll("[class*='Container'] > [class*='Row'] > [class*='Col'] > input")].map(x => x.id)).to.eql(["bar", "baz", "foo"]);
+        })
+
+        it("should support custom layout fields in a grid", () => {
+            const {node} = createFormComponent({
+                schema,
+                configSchema:
+                    {
+                        widget: {
+                            layout: [
+                                {
+                                    bar: {},
+                                    baz: {}
+                                },
+                                {
+                                    foo: {}
+                                }
+                            ]
+                        },
+                        $foo: {
+                            id: "foo"
+                        },
+                        $bar: {
+                            id: "bar"
+                        },
+                        $baz: {
+                            id: "baz"
+                        }
+                    }
+            });
+
+            expect(node.querySelectorAll(".grid-widget > [class*='Row'] ")).to.have.lengthOf(2);
+            expect(node.querySelectorAll(".grid-widget > [class*='Row'] ")[0].querySelectorAll("[class*='Container'] > [class*='Row'] > [class*='Col'] > input")).to.have.lengthOf(2);
+            expect(node.querySelectorAll(".grid-widget > [class*='Row'] ")[1].querySelectorAll("[class*='Container'] > [class*='Row'] > [class*='Col'] > input")).to.have.lengthOf(1);
+        })
+
+        it("should support customization for layout fields in a grid", () => {
+            const {node} = createFormComponent({
+                schema,
+                configSchema:
+                    {
+                        widget: {
+                            layout: [
+                                {
+                                    bar: {
+                                        md: 6,
+                                        offset: 6
+                                    },
+                                    baz: {}
+                                },
+                                {
+                                    foo: {}
+                                }
+                            ]
+                        },
+                        $foo: {
+                            id: "foo"
+                        },
+                        $bar: {
+                            id: "bar"
+                        },
+                        $baz: {
+                            id: "baz"
+                        }
+                    }
+            });
+
+            const uniqueCssClass = "." + node.querySelector(".grid-item").className.split(" ").find(x => x.includes("-Col"));
+            const styles = [...document.styleSheets].reverse().find(x => x.cssRules[0].cssRules[0].selectorText === uniqueCssClass)
+            expect(styles.cssRules[0].cssRules[0].style.flex).to.eql("0 0 50.000000%");
+        })
+
+        it("should support optional rendering for layout fields in a grid", () => {
+            const {comp, node} = createFormComponent({
+                schema,
+                configSchema:
+                    {
+                        widget: {
+                            layout: [
+                                {
+                                    bar: {
+                                        optional: ({isFilled}) => isFilled("baz")
+                                    },
+                                    baz: {}
+                                },
+                                {
+                                    foo: {}
+                                }
+                            ]
+                        },
+                        $foo: {
+                            id: "foo"
+                        },
+                        $bar: {
+                            id: "bar"
+                        },
+                        $baz: {
+                            id: "baz"
+                        }
+                    },
+                data: {}
+            });
+
+
+            expect(node.querySelector(".grid-item").style.display).to.equal("none");
+            Simulate.change(node.querySelector("#baz"), {
+                target:{
+                    value: "hdfhfgh"
+                }
+            });
+            expect(node.querySelector(".grid-item").style.display).to.equal("");
+
+        })
+
+        it("should support custom render for schema field", () => {
+            const {comp, node} = createFormComponent({
+                schema,
+                configSchema:
+                    {
+                        widget: {
+                            layout: [
+                                {
+                                    bar: {
+                                        render: (props) => {
+                                            const {data} = props
+                                            const {baz, foo, bar} = data
+
+                                            return (
+                                                <div id="custom-render">
+                                                    <h3>{bar} {baz} {foo}</h3>
+                                                </div>
+                                            )
+                                        }
+                                    },
+                                    baz: {}
+                                },
+                                {
+                                    foo: {}
+                                }
+                            ]
+                        },
+                        $foo: {
+                            id: "foo"
+                        },
+                        $bar: {
+                            id: "bar"
+                        },
+                        $baz: {
+                            id: "baz"
+                        }
+                    },
+                data: {
+                    bar: "1",
+                    baz: "2",
+                    foo: "3"
+                }
+            });
+
+
+            expect(node.querySelector("#custom-render > h3").textContent).to.equal("1 2 3");
+        })
+
+        it("should support custom render for not schema field", () => {
+            const {comp, node} = createFormComponent({
+                schema,
+                configSchema:
+                    {
+                        widget: {
+                            layout: [
+                                {
+                                    bar: {},
+                                    baz: {},
+                                    custom: {
+                                        render: (props) => {
+                                            const {data} = props
+                                            const {baz, foo, bar} = data
+
+                                            return (
+                                                <div id="custom-render">
+                                                    <h3>{bar} {baz} {foo}</h3>
+                                                </div>
+                                            )
+                                        }
+                                    }
+                                },
+                                {
+                                    foo: {}
+                                }
+                            ]
+                        },
+                        $foo: {
+                            id: "foo"
+                        },
+                        $bar: {
+                            id: "bar"
+                        },
+                        $baz: {
+                            id: "baz"
+                        }
+                    },
+                data: {
+                    bar: "1",
+                    baz: "2",
+                    foo: "3"
+                }
+            });
+
+
+            expect(node.querySelector("#custom-render > h3").textContent).to.equal("1 2 3");
+        })
+
+        it("should support default render config changes", () => {
+            const {node} = createFormComponent({
+                schema,
+                configSchema:
+                    {
+                        widget: {
+                            layout: {
+                                md: 3
+                            }
+                        }
+                    },
+                data: {}
+            });
+
+
+            const css = "." + node.querySelector(".grid-item").className.split(" ").find(x => x.includes("-Col"));
+            const style = [...document.styleSheets].reverse().find(x => x.cssRules[0].cssRules[0].selectorText === css)
+            expect(style.cssRules[0].cssRules[0].style.flex).to.equal("0 0 25.000000%")
+        })
+
+        it("should omit  missed properties in layout", () => {
+            const {node} = createFormComponent({
+                schema,
+                configSchema:
+                    {
+                        widget: {
+                            layout: [
+                                {
+                                    bar: {
+                                        optional: ({isFilled}) => isFilled("baz")
+                                    }
+                                },
+                                {
+                                    foo: {}
+                                }
+                            ]
+                        },
+                        $foo: {
+                            id: "foo"
+                        },
+                        $bar: {
+                            id: "bar"
+                        },
+                        $baz: {
+                            id: "baz"
+                        }
+                    },
+                data: {}
+            });
+
+            expect(node.querySelector("#foo")).not.to.be.null;
+            expect(node.querySelector("#bar")).not.to.be.null;
+            expect(node.querySelector("#baz")).to.be.null;
+
+        })
+    })
 
 });

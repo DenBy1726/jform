@@ -102,7 +102,7 @@ describe("Schema", () => {
                 expect(node.querySelector("#match").style[1]).to.equal("margin")
             })
 
-            it("should change render of components", () => {
+            it("should change render of components by function", () => {
                 const {node} = createFormComponent({
                     configSchema: {
                         layout: {
@@ -123,6 +123,29 @@ describe("Schema", () => {
                 expect(node.querySelectorAll("#id3").length).to.equal(1)
                 expect(node.querySelectorAll("#id4").length).to.equal(1)
                 expect(node.querySelectorAll("#id5").length).to.equal(1)
+            })
+
+            it("should change render of components by config", () => {
+                const {node} = createFormComponent({
+                    configSchema: {
+                        layout: {
+                            render: [{
+                                title: {
+                                    md: 6
+                                },
+                                description: {
+                                    md: 12
+                                }
+                            },
+                                {children: {}}
+                            ]
+                        }
+                    }
+                });
+
+                expect(node.querySelectorAll("[class*='Container'] > [class*='Row']").length).to.equal(2)
+                expect(node.querySelectorAll("[class*='Container'] > [class*='Row']")[0].querySelectorAll("[class*='Col']").length).to.equal(2)
+                expect(node.querySelectorAll("[class*='Container'] > [class*='Row']")[1].querySelectorAll("[class*='Col']").length).to.equal(1)
             })
 
         });

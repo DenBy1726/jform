@@ -12,6 +12,8 @@ import {retrieveSchema} from "./handlers/index";
 import {isConstant} from "./isConstant";
 import {isSelect} from "./isSelect";
 import {schemaRequiresTrueValue} from "./schemaRequiresTrueValue";
+import {renderLayout} from "./renderLayout"
+import {canExpand} from "./canExpand";
 
 
 export {
@@ -28,5 +30,7 @@ export {
     retrieveSchema,
     isConstant,
     isSelect,
-    schemaRequiresTrueValue
+    schemaRequiresTrueValue,
+    renderLayout,
+    canExpand
 }
