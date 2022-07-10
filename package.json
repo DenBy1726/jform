@@ -1,6 +1,7 @@
 {
   "name": "jform",
   "version": "0.0.1",
+  "homepage": "https://denby1726.github.io/jform/",
   "private": true,
   "scripts": {
     "postinstall": "lerna bootstrap",

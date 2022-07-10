@@ -1,6 +1,7 @@
 {
   "name": "@jform/utils",
   "version": "0.0.1",
+  "homepage": "https://denby1726.github.io/jform/",
   "scripts": {
     "build": "rimraf dist && tsdx build --format cjs,es && cross-env NODE_ENV=production BABEL_ENV=umd webpack --config webpack.config.dist.js",
     "start": "tsdx watch",
