@@ -17,6 +17,16 @@
       "dependsOn": [
         "^build"
       ]
+    },
+    "publish": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "deploy": {
+      "dependsOn": [
+        "^build"
+      ]
     }
   }
 }

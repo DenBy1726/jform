@@ -10,6 +10,7 @@
     "start": "lerna run start --stream --parallel",
     "test": "lerna run --stream test --no-sort",
     "publish": "lerna publish --no-private",
+    "deploy": "lerna run deploy --stream",
     "graph": "nx graph"
   },
   "dependencies": {},
