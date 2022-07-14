@@ -1,6 +1,6 @@
 {
   "name": "@jform/utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://denby1726.github.io/jform/",
   "scripts": {
     "build": "rimraf dist && tsdx build",
@@ -77,5 +77,6 @@
         ]
       }
     }
-  }
+  },
+  "gitHead": "0db5e2ae6c08a21ae97b49135d2eb1f39c01a517"
 }
