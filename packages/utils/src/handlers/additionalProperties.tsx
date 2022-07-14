@@ -43,3 +43,7 @@ export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, dat
 
     return schema;
 }
+
+export const isAdditional = (schema: JSONSchema7) : boolean => {
+    return schema?.[ADDITIONAL_PROPERTY_FLAG] !== undefined;
+};

@@ -1,4 +1,4 @@
-import {JSchema} from "@jform/core";
+import {JSchema} from "types";
 
 const strOrFunc = (arg: any): boolean => {
     return typeof arg === "string" || typeof arg === "function";

@@ -9,9 +9,9 @@ import {
     HtmlConfigurable,
     ReadSchema,
     Widget
-} from "@jform/core";
+} from "types";
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
-import {getWidget, retrieveSchema} from "@jform/utils/index";
+import {getWidget, retrieveSchema} from "@jform/utils";
 import types, {TypeProps} from "./types";
 import {JFormContext} from "../Form";
 import {FormTemplate} from "./templates";
@@ -157,8 +157,10 @@ export default (props: PropsWithChildren<SchemaProps>) => {
     const {template, widgets, defaults} = useContext(JFormContext);
 
     const titleProps: FieldTitle = canonizeFieldItemProps(configSchema?.title as FieldStaticInfo<any, any>, schema.title) as FieldTitle;
-    //@ts-ignore
-    titleProps?.required?.display = required || titleProps?.required?.display || false;
+
+    if( titleProps?.required) {
+        titleProps.required.display = required || titleProps?.required?.display || false;
+    }
     titleProps.text = titleProps?.text || (titleProps?.useName && name || undefined);
 
     const descProps: FieldStaticInfo<string, any> = canonizeFieldItemProps(configSchema?.description as FieldStaticInfo<any, any>, schema.description);

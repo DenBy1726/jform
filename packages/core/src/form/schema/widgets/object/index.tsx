@@ -1,6 +1,6 @@
 import {WidgetProps} from "form/schema/widgets";
 import {JSONSchema7} from "json-schema";
-import {ConfigSchema, EventSchema, ReadSchema} from "@jform/core";
+import {ConfigSchema, EventSchema, ReadSchema} from "types";
 
 interface ObjectItem {
     onChange: (arg: any) => void,

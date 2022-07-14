@@ -1,6 +1,13 @@
 import {JSONSchema7} from "json-schema";
-import resolveDependencies, {getMatchingOption} from "@jform/utils/handlers/dependencies";
-import {isObject, mergeSchemas, getSchemaType, retrieveSchema, findSchemaDefinition} from "@jform/utils/index";
+import {
+    resolveDependencies,
+    getMatchingOption,
+    isObject,
+    mergeSchemas,
+    getSchemaType,
+    retrieveSchema,
+    findSchemaDefinition
+} from "@jform/utils";
 
 const _computeInitials = (_schema: JSONSchema7, parentDefaults: any, rootSchema: JSONSchema7, _data: any = {}): any => {
     let schema = isObject(_schema) ? _schema : {};

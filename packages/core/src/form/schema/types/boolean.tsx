@@ -1,9 +1,9 @@
 import React, {ReactElement} from "react";
 import {BooleanWidgetProps} from "../widgets";
 import {TypeProps} from "../../schema/types";
-import {getOptions, schemaRequiresTrueValue} from "@jform/utils/index";
+import {getOptions, schemaRequiresTrueValue} from "@jform/utils";
 import {JSONSchema7} from "json-schema";
-import {ConfigSchema} from "@jform/core";
+import {ConfigSchema} from "types";
 
 const getBooleanOptions = (schema: JSONSchema7, configSchema: ConfigSchema) => {
     if (Array.isArray(schema.oneOf)) {

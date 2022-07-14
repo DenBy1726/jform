@@ -1,8 +1,7 @@
 import {TypeProps} from "./index";
 import React, {ReactElement} from "react";
 import {JSONSchema7} from "json-schema";
-import {ADDITIONAL_PROPERTY_FLAG} from "@jform/utils/handlers/additionalProperties";
-import {mergeSchemas} from "@jform/utils/mergeSchemas";
+import {mergeSchemas, isAdditional} from "@jform/utils";
 
 const orderProperties = (properties: string[], order?: string[]) => {
     if (!Array.isArray(order)) {
@@ -75,7 +74,7 @@ const ObjectField = (props: TypeProps): ReactElement<any, any> => {
         properties = propertiesList.map(name => {
             const _schema = schema?.properties?.[name];
             //@ts-ignore
-            const isAdditional = _schema?.[ADDITIONAL_PROPERTY_FLAG];
+            const additional = isAdditional(_schema);
             return {
                 [name]: {
                     onChange: onPropertyChanged(name, data, onChange),
@@ -87,7 +86,7 @@ const ObjectField = (props: TypeProps): ReactElement<any, any> => {
                     readSchema: mergeSchemas({}, readSchema?.additionalProperties, readSchema?.[`$${name}`]),
                     required: isRequired(schema, name),
                     value: data[name],
-                    isAdditional
+                    isAdditional: additional
                 }
             }
         }).reduce((a, b) => ({...a, ...b}));

@@ -1,5 +1,5 @@
 import React from "react"
-import {HtmlConfigurable} from "@jform/core";
+import {HtmlConfigurable} from "types";
 import layout, {FieldLayoutProps} from "./layout";
 import title, {TitleProps} from "./title";
 import {cloneDeep} from "lodash";
@@ -9,7 +9,8 @@ import error, {ErrorProps} from "./error";
 import {JSONSchema7TypeName} from "json-schema";
 
 interface FieldStaticInfoProps<Text> extends HtmlConfigurable {
-    text?: Text
+    text?: Text,
+    display?: boolean
 }
 
 interface FormTemplate {

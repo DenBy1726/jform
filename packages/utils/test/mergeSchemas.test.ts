@@ -2,11 +2,6 @@
 import {mergeSchemas} from '../src';
 
 describe('mergeSchemas()', () => {
-    it('shouldn`t mutate the provided objects', () => {
-        const obj1 = {a: 1};
-        mergeSchemas(obj1, {b: 2});
-        expect(obj1).toEqual({a: 1});
-    });
 
     it('should merge two one-level deep objects', () => {
         expect(mergeSchemas({a: 1}, {b: 2})).toEqual({a: 1, b: 2});

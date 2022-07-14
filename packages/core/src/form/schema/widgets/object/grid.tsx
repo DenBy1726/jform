@@ -3,7 +3,7 @@ import React from "react";
 import Schema from "../../Schema";
 //@ts-ignore
 import {Col, Container, Row} from 'react-grid';
-import {canExpand, renderLayout} from "@jform/utils/index";
+import {canExpand, renderLayout} from "@jform/utils";
 import {defaultLayout, defaultLayoutStyles} from "../../templates/layout";
 import {isArray} from "lodash";
 

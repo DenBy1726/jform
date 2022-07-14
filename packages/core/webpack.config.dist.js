@@ -9,7 +9,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, "dist"),
         publicPath: "/dist/",
-        filename: "@jform/core.js",
+        filename: "core.js",
         library: "JForm",
         libraryTarget: "umd"
     },
@@ -44,8 +44,13 @@ module.exports = {
             {
                 test: /\.[tj]sx?$/,
                 use: [
-                    "ts-loader",
-                ],
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            transpileOnly: true
+                        }
+                    }
+                ]
             },
         ]
     }

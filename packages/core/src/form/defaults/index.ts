@@ -1,4 +1,4 @@
-import {JSchema} from "@jform/core";
+import {JSchema} from "types";
 import {JSONSchema7TypeName} from "json-schema";
 import {canonizationRules} from "./canonize/rules";
 import {applyDefaults} from "./schema"

@@ -153,7 +153,7 @@ describe("Schema", () => {
         describe("title", () => {
             it("should use passed title template", () => {
                 const template = getDefaultTemplate();
-                template.common.field.title = () => <label id="match">Bar</>;
+                template.common.field.title = () => <label id="match">Bar</label>
 
                 const {node} = createFormComponent({schema: {}, template});
                 expect(node.querySelector("#match").textContent).to.equal("Bar")

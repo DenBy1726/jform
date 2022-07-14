@@ -37,12 +37,12 @@ const withExactlyOneSubschema = (schema: JSONSchema7, rootSchema: JSONSchema7, d
         ...dependentSubschema
     } = subschema.properties;
     const dependentSchema = {...subschema, properties: dependentSubschema};
-    return mergeSchemas(schema, retrieveSchema(dependentSchema, rootSchema, data));
+    return mergeSchemas({}, schema, retrieveSchema(dependentSchema, rootSchema, data));
 }
 
 const withDependentSchema = (schema: JSONSchema7, rootSchema: JSONSchema7, data: any, dependencyKey: string, dependencyValue: JSONSchema7) => {
     let {oneOf, ...dependentSchema} = retrieveSchema(dependencyValue, rootSchema, data);
-    schema = mergeSchemas(schema, dependentSchema);
+    schema = mergeSchemas({}, schema, dependentSchema);
     // Since it does not contain oneOf, we return the original schema.
     if (oneOf === undefined) {
         return schema;

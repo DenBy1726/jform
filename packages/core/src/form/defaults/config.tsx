@@ -1,8 +1,8 @@
 import React from "react"
 import {cloneDeep} from "lodash";
 import {Defaults} from "../defaults";
-import {getSchemaType} from "@jform/utils/index";
-import {JSchema} from "@jform/core";
+import {getSchemaType} from "@jform/utils";
+import {JSchema} from "types";
 
 
 const defaults: Defaults = {

@@ -1,4 +1,4 @@
-import {mergeSchemas} from "@jform/utils/index";
+import {mergeSchemas} from "@jform/utils";
 import {merge} from "lodash";
 import {canonizationRules} from "./rules";
 import {Defaults} from "form/defaults";

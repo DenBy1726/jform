@@ -1,12 +1,12 @@
 import React, {createContext, PropsWithChildren, useMemo, useState} from "react";
 import Schema from "./schema";
-import {ConfigSchema, EventSchema, JSchema, ReadSchema, RulesSchema, ValidationSchema,} from "@jform/core";
 import {isEqual, merge} from "lodash"
 import getDefaultTemplate, {FormTemplate} from "./schema/templates";
 import getDefaultWidgets, {Widgets} from "./schema/widgets";
 import getDefaults, {applyDefaults, canonizeDefaults, computeInitials, Defaults} from "./defaults";
 import {JSONSchema7} from "json-schema";
 import {useLifeCycle} from "./hooks";
+import {ValidationSchema, ConfigSchema, EventSchema, JSchema, ReadSchema, RulesSchema} from "types";
 
 
 export interface FormProps {

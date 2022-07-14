@@ -1,17 +1,10 @@
 //@ts-nocheck
 import {JSONSchema7} from "json-schema";
-import Ajv from "ajv";
 import {retrieveSchema} from "./";
 import {mergeSchemas} from "../index";
+import {createAjvInstance} from "../utils";
 
 const ID_PREFIX = "__jform_rootSchema";
-
-const createAjvInstance = (): Ajv => {
-    return new Ajv({
-        allErrors: true,
-        multipleOfPrecision: 8
-    });
-}
 
 let ajv = createAjvInstance()
 
@@ -60,7 +53,7 @@ export default <T extends any>(schema: JSONSchema7, rootSchema: JSONSchema7, dat
 
     if (conditionalSchema) {
         return retrieveSchema(
-            mergeSchemas(
+            mergeSchemas({},
                 resolvedSchemaLessConditional,
                 retrieveSchema(conditionalSchema, rootSchema, data)
             ), rootSchema, data

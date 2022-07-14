@@ -1,7 +1,7 @@
 import {toConstant} from "./index";
 import {JSONSchema7} from "json-schema";
 
-export interface SelectOption<T> {
+export type SelectOption<T> = {
     schema?: JSONSchema7,
     label: string,
     value: T,

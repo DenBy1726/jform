@@ -7,7 +7,7 @@ import {JSONSchema7, JSONSchema7Definition} from "json-schema";
 import {isObject} from "lodash";
 import {resolveReference} from "../index";
 
-const handlers = {
+const handlers: ({ [k: string]: ((schema: JSONSchema7, rootSchema: JSONSchema7, data?: any) => JSONSchema7) }) = {
     $ref: resolveReference,
     dependencies: resolveDependencies,
     allOf_before: resolveAllOf,
@@ -17,7 +17,7 @@ const handlers = {
     additionalProperties: resolveAdditional
 }
 
-export const retrieveSchema =  <T extends any>(schema: JSONSchema7Definition, rootSchema: JSONSchema7, data?: T): JSONSchema7 => {
+export const retrieveSchema = (schema: JSONSchema7Definition, rootSchema: JSONSchema7, data?: any): JSONSchema7 => {
     if (!isObject(schema)) {
         return {};
     }

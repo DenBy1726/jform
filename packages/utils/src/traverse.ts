@@ -24,22 +24,16 @@ const ignore = {
 
 const ignorePaths = Object.keys(ignore).join('|');
 
-//TODO: arrays support
 export const traverse = (_schema: JSONSchema7, _additionalSchemas: { [k: string]: {} }, handler: (arg0: JSONSchema7, arg1: { [k: string]: {} }) => { [k: string]: {} }): JSONSchema7 => {
     return _traverse(_schema || {}, (schemaOrSubschema: JSONSchema7, _b: boolean, _path: string) => {
         const propertyPath = _path.replace(new RegExp(ignorePaths, "g"), "").split("/")
             .filter(x => x !== "")
             .map(x => x === "additionalProperties" ? x : "$" + x);
+        const objectPath = propertyPath.join(".");
 
         let _additionalSubSchemas;
         if (propertyPath.length > 0) {
-            _additionalSubSchemas = Object.entries(_additionalSchemas).map(([k, v]) => {
-                const value =  _.get(v,  propertyPath.join("."));
-                if(value === undefined) {
-                    _.set(v, propertyPath.join("."), {});
-                }
-                return ({[k]: _.get(v,  propertyPath.join("."))})
-            })
+            _additionalSubSchemas = Object.entries(_additionalSchemas).map(([k, v]) => ({[k]: _.get(v, objectPath)}))
                 .reduce((a, b) => ({...a, ...b}));
         } else {
             _additionalSubSchemas = _additionalSchemas;
@@ -51,7 +45,7 @@ export const traverse = (_schema: JSONSchema7, _additionalSchemas: { [k: string]
                 _.merge(_additionalSchemas, _mutatedSubschemas);
             }
             else {
-                Object.entries(_mutatedSubschemas).forEach(([k, v]) => _.set(_additionalSchemas[k], propertyPath.join("."), v))
+                Object.entries(_mutatedSubschemas).forEach(([k, v]) => _.set(_additionalSchemas[k], objectPath, v))
             }
             return schema;
         }

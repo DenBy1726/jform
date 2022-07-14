@@ -7,13 +7,15 @@ import {traverse} from "./traverse";
 import {resolveReference} from "./resolveReference";
 import {getWidget} from "./getWidget";
 import {toConstant} from "./toConstant";
-import {getOptions, SelectOption} from "./getOptions";
-import {retrieveSchema} from "./handlers/index";
+import {getOptions} from "./getOptions";
+import {retrieveSchema} from "./handlers";
 import {isConstant} from "./isConstant";
 import {isSelect} from "./isSelect";
 import {schemaRequiresTrueValue} from "./schemaRequiresTrueValue";
 import {renderLayout} from "./renderLayout"
 import {canExpand} from "./canExpand";
+import resolveDependencies, {getMatchingOption} from "./handlers/dependencies"
+import {isAdditional} from "./handlers/additionalProperties"
 
 
 export {
@@ -26,11 +28,16 @@ export {
     resolveReference,
     getWidget,
     toConstant,
-    getOptions, SelectOption,
+    getOptions,
     retrieveSchema,
     isConstant,
     isSelect,
     schemaRequiresTrueValue,
     renderLayout,
-    canExpand
+    canExpand,
+    resolveDependencies,
+    getMatchingOption,
+    isAdditional
 }
+
+export type {SelectOption} from "./getOptions"

@@ -1,7 +1,7 @@
 import React, {FunctionComponent, PropsWithChildren} from "react"
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 import string from "./string";
-import {ConfigSchema, EventSchema, FieldError, HtmlConfigurable, ReadSchema} from "@jform/core";
+import {ConfigSchema, EventSchema, FieldError, HtmlConfigurable, ReadSchema} from "types";
 import {WidgetProps} from "form/schema/widgets";
 import boolean from "./boolean";
 import object from "./object";
@@ -23,7 +23,8 @@ export interface TypeProps extends HtmlConfigurable {
     onChange: (arg: any) => void,
     onBlur: () => void,
     onFocus: () => void,
-    events: { [k: string]: Function }
+    events: { [k: string]: Function },
+    name?: string
 }
 
 const types: Types = {

@@ -1,7 +1,7 @@
 import React, {ReactElement} from "react";
 import {TypeProps} from "./index";
 import {StringWidgetProps} from "../widgets/index";
-import {getOptions} from "@jform/utils/index";
+import {getOptions} from "@jform/utils";
 
 const StringField = (props: TypeProps): ReactElement<StringWidgetProps, any> => {
     const {

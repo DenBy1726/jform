@@ -5,17 +5,17 @@
   "private": true,
   "scripts": {
     "postinstall": "lerna bootstrap",
-    "publish": "lerna publish",
     "changed": "lerna changed",
-    "test": "lerna run --stream test",
-    "test:update": "lerna run --stream test:update",
-    "build": "lerna run --stream build",
-    "start": "lerna run start --stream --parallel"
+    "build": "lerna run build",
+    "start": "lerna run start --stream --parallel",
+    "test": "lerna run --stream test --no-sort",
+    "publish": "lerna publish --no-private",
+    "graph": "nx graph"
   },
-  "dependencies": {
-    "lerna": "^4.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "lerna": "^5.1.6",
+    "nx": "14.4.0",
     "source-map-loader": "^1.1.2",
     "ts-loader": "^8.4.0",
     "tsdx": "^0.14.1",

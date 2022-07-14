@@ -1,5 +1,5 @@
-import {ConfigSchema, JSchema} from "@jform/core";
-import {traverse, mergeSchemas, resolveReference} from "@jform/utils/index";
+import {ConfigSchema, JSchema} from "types";
+import {traverse, mergeSchemas, resolveReference} from "@jform/utils";
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 import {canonizationRules, Defaults} from "./";
 import {defaultRules} from "./config";

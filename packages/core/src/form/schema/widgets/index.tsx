@@ -3,7 +3,7 @@ import text from "./string/text";
 import select from "./string/select";
 import {FunctionComponent} from "react";
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
-import {ConfigSchema, HtmlConfigurable} from "@jform/core";
+import {ConfigSchema, HtmlConfigurable} from "types";
 import {ErrorProps} from "../templates";
 import {StringWidgetProps} from "./string"
 import {BooleanWidgetProps} from "./boolean"

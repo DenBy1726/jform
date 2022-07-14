@@ -1,12 +1,12 @@
 import React, {FunctionComponent, PropsWithChildren, useContext, useMemo} from "react"
-import {ConfigSchema, FieldError, FieldHidden, FieldStaticInfo, FieldTitle, HtmlConfigurable} from "@jform/core";
+import {ConfigSchema, FieldError, FieldHidden, FieldStaticInfo, FieldTitle, HtmlConfigurable} from "types";
 import {DescriptionProps, ErrorProps, HelpProps, TitleProps} from "./index";
 import {JFormContext} from "../../Form";
 import {JSONSchema7TypeName} from "json-schema";
 import {isArray} from "lodash";
 //@ts-ignore
 import {Container, Row, Col} from 'react-grid';
-import {renderLayout} from "@jform/utils/index";
+import {renderLayout} from "@jform/utils";
 
 
 export interface FieldLayoutProps extends HtmlConfigurable {
