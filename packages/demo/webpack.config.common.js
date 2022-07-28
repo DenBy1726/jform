@@ -1,6 +1,9 @@
 var path = require("path");
 var webpack = require("webpack");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const antdTheme = require('./antdTheme');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
     entry: [
@@ -26,6 +29,10 @@ module.exports = {
             filename: 'index.html',
             template: './public/index.html'
         }),
+        new MiniCssExtractPlugin({
+            filename: 'bundle.css',
+            allChunks: true
+        })
     ],
     module: {
         rules: [
@@ -37,7 +44,7 @@ module.exports = {
                 include: [
                     path.join(__dirname, "src"),
                     path.join(__dirname, "node_modules", "mode", "javascript"),
-                ]
+                ],
             },
             {
                 test: /\.js$/,
@@ -48,32 +55,24 @@ module.exports = {
                 test: /\.s?css$/,
                 use: [
                     "style-loader",
-                    "css-loader",
-                    "sass-loader"
+                    "css-loader"
                 ],
-                include: [
-                    path.join(__dirname, "src"),
-                    path.join(__dirname, "node_modules", "monaco-editor")
-                ],
+                // include: [
+                //     path.join(__dirname, "src"),
+                //     path.join(__dirname, "node_modules", "monaco-editor")
+                // ],
             },
             {
                 test: /\.less$/,
-                include: /node_modules[\\/]antd/,
                 use: [
-                    {
-                        loader: "style-loader",
+                    {loader: "style-loader"},
+                    {loader: "css-loader"},
+                    {loader: "less-loader",
                         options: {
-                            insert: "#antd-styles-iframe"
+                            modifyVars: antdTheme
                         }
-                    },
-                    "css-loader",
-                    {
-                        loader: 'less-loader',
-                        options: {
-                            javascriptEnabled: true,
-                        },
-                    },
-                ],
+                    }
+                ]
             },
             {
                 test: /\.ttf$/,

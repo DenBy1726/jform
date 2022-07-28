@@ -3,10 +3,11 @@ import {traverse, mergeSchemas, resolveReference} from "@jform/utils";
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 import {canonizationRules, Defaults} from "./";
 import {defaultRules} from "./config";
+import {cloneDeep} from "lodash";
 
 
-const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
-    let {schema, ...additional} = _schema;
+const _applyDefaults = (_schema: JSchema, defaults: Defaults): Required<JSchema> => {
+    let {schema, ...additional} = cloneDeep(_schema);
     schema = resolveReference(schema as JSONSchema7, schema as JSONSchema7);
     const rules = [...(defaults?.rules || []), ...(defaultRules || []), ...canonizationRules];
     // @ts-ignore
@@ -55,16 +56,15 @@ const _applyDefaults = (_schema: JSchema, defaults: Defaults): JSchema => {
                 }
             ))
             .reduce((a, b) => ({...a, ...b})));
-        if(isTruthSchema) {
+        if (isTruthSchema) {
             //@ts-ignore
             schema = true;
         }
         return {schema, ...other};
     })
-    return {schema, ...additional};
+    return {schema, ...additional} as Required<JSchema>;
 };
 
-export const applyDefaults = (props: JSchema, defaults: Defaults): JSchema => {
-    let {schema, configSchema, eventSchema, readSchema} = props;
-    return _applyDefaults({schema, configSchema, eventSchema, readSchema}, defaults);
+export const applyDefaults = (props: JSchema, defaults: Defaults): Required<JSchema> => {
+    return _applyDefaults(props, defaults);
 }

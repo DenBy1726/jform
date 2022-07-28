@@ -48,7 +48,7 @@ const defaults: Defaults = {
             hidden: {
                 className: "jform-hidden"
             },
-            className: "form-control"
+            className: "form-field"
         }
     },
     type: {

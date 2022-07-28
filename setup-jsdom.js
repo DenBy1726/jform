@@ -1,3 +1,13 @@
+
+const originalPrototypeOf = Object.getPrototypeOf;
+Object.getPrototypeOf = (arg) => {
+    if(arg === undefined) {
+        return {};
+    } else {
+        return originalPrototypeOf(arg);
+    }
+}
+
 var { JSDOM } = require("jsdom");
 
 // Setup the jsdom environment
@@ -13,6 +23,8 @@ if (!global.hasOwnProperty("window")) {
 // atob
 global.atob = require("atob");
 global.HTMLElement = window.HTMLElement;
+
+Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]()));
 
 // HTML debugging helper
 global.d = function d(node) {

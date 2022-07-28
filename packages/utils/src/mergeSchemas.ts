@@ -23,6 +23,6 @@ const customizer = (a: any, b: any, key: string, object: any, source: any): any 
     return undefined;
 }
 
-export const mergeSchemas = (arg: any, ...args: any[]): object => {
+export const mergeSchemas = <T>(arg: T, ...args: Partial<T>[]): T => {
     return mergeWith(arg, ...args, customizer);
 }

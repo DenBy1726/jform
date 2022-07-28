@@ -7,6 +7,7 @@
   "scripts": {
     "build": "rimraf dist && cross-env NODE_ENV=production webpack --config webpack.config.dist.js",
     "start": "webpack serve --config webpack.config.dev.js",
+    "predeploy": "npm run build",
     "deploy": "gh-pages --dist dist/"
   },
   "main": "src/index.js",
@@ -17,8 +18,16 @@
   "engines": {
     "node": ">=12"
   },
-  "peerDependencies": {
+  "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@jform/core": "*",
+    "antd": "^4.21.6",
+    "easy-peasy": "^5.0.4",
+    "react-head": "^3.4.0",
+    "react-router": "^6.3.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependencies": {
     "react": ">=17"
   },
   "devDependencies": {
@@ -33,15 +42,22 @@
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.6.0",
     "babel-loader": "^8.2.3",
+    "babel-plugin-import": "^1.6.5",
     "cross-env": "^2.0.1",
-    "css-loader": "^5.2.2",
+    "css-loader": "0.28.7",
+    "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^3.2.0",
     "gh-pages": "^4.0.0",
+    "less": "^2.7.3",
+    "less-loader": "^4.0.5",
+    "less-vars-to-js": "^1.2.1",
+    "mini-css-extract-plugin": "^0.9.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rimraf": "^2.5.4",
     "source-map-loader": "1.1.3",
+    "style-loader": "0.18.2",
     "ts-loader": "^8.2.0",
     "tslib": "^2.4.0",
     "webpack": "^4.20.2",

@@ -79,7 +79,7 @@ function getTypeTemplate(type: JSONSchema7TypeName, configSchema?: ConfigSchema)
 
 }
 
-function getFieldTemplate(type: JSONSchema7TypeName, configSchema: ConfigSchema | undefined, template: FormTemplate): FunctionComponent<FieldLayoutProps> {
+function getFieldTemplate(type: JSONSchema7TypeName, configSchema: ConfigSchema | undefined, template: Partial<FormTemplate>): FunctionComponent<FieldLayoutProps> {
     if (typeof configSchema?.layout !== "function" && configSchema?.layout?.template && typeof configSchema.layout?.template === 'function') {
         return configSchema.layout?.template;
     } else {

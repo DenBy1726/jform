@@ -16,7 +16,8 @@ module.exports = merge(common, {
     devServer: {
         contentBase: path.join(__dirname, 'build'),
         compress: true,
-        port: 3000
+        port: 3000,
+        historyApiFallback: true
     },
     resolve: {
         modules: [path.resolve('./src'), path.resolve('../core/src'),  path.resolve('../utils/src')],

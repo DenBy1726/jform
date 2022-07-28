@@ -53,7 +53,7 @@ describe("defaults", () => {
                     }
                 }
             }, schemaInitialized: ({configSchema}) => {
-                expect(configSchema.className).to.equal("form-control bar")
+                expect(configSchema.className).to.contains("bar")
                 done();
             }
         });
@@ -588,7 +588,7 @@ describe("defaults", () => {
                 }
             }, schemaInitialized: ({schema, configSchema}) => {
                 expect(schema.type).to.be.equals("boolean")
-                expect(configSchema.className).to.be.equals("form-control")
+                expect(configSchema.className).to.be.equals("form-field")
                 expect(schema.const).to.be.true
                 done();
             }

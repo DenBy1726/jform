@@ -5,6 +5,7 @@
     "@babel/preset-env"
   ],
   "plugins": [
+    "@babel/plugin-transform-react-jsx",
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-proposal-object-rest-spread",
     "@babel/plugin-proposal-class-properties",
@@ -13,13 +14,12 @@
       {
         "corejs": 3
       }
+    ],
+    ["import",
+      {
+        "libraryName": "antd",
+        "style": true
+      }
     ]
-  ],
-  "env": {
-    "development": {
-      "plugins": [
-        "@babel/plugin-transform-react-jsx"
-      ]
-    }
-  }
+  ]
 }

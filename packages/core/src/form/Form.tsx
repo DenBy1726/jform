@@ -1,12 +1,13 @@
 import React, {createContext, PropsWithChildren, useMemo, useState} from "react";
 import Schema from "./schema";
-import {isEqual, merge} from "lodash"
+import {isEqual} from "lodash"
 import getDefaultTemplate, {FormTemplate} from "./schema/templates";
 import getDefaultWidgets, {Widgets} from "./schema/widgets";
 import getDefaults, {applyDefaults, canonizeDefaults, computeInitials, Defaults} from "./defaults";
 import {JSONSchema7} from "json-schema";
 import {useLifeCycle} from "./hooks";
 import {ValidationSchema, ConfigSchema, EventSchema, JSchema, ReadSchema, RulesSchema} from "types";
+import {mergeSchemas} from "@jform/utils";
 
 
 export interface FormProps {
@@ -28,22 +29,32 @@ export interface FormProps {
     onSubmit?: (arg: any) => void
 }
 
+export const extractSchemaFromProps = (props: FormProps | JSchema): Required<JSchema> => {
+    const {
+        schema = {},
+        configSchema = {},
+        readSchema = {},
+        eventSchema = {},
+        validationSchema = {},
+        rulesSchema = []
+    } = props;
+    return {schema, configSchema, readSchema, eventSchema, validationSchema, rulesSchema}
+}
+
 
 // @ts-ignore
-export const JFormContext = createContext<{ template: FormTemplate, widgets: Widgets, schema: JSONSchema7, defaults: Defaults }>({});
+export const JFormContext = createContext<{ template: Partial<FormTemplate>, widgets: Partial<Widgets>, schema: JSONSchema7, defaults: Defaults }>({});
 
 export default function Form(props: PropsWithChildren<FormProps>) {
-    let {template, widgets, defaults = {}, schemaInitialized, errors} = props;
+    let {template = {}, widgets = {}, defaults = {}, schemaInitialized, errors} = props;
 
     const [data, setData] = useState(props.data);
-    const [schema, setSchema] = useState(props.schema || {});
-    const [configSchema, setConfigSchema] = useState(props.configSchema || {});
-    const [readSchema, setReadSchema] = useState(props.readSchema || {});
-    const [eventSchema, setEventSchema] = useState(props.eventSchema || {});
+    const [beforeDefaults, setBeforeDefaults] = useState<Required<JSchema>>(extractSchemaFromProps(props));
+    const [jschema, setJschema] = useState<Required<JSchema>>(beforeDefaults);
 
-    const computedTemplate = useMemo(() => merge(getDefaultTemplate(), template), [template]);
-    const computedWidgets = useMemo(() => merge(getDefaultWidgets(), widgets), [widgets]);
-    const computedDefaults = useMemo(() => canonizeDefaults(merge(getDefaults(), defaults)), [defaults]);
+    const computedTemplate = useMemo(() => mergeSchemas(getDefaultTemplate(), template), [template]);
+    const computedWidgets = useMemo(() => mergeSchemas(getDefaultWidgets(), widgets), [widgets]);
+    const computedDefaults = useMemo(() => canonizeDefaults(mergeSchemas(getDefaults(), defaults)), [defaults]);
 
     const onBlur = () => props.onBlur && props.onBlur();
     const onFocus = () => props.onFocus && props.onFocus();
@@ -62,15 +73,13 @@ export default function Form(props: PropsWithChildren<FormProps>) {
     }
 
     const extendSchemas = () => {
-        const applied = applyDefaults({...props}, computedDefaults);
-        const dataWithDefaults = computeInitials(applied.schema as JSONSchema7, applied.schema as JSONSchema7, data);
+        const initialSchema = extractSchemaFromProps(beforeDefaults);
+        const jschema = applyDefaults(initialSchema, computedDefaults);
+        const dataWithDefaults = computeInitials(jschema.schema as JSONSchema7, jschema.schema as JSONSchema7, data);
         setData(dataWithDefaults);
-        setSchema(applied.schema || {});
-        setConfigSchema(applied.configSchema || {});
-        setReadSchema(applied.readSchema || {});
-        setEventSchema(applied.eventSchema || {});
+        setJschema(jschema);
         if (schemaInitialized) {
-            schemaInitialized({...applied, data});
+            schemaInitialized({...jschema, data});
         }
     }
 
@@ -84,14 +93,26 @@ export default function Form(props: PropsWithChildren<FormProps>) {
 
     //@ts-ignore
     didMount(extendSchemas);
-    didUpdate(extendSchemas, [props.schema, props.configSchema]);
+    didUpdate(() => {
+        const jschema = extractSchemaFromProps(props);
+        setBeforeDefaults(jschema)
+    }, [props.schema, props.configSchema, props.defaults]);
+    didUpdate(extendSchemas, [beforeDefaults]);
     didUpdateData(() => updateData(props.data), [props.data])
 
 
-    return <JFormContext.Provider
-        value={{template: computedTemplate, widgets: computedWidgets, schema, defaults: computedDefaults}}>
-        <Schema data={data} schema={schema || {}} configSchema={configSchema} readSchema={readSchema}
-                eventSchema={eventSchema} errors={errors} onBlur={onBlur} onFocus={onFocus} onChange={onChange}/>
-        {props.onSubmit && <button onClick={onSubmit}>Submit</button>}
-    </JFormContext.Provider>
+    return <div className="jform">
+        <JFormContext.Provider
+            value={{
+                template: computedTemplate,
+                widgets: computedWidgets,
+                schema: jschema.schema,
+                defaults: computedDefaults
+            }}>
+            <div className="jform-group">
+                <Schema data={data} {...jschema} errors={errors} onBlur={onBlur} onFocus={onFocus} onChange={onChange}/>
+            </div>
+            {props.onSubmit && <button className="btn btn-info" onClick={onSubmit}>Submit</button>}
+        </JFormContext.Provider>
+    </div>
 }

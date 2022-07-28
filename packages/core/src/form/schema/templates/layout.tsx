@@ -137,16 +137,16 @@ export default (props: PropsWithChildren<FieldLayoutProps>) => {
     let _render;
     if (typeof render === "function") {
         _render = render({
-            Title: rowElements.title,
-            Description: rowElements.description,
-            children: rowElements.children(),
-            Errors: rowElements.errors,
-            Help: rowElements.help
+            Title: rowElements.title || (() => null),
+            Description: rowElements.description || (() => null),
+            children: rowElements.children() || (() => null),
+            Errors: rowElements.errors || (() => null),
+            Help: rowElements.help || (() => null)
         })
     } else {
         _render = renderLayout(render || defaultLayout(rowElements),
             (name, rowProps) => <Col styles={defaultLayoutStyles()} {...rowProps}
-                                     key={name || "root"}>{rowElements[name]()}</Col>,
+                                     key={name || "root"}>{rowElements[name] && rowElements[name]()}</Col>,
             ((children, index) => <Row styles={defaultLayoutStyles()} key={index}>{children}</Row>))
     }
 

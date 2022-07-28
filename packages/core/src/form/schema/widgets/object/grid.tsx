@@ -46,6 +46,7 @@ const GridWidget = (props: ObjectWidgetProps) => {
 
     const {
         itemClassName,
+        itemStyle,
         additionalItemClassName,
         actionsClassName,
         actionClassName,
@@ -69,7 +70,7 @@ const GridWidget = (props: ObjectWidgetProps) => {
         {
             renderLayout(_layout, ((name, rowProps) => {
                 const {optional, render, ...other} = rowProps;
-                let _style = style || {};
+                let _style = itemStyle || {};
 
                 //@ts-ignore
                 const isFilled = (fieldName: string) => !!(data[fieldName] && data[fieldName].length)
@@ -111,16 +112,16 @@ const GridWidget = (props: ObjectWidgetProps) => {
                         isAdditional
                     } = properties[name];
 
-                    return <Col styles={defaultLayoutStyles()} {...other} key={name} style={_style}
+                    return <Col styles={defaultLayoutStyles()} {...other} key={name} style={_style || {}}
                                 className={[itemClassName, isAdditional && additionalItemClassName].filter(x => x && x.length > 0).join(" ")}>
                         <Schema
                             key={name}
                             name={name}
                             required={required}
-                            schema={schema}
-                            configSchema={configSchema}
-                            eventSchema={eventSchema}
-                            readSchema={readSchema}
+                            schema={schema || {}}
+                            configSchema={configSchema || {}}
+                            eventSchema={eventSchema || {}}
+                            readSchema={readSchema || {}}
                             data={value}
                             onChange={onChange}
                             onBlur={onBlur}

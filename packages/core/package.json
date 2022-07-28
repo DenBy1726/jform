@@ -4,7 +4,6 @@
   "homepage": "https://denby1726.github.io/jform/",
   "scripts": {
     "build": "rimraf dist && tsdx build --transpileOnly",
-    "start": "tsdx watch",
     "test": "tsdx test",
     "coverage": "jest  --coverage",
     "publish-to-npm": "npm run build && npm publish"
@@ -38,6 +37,7 @@
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-transform-react-jsx": "^7.16.0",
     "@babel/plugin-transform-runtime": "^7.16.0",
+    "@babel/plugin-syntax-async-generators": "^7.8.4",
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-react": "^7.16.0",
     "@types/json-schema": "^7.0.11",
@@ -52,7 +52,7 @@
     "cross-env": "^7.0.2",
     "csstype": "^3.1.0",
     "jest": "^27.5.1",
-    "jsdom": "^16.5.3",
+    "jsdom": "^20.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "rimraf": "^2.5.4",

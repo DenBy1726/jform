@@ -129,8 +129,8 @@ describe("Object type", () => {
         it("should handle a default object value", () => {
             const {node} = createFormComponent({schema});
 
-            expect(node.querySelector(".form-control input[type=text]").value).eql("hey");
-            expect(node.querySelector(".form-control input[type=checkbox]").checked).eql(true);
+            expect(node.querySelector(".form-field input[type=text]").value).eql("hey");
+            expect(node.querySelector(".form-field input[type=checkbox]").checked).eql(true);
         });
 
         it("should handle required values", () => {
@@ -150,8 +150,8 @@ describe("Object type", () => {
                 },
             });
 
-            expect(node.querySelector(".form-control input[type=text]").value).eql("ho");
-            expect(node.querySelector(".form-control input[type=checkbox]").checked).eql(false);
+            expect(node.querySelector(".form-field input[type=text]").value).eql("ho");
+            expect(node.querySelector(".form-field input[type=checkbox]").checked).eql(false);
         });
 
         it("should handle object fields change events", () => {
@@ -194,7 +194,7 @@ describe("Object type", () => {
                 }, onChange, data: {first: true},
             });
 
-            Simulate.change(node.querySelector(".additional-item .form-control"), {
+            Simulate.change(node.querySelector(".additional-item .form-field"), {
                 target: {checked: false},
             });
 
@@ -211,7 +211,7 @@ describe("Object type", () => {
                 data: {first: "str"},
             });
 
-            Simulate.change(node.querySelector(".additional-item .form-control"), {
+            Simulate.change(node.querySelector(".additional-item .form-field"), {
                 target: {value: null},
             });
 
@@ -682,10 +682,10 @@ describe("Object type", () => {
                 }, data: {first: 1},
             });
 
-            expect(node.querySelector(".form-control.text-widget").value).to.eql("1");
+            expect(node.querySelector(".text-widget").value).to.eql("1");
             Simulate.click(node.querySelector(".remove-key-button"));
 
-            expect(node.querySelector(".form-control.text-widget")).to.not.exist;
+            expect(node.querySelector(".text-widget")).to.not.exist;
         });
 
         it("delete button should delete correct pair", () => {
@@ -722,7 +722,7 @@ describe("Object type", () => {
                 data: {first: 1},
             });
 
-            Simulate.change(node.querySelector(".form-control.text-widget"), {
+            Simulate.change(node.querySelector(".text-widget"), {
                 target: {value: ""},
             });
 
