@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import "./Menu.css"
 import {Drawer, Menu} from "antd";
 import {useStoreState} from "easy-peasy";
-import {Theme} from "components/theme/Theme";
+import {Theme} from "../../components/theme/Theme";
 
 export default () => {
     const settings = useStoreState(state => state.menu.settings);

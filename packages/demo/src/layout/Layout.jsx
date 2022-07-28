@@ -4,8 +4,7 @@ import "./Layout.css"
 import Header from "./Header";
 import Sider from "./menu/Sider";
 import AppContent from "./Content"
-import {IFrame} from "components/common/iframe/IFrame";
-import {useRoutes} from "react-router-dom";
+import {IFrame} from "../components/common/iframe/IFrame";
 
 
 const {Content} = Layout;

@@ -1,5 +1,5 @@
 import React from "react";
-import {Solutions} from "components/solutions/Solutions";
+import {Solutions} from "../components/solutions/Solutions";
 import {Navigate} from "react-router-dom";
 
 export default [

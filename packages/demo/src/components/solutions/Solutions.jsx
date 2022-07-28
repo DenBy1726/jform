@@ -1,4 +1,4 @@
-import {Form} from "components/common/Form";
+import {Form} from "../common/Form";
 import React from "react";
 import {useParams} from "react-router-dom";
 import config from "./config"
