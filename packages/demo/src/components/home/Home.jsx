@@ -38,7 +38,7 @@ export const Home = () => {
             borderBottom: "1px solid hsla(210,18%,87%,1)"
         }}>Использование</h1>
 
-        <Editor {...config} height={350} show={{code: true}} useTabs={false}
+        <Editor {...config} height={390} show={{code: true}} useTabs={false}
                 formProps={{...config, onSubmit: console.log}}/>
     </div>
 }
