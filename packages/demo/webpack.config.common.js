@@ -20,9 +20,7 @@ module.exports = {
         extensions: ['*', '.js', '.jsx', '.json', '.css', 'html'],
         alias: {
             "routes":  path.resolve('./src/routes'),
-            "@jform/utils":  path.resolve('../utils/src'),
-            "react": path.resolve('./node_modules/react'),
-            'react-dom': path.resolve('./node_modules/react-dom'),
+            "components":  path.resolve('./src/components'),
         }
     },
     optimization: {
