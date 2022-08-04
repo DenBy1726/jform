@@ -1,6 +1,6 @@
 {
   "name": "@jform/core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "homepage": "https://denby1726.github.io/jform/",
   "scripts": {
     "build": "rimraf dist && tsdx build --transpileOnly",
@@ -22,7 +22,7 @@
     "react": ">=16 || >=17"
   },
   "dependencies": {
-    "@jform/utils": "*",
+    "@jform/utils": "^0.0.6",
     "ajv": "^8.11.0",
     "json-schema-merge-allof": "^0.8.1",
     "jsonpointer": "^5.0.0",

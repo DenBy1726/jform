@@ -1,6 +1,6 @@
 {
   "name": "@jform/utils",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "homepage": "https://denby1726.github.io/jform/",
   "scripts": {
     "build": "rimraf dist && tsdx build",
