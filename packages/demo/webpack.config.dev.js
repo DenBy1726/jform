@@ -17,14 +17,15 @@ module.exports = merge(common, {
         contentBase: path.join(__dirname, 'build'),
         compress: true,
         port: 3000,
-        historyApiFallback: true
+        historyApiFallback: {index: '/jform/'},
+        publicPath: '/jform/'
     },
     resolve: {
-        modules: [path.resolve('./src'), path.resolve('../core/src'),  path.resolve('../utils/src')],
+        modules: [path.resolve('./src'), path.resolve('../core/src'), path.resolve('../utils/src')],
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
         alias: {
-            "@jform/core":  path.resolve('../core/src'),
-            "@jform/utils":  path.resolve('../utils/src'),
+            "@jform/core": path.resolve('../core/src'),
+            "@jform/utils": path.resolve('../utils/src'),
             "react": path.resolve('./node_modules/react'),
             'react-dom': path.resolve('./node_modules/react-dom'),
         }
@@ -36,7 +37,7 @@ module.exports = merge(common, {
                 test: /\.[jt]sx?$/,
                 exclude: /node_modules/,
                 loader: "babel-loader",
-                options: { babelrcRoots: [".", "../core/src"] }
+                options: {babelrcRoots: [".", "../core/src"]}
             },
             {
                 test: /\.tsx?$/,

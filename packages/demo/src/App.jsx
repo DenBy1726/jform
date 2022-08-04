@@ -4,7 +4,7 @@ import {BrowserRouter as Router} from "react-router-dom";
 
 export const App = (props) => {
     return <>
-        <Router>
+        <Router basename="/jform">
             <Layout/>
         </Router>
     </>

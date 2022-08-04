@@ -2,6 +2,7 @@ import {TypeProps} from "./index";
 import React, {ReactElement} from "react";
 import {JSONSchema7} from "json-schema";
 import {mergeSchemas, isAdditional} from "@jform/utils";
+import {isObject} from "lodash-es";
 
 const orderProperties = (properties: string[], order?: string[]) => {
     if (!Array.isArray(order)) {
@@ -45,7 +46,12 @@ const isRequired = (schema: JSONSchema7, name: string): boolean => {
 
 const onPropertyChanged = (name: string, data: any, onChange: Function): ((arg: any) => void) => {
     return (value: any) => {
-        const newData = {...data, [name]: value};
+        let newData;
+        if (isObject(data)) {
+            newData = {...data, [name]: value};
+        } else {
+            newData = {[name]: value}
+        }
         onChange(newData);
     };
 }

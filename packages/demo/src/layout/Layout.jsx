@@ -4,7 +4,6 @@ import "./Layout.css"
 import Header from "./Header";
 import Sider from "./menu/Sider";
 import AppContent from "./Content"
-import {IFrame} from "../components/common/iframe/IFrame";
 
 
 const {Content} = Layout;
@@ -16,9 +15,7 @@ export default () => {
         <Content style={{marginTop: 64}}>
             <Layout className="site-layout-background">
                 <Sider/>
-                <IFrame>
-                    <AppContent/>
-                </IFrame>
+                <AppContent/>
             </Layout>
         </Content>
     </Layout>

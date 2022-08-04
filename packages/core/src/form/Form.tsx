@@ -79,7 +79,7 @@ export default function Form(props: PropsWithChildren<FormProps>) {
         setData(dataWithDefaults);
         setJschema(jschema);
         if (schemaInitialized) {
-            schemaInitialized({...jschema, data});
+            schemaInitialized({...jschema, data: dataWithDefaults});
         }
     }
 

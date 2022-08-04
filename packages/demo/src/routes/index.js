@@ -1,11 +1,12 @@
 import React from "react";
 import {Solutions} from "../components/solutions/Solutions";
 import {Navigate} from "react-router-dom";
+import {Home} from "../components/home/Home";
 
 export default [
     {
         path: "",
-        element: <Navigate to="/components" replace/>
+        element: <Home/>
     },
     {
         path: "documentation"

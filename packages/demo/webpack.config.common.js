@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const antdTheme = require('./antdTheme');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
     entry: [
@@ -12,11 +13,17 @@ module.exports = {
     output: {
         path: path.join(__dirname, 'public'),
         filename: 'bundle.js',
-        publicPath: '/'
+        publicPath: '/jform'
     },
     resolve: {
         modules: ["node_modules"],
-        extensions: ['*', '.js', '.jsx', '.json', '.css', 'html']
+        extensions: ['*', '.js', '.jsx', '.json', '.css', 'html'],
+        alias: {
+            "routes":  path.resolve('./src/routes'),
+            "@jform/utils":  path.resolve('../utils/src'),
+            "react": path.resolve('./node_modules/react'),
+            'react-dom': path.resolve('./node_modules/react-dom'),
+        }
     },
     optimization: {
         splitChunks: {
@@ -32,6 +39,10 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: 'bundle.css',
             allChunks: true
+        }),
+        new MonacoWebpackPlugin({
+            // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+            languages: ['json', 'javascript']
         })
     ],
     module: {
@@ -57,10 +68,10 @@ module.exports = {
                     "style-loader",
                     "css-loader"
                 ],
-                // include: [
-                //     path.join(__dirname, "src"),
-                //     path.join(__dirname, "node_modules", "monaco-editor")
-                // ],
+                include: [
+                    path.join(__dirname, "src"),
+                    path.join(__dirname, "node_modules", "monaco-editor")
+                ],
             },
             {
                 test: /\.less$/,

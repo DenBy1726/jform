@@ -1,5 +1,7 @@
+import {SOLUTIONS_PATH} from "routes/constants";
+
 export default [
     {
-        label: "Динамическая верстка", key: "/solutions/0"
+        label: "Динамическая верстка", key: SOLUTIONS_PATH + "/0"
     }
 ]

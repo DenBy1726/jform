@@ -12,7 +12,7 @@ export default () => {
     let navigate = useNavigate();
     let {pathname} = useLocation();
 
-    return <Sider collapsible className="site-layout-background" width={200}>
+    return (sider ? <Sider collapsible className="site-layout-background" width={200}>
         <Menu
             mode="inline"
             style={{height: '100%'}}
@@ -22,5 +22,5 @@ export default () => {
             }}
             selectedKeys={[pathname]}
         />
-    </Sider>
+    </Sider> : null)
 }

@@ -1,0 +1,21 @@
+.editor-header {
+    border-bottom: 2px solid #1DA57A;
+}
+
+.jeditor .codicon-folding-collapsed:before {
+    content: '+';
+}
+
+.jeditor .codicon-folding-expanded:before {
+    content: '-';
+}
+
+.jeditor-panel {
+    border-color: #ddd;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
+    box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
+}
